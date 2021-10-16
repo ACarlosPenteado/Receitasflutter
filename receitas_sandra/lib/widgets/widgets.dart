@@ -4,9 +4,9 @@ class ListDemo extends StatelessWidget {
   late double _height;
   late double _width;
 
-  final AsyncSnapshot qsRec;
+  final List list;
 
-  ListDemo({Key? key, required this.qsRec}) : super(key: key);
+  ListDemo({Key? key, required this.list}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class ListDemo extends StatelessWidget {
     _width = MediaQuery.of(context).size.width;
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: qsRec.data.length,
+      itemCount: list.length,
       itemBuilder: (_, index) {
         return SafeArea(
           child: Center(
@@ -58,7 +58,7 @@ class ListDemo extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
                                 Text(
-                                  qsRec.data[index],
+                                  list[index]['descricao'],
                                   style: Theme.of(context)
                                       .textTheme
                                       .headline5!

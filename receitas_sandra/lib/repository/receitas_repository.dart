@@ -5,7 +5,7 @@ import 'package:receitas_sandra/model/receitas.dart';
 
 class ReceitasRepository extends ChangeNotifier {
   List<Receitas> _lista = [];
-  late FirebaseFirestore firedb;
+  late FirebaseFirestore fireDb;
   late FirebaseAuth auth;
   late String? tipo;
 
@@ -15,31 +15,45 @@ class ReceitasRepository extends ChangeNotifier {
 
   _startRepository() async {
     await _startFirestore();
-    await readReceitas(tipo!);
   }
 
   _startFirestore() {
-    firedb = FirebaseFirestore.instance;
+    fireDb = FirebaseFirestore.instance;
   }
 
-  readReceitas(String tipo) async {
-    await firedb
+  static Future<List> listReceita(String tipo) async {
+    List? receitaList = [];
+    FirebaseFirestore fireDb = FirebaseFirestore.instance;
+    QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
         .collection('Receitas')
         .where('tipo', isEqualTo: tipo)
-        .get()
-        .then((QuerySnapshot query) {
-      query.docs.forEach((doc) {
-        print(query.docs);
-      });
-    });
-    notifyListeners();
+        .get();
+    receitaList = colRef.docs;
+    return receitaList;
+  }
+
+  static favoritar(String id, bool fav) async {
+    FirebaseFirestore fireDb = FirebaseFirestore.instance;
+    await fireDb.collection('Receitas').doc(id).update({'favorita': fav});
+  }
+
+  static Future<List> listFavoritas(String tipo) async {
+    List? favoritaList = [];
+    FirebaseFirestore fireDb = FirebaseFirestore.instance;
+    QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
+        .collection('Receitas')
+        .where('tipo', isEqualTo: tipo)
+        .where('favorita', isEqualTo: true)
+        .get();
+    favoritaList = colRef.docs;
+    return favoritaList;
   }
 
   saveAll(List<Receitas> receitas) async {
     receitas.forEach((receita) async {
       if (!_lista.any((atual) => atual.id == receita.id)) {
         _lista.add(receita);
-        await firedb.collection('Receitas').doc(auth.currentUser!.uid).set({
+        await fireDb.collection('Receitas').doc(auth.currentUser!.uid).set({
           'data': receita.data,
           'descricao': receita.descricao,
           'id_user': receita.id_user,
@@ -56,7 +70,7 @@ class ReceitasRepository extends ChangeNotifier {
   }
 
   remove(Receitas receitas) async {
-    await firedb.collection('Receitas').doc(receitas.id).delete();
+    await fireDb.collection('Receitas').doc(receitas.id).delete();
     _lista.remove(receitas);
     notifyListeners();
   }
