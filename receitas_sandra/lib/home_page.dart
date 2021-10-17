@@ -6,9 +6,9 @@ import 'package:receitas_sandra/pages/listar_receita_page.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/HomePage';
-  final String uid;
+  final String? uid;
 
-  const HomePage({Key? key, required this.uid}) : super(key: key);
+  const HomePage({Key? key, this.uid}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -38,9 +38,10 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 3))
-          ..repeat();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
 
     final FirebaseFirestore fireDb = FirebaseFirestore.instance;
     DocumentReference colRef = fireDb.collection('Users').doc(widget.uid);
@@ -49,6 +50,12 @@ class _HomePageState extends State<HomePage>
       email = value.get('email').toString();
       imagem = value.get('imagem').toString();
     });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -70,7 +77,8 @@ class _HomePageState extends State<HomePage>
           child: Column(
             children: <Widget>[
               clipShape(),
-              animeLetter(),
+               animeLetter(),
+              
               const SizedBox(
                 height: 60,
               ),
@@ -83,65 +91,62 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget buttonRec() {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          InkWell(
-            child: Column(
-              children: [
-                Image.asset(
-                  'images/receitas/doces.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fill,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        InkWell(
+          child: Column(
+            children: [
+              Image.asset(
+                'images/receitas/doces.png',
+                width: 100,
+                height: 100,
+                fit: BoxFit.fill,
+              ),
+              const Text(
+                'DOCES',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                const Text(
-                  'DOCES',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const ListarReceitaPage(tipo: 'Doces'),
-                ),
-              );
-            },
+              ),
+            ],
           ),
-          InkWell(
-            child: Column(
-              children: [
-                Image.asset(
-                  'images/receitas/salgadas.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fill,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ListarReceitaPage(tipo: 'Doces'),
+              ),
+            );
+          },
+        ),
+        InkWell(
+          child: Column(
+            children: [
+              Image.asset(
+                'images/receitas/salgadas.png',
+                width: 100,
+                height: 100,
+                fit: BoxFit.fill,
+              ),
+              const Text(
+                'SALGADAS',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                const Text(
-                  'SALGADAS',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const ListarReceitaPage(tipo: 'Salgadas'),
-                ),
-              );
-            },
+              ),
+            ],
           ),
-        ],
-      ),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ListarReceitaPage(tipo: 'Salgadas'),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -311,7 +316,7 @@ class _HomePageState extends State<HomePage>
         return ShaderMask(
           shaderCallback: (rect) {
             return LinearGradient(
-              colors: [Colors.grey, Colors.white, Colors.grey],
+              colors: const [Colors.grey, Colors.white, Colors.grey],
               stops: [
                 controller.value - 0.3,
                 controller.value,
@@ -323,7 +328,7 @@ class _HomePageState extends State<HomePage>
           },
           child: const Text(
             'Receitas da Sandra',
-            style: const TextStyle(fontSize: 30),
+            style: TextStyle(fontSize: 25),
           ),
           blendMode: BlendMode.srcIn,
         );
@@ -370,19 +375,22 @@ class _HomePageState extends State<HomePage>
         const SizedBox(
           height: 40,
         ),
-        Container(
-          alignment: Alignment.bottomCenter,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(40),
-          ),
-          margin: EdgeInsets.only(
-              top: _large
-                  ? _height / 50
-                  : (_medium ? _height / 55 : _height / 50)),
-          child: Image.network(
-            'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
-            height: _height / 3.5,
-            width: _width / 3.5,
+        Hero(
+          tag: 'image1',
+          child: Container(
+            alignment: Alignment.bottomCenter,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(40),
+            ),
+            margin: EdgeInsets.only(
+                top: _large
+                    ? _height / 50
+                    : (_medium ? _height / 55 : _height / 50)),
+            child: Image.network(
+              'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
+              height: _height / 3.5,
+              width: _width / 3.5,
+            ),
           ),
         ),
       ],

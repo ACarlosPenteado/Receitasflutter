@@ -153,6 +153,11 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
             ),
             RawMaterialButton(
               onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => FavoritasPage(tipo: widget.tipo)),
+                );
+
                 fabKey.currentState!.close();
               },
               shape: const CircleBorder(),
@@ -243,7 +248,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                 margin: const EdgeInsets.all(16),
                 child: InkWell(
                     child: Stack(
-                      children: <Widget>[
+                      children: [
                         Card(
                           elevation: 12,
                           shape: RoundedRectangleBorder(
@@ -358,7 +363,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                                             ),
                                           ),
                                         ],
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -368,15 +373,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                         ),
                         if (receitas[index]['favorita'] ||
                             selecionadas.contains(receitas[index]['id']))
-                          const Positioned(
-                            left: 8,
-                            top: 8,
-                            child: Icon(
-                              Icons.favorite,
-                              size: 32,
-                              color: Colors.cyan,
-                            ),
-                          ),
+                          favorita()
                       ],
                     ),
                     onTap: () {},
@@ -390,6 +387,18 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           ),
         );
       },
+    );
+  }
+
+  Widget favorita() {
+    return const Positioned(
+      left: 8,
+      top: 8,
+      child: Icon(
+        Icons.favorite,
+        size: 32,
+        color: Colors.cyan,
+      ),
     );
   }
 }
