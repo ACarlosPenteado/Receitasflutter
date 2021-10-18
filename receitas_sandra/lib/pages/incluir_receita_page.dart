@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/widgets/text_field.dart';
 
 class IncluirReceitaPage extends StatefulWidget {
@@ -21,7 +22,88 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   TextEditingController nomeController = TextEditingController();
   TextEditingController tempoController = TextEditingController();
   TextEditingController rendiController = TextEditingController();
+
+  TextEditingController quanController = TextEditingController();
+  TextEditingController mediController = TextEditingController();
+  TextEditingController descController = TextEditingController();
+
   final GlobalKey<FormState> _formkey = GlobalKey();
+
+  showMaterialDialog({required BuildContext context, required Widget child}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => child,
+    );
+  }
+
+  List<Ingrediente> listIngre = [];
+
+  cadastraIngre() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            color: Colors.grey[600],
+            width: 320,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Cadastrar Ingredientes'),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        height: 40,
+                        child: quanTextFormField(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 280,
+                        height: 40,
+                        child: descTextFormField(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        child: const Text("Salva"),
+                        onPressed: () {},
+                      ),
+                      ElevatedButton(
+                        child: const Text("Cancela"),
+                        onPressed: () {},
+                      )
+                    ],
+                  )
+                  //mediDropDownSearch(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +130,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       keyboardType: TextInputType.emailAddress,
       textEditingController: nomeController,
       focus: true,
+      ftm: 12,
       hint: "Nome da receita",
       validator: (value) {
         if (value.isEmpty) {
@@ -63,6 +146,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       keyboardType: TextInputType.number,
       textEditingController: tempoController,
       hint: "Tempo de Preparo",
+      ftm: 12,
       focus: false,
     );
   }
@@ -72,6 +156,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       keyboardType: TextInputType.number,
       textEditingController: rendiController,
       hint: "Rendimento",
+      ftm: 12,
       focus: false,
     );
   }
@@ -122,78 +207,128 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               top: _large
                   ? _height / 10
                   : (_medium ? _height / 13 : _height / 11)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Column(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.blue,
-                        width: 1.0,
-                      ),
-                      /* image: DecorationImage(
+                  Column(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.blue,
+                            width: 1.0,
+                          ),
+                          /* image: DecorationImage(
                         image: NetworkImage(
                             'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg'),
                         fit: BoxFit.fill,
                       ), */
-                    ),
-                    child: pick(),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: 40,
-                        width: 250,
-                        child: nomeTextFormField(),
+                        ),
+                        child: pick(),
                       ),
                     ],
                   ),
                   const SizedBox(
-                    height: 10,
+                    width: 20,
                   ),
-                  Row(
+                  Column(
                     children: [
-                      Column(
+                      Row(
                         children: [
                           SizedBox(
                             height: 40,
-                            width: 115,
-                            child: tempoTextFormField(),
+                            width: 250,
+                            child: nomeTextFormField(),
                           ),
                         ],
                       ),
                       const SizedBox(
-                        width: 20,
+                        height: 10,
                       ),
-                      Column(
+                      Row(
                         children: [
-                          SizedBox(
-                            height: 40,
-                            width: 115,
-                            child: rendiTextFormField(),
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 40,
+                                width: 115,
+                                child: tempoTextFormField(),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 40,
+                                width: 115,
+                                child: rendiTextFormField(),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
+                      )
                     ],
                   )
                 ],
-              )
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              InkWell(
+                onTap: () {
+                  cadastraIngre();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(width: 1, color: Colors.purple),
+                  ),
+                  child: const Text(
+                    'Ingredientes',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget quanTextFormField() {
+    return CustomTextField(
+      keyboardType: TextInputType.number,
+      textEditingController: quanController,
+      tm: 3,
+      ftm: 15,
+      focus: true,
+      hint: 'QTD',
+    );
+  }
+
+  Widget descTextFormField() {
+    return CustomTextField(
+      keyboardType: TextInputType.text,
+      textEditingController: quanController,
+      tm: 40,
+      ftm: 15,
+      focus: false,
+      hint: 'Descrição',
     );
   }
 }

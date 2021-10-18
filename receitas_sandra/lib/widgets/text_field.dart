@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatefulWidget {
   final String hint;
   final TextEditingController textEditingController;
   final TextInputType keyboardType;
-  final IconData? icon;
+  final int? tm;
+  final double ftm;
   final FormFieldValidator? validator;
   final FocusNode? focusNode;
   final bool focus;
@@ -14,7 +16,8 @@ class CustomTextField extends StatefulWidget {
     required this.hint,
     required this.textEditingController,
     required this.keyboardType,
-    this.icon,
+    this.tm,
+    required this.ftm,
     this.validator,
     this.focusNode,
     required this.focus,
@@ -37,13 +40,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
         validator: widget.validator,
         focusNode: widget.focusNode,
         autofocus: widget.focus,
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(widget.tm),
+        ],
         decoration: InputDecoration(
-          labelStyle: const TextStyle(fontSize: 10),
-          prefixIcon: Icon(
-            widget.icon,
-            color: Colors.indigoAccent,
-            size: 20,
-          ),
+          labelStyle: TextStyle(fontSize: widget.ftm),
           labelText: widget.hint,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
