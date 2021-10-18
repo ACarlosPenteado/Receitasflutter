@@ -1,5 +1,3 @@
-//   fab_circular_menu: ^1.0.2
-
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 

@@ -1,8 +1,6 @@
 import 'dart:collection';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/receitas.dart';
-import 'package:receitas_sandra/repository/receitas_repository.dart';
 
 class FavoritasRepository extends ChangeNotifier {
   List<Receitas> _lista = [];

@@ -5,6 +5,7 @@ import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/favoritas_page.dart';
+import 'package:receitas_sandra/pages/incluir_receita_page.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 
 class ListarReceitaPage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
       setState(() {
         receitas = list;
       });
-    });
+    }).whenComplete(() => receitas);
     ReceitasRepository.listFavoritas(widget.tipo).then((List list) {
       setState(() {
         favoritas = list;
@@ -155,7 +156,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => FavoritasPage(tipo: widget.tipo)),
+                      builder: (context) =>
+                          IncluirReceitaPage(tipo: widget.tipo)),
                 );
 
                 fabKey.currentState!.close();
