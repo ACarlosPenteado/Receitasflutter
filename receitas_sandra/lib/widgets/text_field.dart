@@ -40,6 +40,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         validator: widget.validator,
         focusNode: widget.focusNode,
         autofocus: widget.focus,
+        
         inputFormatters: [
           LengthLimitingTextInputFormatter(widget.tm),
         ],

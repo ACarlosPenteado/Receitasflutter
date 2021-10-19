@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
+import 'package:receitas_sandra/widgets/search.dart';
 import 'package:receitas_sandra/widgets/text_field.dart';
 
 class IncluirReceitaPage extends StatefulWidget {
@@ -40,6 +41,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
 
   cadastraIngre() {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -47,7 +49,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
-            color: Colors.grey[600],
+            color: Colors.grey[100],
             width: 320,
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -64,6 +66,18 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                         width: 100,
                         height: 40,
                         child: quanTextFormField(),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Material(
+                        borderRadius: BorderRadius.circular(20.0),
+                        elevation: 10,
+                        child: const SizedBox(
+                          width: 180,
+                          height: 40,
+                          child: DropdownSearchable(),
+                        ),
                       ),
                     ],
                   ),
@@ -87,15 +101,18 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                     children: [
                       ElevatedButton(
                         child: const Text("Salva"),
-                        onPressed: () {},
+                        onPressed: () {
+                          salvarIngre();
+                        },
                       ),
                       ElevatedButton(
                         child: const Text("Cancela"),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                       )
                     ],
                   )
-                  //mediDropDownSearch(),
                 ],
               ),
             ),
@@ -104,6 +121,8 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       },
     );
   }
+
+  salvarIngre() {}
 
   @override
   Widget build(BuildContext context) {
@@ -324,7 +343,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   Widget descTextFormField() {
     return CustomTextField(
       keyboardType: TextInputType.text,
-      textEditingController: quanController,
+      textEditingController: descController,
       tm: 40,
       ftm: 15,
       focus: false,
