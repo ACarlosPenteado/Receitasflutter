@@ -8,4 +8,16 @@ class Ingrediente {
     required this.medida,
     required this.descricao,
   });
+
+  get getQuantidade => this.quantidade;
+
+  set setQuantidade(quantidade) => this.quantidade = quantidade;
+
+  get getMedida => this.medida;
+
+  set setMedida(medida) => this.medida = medida;
+
+  get getDescricao => this.descricao;
+
+  set setDescricao(descricao) => this.descricao = descricao;
 }

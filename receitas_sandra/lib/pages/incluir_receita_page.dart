@@ -28,16 +28,18 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   TextEditingController mediController = TextEditingController();
   TextEditingController descController = TextEditingController();
 
+  TextEditingController prepaController = TextEditingController();
+
   final GlobalKey<FormState> _formkey = GlobalKey();
 
-  showMaterialDialog({required BuildContext context, required Widget child}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => child,
-    );
-  }
+  FocusNode focusQtd = FocusNode();
+  FocusNode focusDropDow = FocusNode();
+  FocusNode focusDesc = FocusNode();
 
-  List<Ingrediente> listIngre = [];
+  String selecionado = '';
+
+  List listIngre = [];
+  List listPrepa = [];
 
   cadastraIngre() {
     showDialog(
@@ -53,68 +55,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             width: 320,
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Cadastrar Ingredientes'),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        height: 40,
-                        child: quanTextFormField(),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Material(
-                        borderRadius: BorderRadius.circular(20.0),
-                        elevation: 10,
-                        child: const SizedBox(
-                          width: 180,
-                          height: 40,
-                          child: DropdownSearchable(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 280,
-                        height: 40,
-                        child: descTextFormField(),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        child: const Text("Salva"),
-                        onPressed: () {
-                          salvarIngre();
-                        },
-                      ),
-                      ElevatedButton(
-                        child: const Text("Cancela"),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      )
-                    ],
-                  )
-                ],
-              ),
+              child: formIngre(),
             ),
           ),
         );
@@ -122,7 +63,30 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     );
   }
 
-  salvarIngre() {}
+  salvarIngre(String quantidade, String medida, String descricao) {
+    listIngre.add(
+      Ingrediente(quantidade: quantidade, medida: medida, descricao: descricao),
+    );
+
+    for (var i = 0; i < listIngre.length; i++) {
+      print(listIngre[i].toString());
+    }
+    limparIngre();
+  }
+
+  salvarPrepa(String descricao) {
+    listPrepa.add(descricao);
+  }
+
+  limparIngre() {
+    quanController.text = '';
+    selecionado = '';
+    descController.text = '';
+  }
+
+  limparPrepa() {
+    prepaController.text = '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,42 +105,6 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           child: clipShape(),
         ),
       ),
-    );
-  }
-
-  Widget nomeTextFormField() {
-    return CustomTextField(
-      keyboardType: TextInputType.emailAddress,
-      textEditingController: nomeController,
-      focus: true,
-      ftm: 12,
-      hint: "Nome da receita",
-      validator: (value) {
-        if (value.isEmpty) {
-          return 'Digite o nome da receita!';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget tempoTextFormField() {
-    return CustomTextField(
-      keyboardType: TextInputType.number,
-      textEditingController: tempoController,
-      hint: "Tempo de Preparo",
-      ftm: 12,
-      focus: false,
-    );
-  }
-
-  Widget rendiTextFormField() {
-    return CustomTextField(
-      keyboardType: TextInputType.number,
-      textEditingController: rendiController,
-      hint: "Rendimento",
-      ftm: 12,
-      focus: false,
     );
   }
 
@@ -329,14 +257,149 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     );
   }
 
+  Widget nomeTextFormField() {
+    return CustomTextField(
+      keyboardType: TextInputType.emailAddress,
+      textEditingController: nomeController,
+      focus: true,
+      ftm: 12,
+      hint: "Nome da receita",
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Digite o nome da receita!';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget tempoTextFormField() {
+    return CustomTextField(
+      keyboardType: TextInputType.number,
+      textEditingController: tempoController,
+      hint: "Tempo de Preparo",
+      ftm: 12,
+      focus: false,
+    );
+  }
+
+  Widget rendiTextFormField() {
+    return CustomTextField(
+      keyboardType: TextInputType.number,
+      textEditingController: rendiController,
+      hint: "Rendimento",
+      ftm: 12,
+      focus: false,
+    );
+  }
+
+  Widget formIngre() {
+    return Form(
+      key: _formkey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Cadastrar Ingredientes'),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: 100,
+                height: 40,
+                child: quanTextFormField(),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Material(
+                borderRadius: BorderRadius.circular(20.0),
+                elevation: 10,
+                child: SizedBox(
+                  width: 180,
+                  height: 40,
+                  child: medidasDropDown(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: 290,
+                height: 80,
+                child: descTextFormField(),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                child: const Text("Salva"),
+                onPressed: () {
+                  if (_formkey.currentState!.validate()) {
+                    salvarIngre(
+                        quanController.text, selecionado, descController.text);
+                  }
+                },
+              ),
+              ElevatedButton(
+                child: const Text("Cancela"),
+                onPressed: () {
+                  limparIngre();
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget quanTextFormField() {
     return CustomTextField(
       keyboardType: TextInputType.number,
       textEditingController: quanController,
       tm: 3,
       ftm: 15,
-      focus: true,
+      maxLine: 1,
       hint: 'QTD',
+      focus: true,
+      focusNode: focusQtd,
+      onChange: (value) {
+        if (value.length == 3) {
+          FocusScope.of(context).requestFocus(focusDropDow);
+        }
+      },
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Entre com a quantidade';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget medidasDropDown() {
+    return DropdownSearchable(
+      focusNode: focusDropDow,
+      validator: (value) {
+        if (value.isEmpty) {
+          selecionado = '-';
+        } else {
+          selecionado = value;
+        }
+        return null;
+      },
     );
   }
 
@@ -345,9 +408,17 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       keyboardType: TextInputType.text,
       textEditingController: descController,
       tm: 40,
+      maxLine: 2,
       ftm: 15,
       focus: false,
+      focusNode: focusDesc,
       hint: 'Descrição',
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Entre com a descrição';
+        }
+        return null;
+      },
     );
   }
 }

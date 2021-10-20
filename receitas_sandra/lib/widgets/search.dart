@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 
 class DropdownSearchable extends StatefulWidget {
   static const routeName = '/DropdownSearchable';
+  final FocusNode focusNode;
+  final FormFieldValidator? validator;
 
-  const DropdownSearchable({Key? key}) : super(key: key);
+  const DropdownSearchable({
+    Key? key,
+    required this.focusNode,
+    this.validator,
+  }) : super(key: key);
   @override
   _DropdownSearchableState createState() => _DropdownSearchableState();
 }
@@ -25,8 +31,6 @@ class _DropdownSearchableState extends State<DropdownSearchable> {
 
   String selecionado = '';
 
-  FocusNode focusDropDown = FocusNode();
-
   @override
   void initState() {
     super.initState();
@@ -38,7 +42,7 @@ class _DropdownSearchableState extends State<DropdownSearchable> {
       mode: Mode.MENU,
       maxHeight: 300,
       popupElevation: 8,
-      focusNode: focusDropDown,
+      focusNode: widget.focusNode,
       popupTitle: const Center(
         child: Text(
           'Medidas',
@@ -71,6 +75,7 @@ class _DropdownSearchableState extends State<DropdownSearchable> {
           ),
         ),
       ),
+      validator: widget.validator,
     );
   }
 }

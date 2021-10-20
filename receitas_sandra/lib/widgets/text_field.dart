@@ -6,9 +6,11 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController textEditingController;
   final TextInputType keyboardType;
   final int? tm;
+  final int? maxLine;
   final double ftm;
   final FormFieldValidator? validator;
   final FocusNode? focusNode;
+  final FormFieldSetter? onChange;
   final bool focus;
 
   CustomTextField({
@@ -17,9 +19,11 @@ class CustomTextField extends StatefulWidget {
     required this.textEditingController,
     required this.keyboardType,
     this.tm,
+    this.maxLine,
     required this.ftm,
     this.validator,
     this.focusNode,
+    this.onChange,
     required this.focus,
   });
 
@@ -39,8 +43,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
         cursorColor: Colors.orange[200]!,
         validator: widget.validator,
         focusNode: widget.focusNode,
+        onChanged: widget.onChange,
         autofocus: widget.focus,
-        
+        maxLines: widget.maxLine,
         inputFormatters: [
           LengthLimitingTextInputFormatter(widget.tm),
         ],
