@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 class CustomTextField extends StatefulWidget {
   final String hint;
+  final String? sufix;
   final TextEditingController textEditingController;
   final TextInputType keyboardType;
   final int? tm;
@@ -16,6 +17,7 @@ class CustomTextField extends StatefulWidget {
   CustomTextField({
     Key? key,
     required this.hint,
+    this.sufix,
     required this.textEditingController,
     required this.keyboardType,
     this.tm,
@@ -40,6 +42,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       child: TextFormField(
         controller: widget.textEditingController,
         keyboardType: widget.keyboardType,
+        textCapitalization: TextCapitalization.sentences,
         cursorColor: Colors.orange[200]!,
         validator: widget.validator,
         focusNode: widget.focusNode,
@@ -52,6 +55,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         decoration: InputDecoration(
           labelStyle: TextStyle(fontSize: widget.ftm),
           labelText: widget.hint,
+          suffixText: widget.sufix,
+          suffixStyle: const TextStyle(fontSize: 12),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
               borderSide: BorderSide.none),

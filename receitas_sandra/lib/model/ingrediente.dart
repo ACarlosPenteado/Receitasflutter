@@ -20,4 +20,9 @@ class Ingrediente {
   get getDescricao => this.descricao;
 
   set setDescricao(descricao) => this.descricao = descricao;
+
+  @override
+  String toString() {
+    return '{ quantidade: ${quantidade}, medida: ${medida}, descricao: ${descricao} }';
+  }
 }

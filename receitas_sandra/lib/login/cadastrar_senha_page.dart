@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/pages/termos_page.dart';
+import 'package:receitas_sandra/uteis/funtions.dart';
 
 class CadatrarSenhaPage extends StatefulWidget {
   static const routeName = '/CadatrarSenhaPage';
@@ -78,13 +79,13 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     _focusConfirma.dispose();
   }
 
-  getDate() {
+  /* getDate() {
     String data = DateTime.now().toString();
     var inputFormat = DateFormat('yyyy-MM-dd');
     var inputDate = inputFormat.parse(data);
     var outputFormat = DateFormat('dd/MM/yyyy');
     return outputFormat.format(inputDate);
-  }
+  } */
 
   cadastrar() {
     _auth
@@ -97,7 +98,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
         'fone': foneController.text,
         'id': result.user!.uid,
         'provedor': 'email',
-        'data': getDate(),
+        'data': getDate,
         'imagem': 'imagem',
       }).then((value) {
         Navigator.pushReplacement(

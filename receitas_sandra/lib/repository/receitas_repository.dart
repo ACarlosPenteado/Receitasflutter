@@ -56,7 +56,7 @@ class ReceitasRepository extends ChangeNotifier {
         await fireDb.collection('Receitas').doc(auth.currentUser!.uid).set({
           'data': receita.data,
           'descricao': receita.descricao,
-          'id_user': receita.id_user,
+          'id_user': receita.iduser,
           'imagem': receita.imagem,
           'ingredientes': receita.ingredientes,
           'preparo': receita.preparo,

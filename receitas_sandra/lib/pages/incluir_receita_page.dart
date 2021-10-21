@@ -1,5 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
+import 'package:receitas_sandra/model/preparo.dart';
+import 'package:receitas_sandra/model/receitas.dart';
+import 'package:receitas_sandra/uteis/funtions.dart';
+import 'package:receitas_sandra/widgets/listingre.dart';
+import 'package:receitas_sandra/widgets/listprepa.dart';
 import 'package:receitas_sandra/widgets/search.dart';
 import 'package:receitas_sandra/widgets/text_field.dart';
 
@@ -20,6 +26,8 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   late bool _large;
   late bool _medium;
 
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   TextEditingController nomeController = TextEditingController();
   TextEditingController tempoController = TextEditingController();
   TextEditingController rendiController = TextEditingController();
@@ -38,8 +46,10 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
 
   String selecionado = '';
 
-  List listIngre = [];
-  List listPrepa = [];
+  String data = getDate;
+
+  List<Ingrediente> listIngre = [];
+  List<Preparo> listPrepa = [];
 
   cadastraIngre() {
     showDialog(
@@ -63,19 +73,38 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     );
   }
 
+  cadastraPrepa() {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            color: Colors.grey[100],
+            width: 320,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: formPrepa(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   salvarIngre(String quantidade, String medida, String descricao) {
     listIngre.add(
       Ingrediente(quantidade: quantidade, medida: medida, descricao: descricao),
     );
-
-    for (var i = 0; i < listIngre.length; i++) {
-      print(listIngre[i].toString());
-    }
-    limparIngre();
   }
 
   salvarPrepa(String descricao) {
-    listPrepa.add(descricao);
+    listPrepa.add(
+      Preparo(descricao: descricao),
+    );
   }
 
   limparIngre() {
@@ -143,7 +172,21 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             ),
           ),
         ),
-        const Opacity(opacity: 0.88, child: CustomAppBar()),
+        Opacity(
+          opacity: 0.88,
+          child: CustomAppBar(
+            data: data,
+            descricao: nomeController.text,
+            favorita: false,
+            iduser: auth.currentUser!.uid.toString(),
+            imagem: 'sem imagem',
+            ingredientes: listIngre,
+            preparo: listPrepa,
+            rendimento: rendiController.text,
+            tempoPreparo: tempoController.text,
+            tipo: widget.tipo,
+          ),
+        ),
         const SizedBox(
           height: 40,
         ),
@@ -231,9 +274,18 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               const SizedBox(
                 height: 10,
               ),
+              const Divider(
+                height: 5,
+                color: Colors.purple,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               InkWell(
                 onTap: () {
-                  cadastraIngre();
+                  if (nomeController.text.isNotEmpty) {
+                    cadastraIngre();
+                  }
                 },
                 child: Container(
                   padding: const EdgeInsets.all(5),
@@ -250,6 +302,39 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                   ),
                 ),
               ),
+              ListIngre(list: listIngre),
+              const SizedBox(
+                height: 10,
+              ),
+              const Divider(
+                height: 5,
+                color: Colors.purple,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              InkWell(
+                onTap: () {
+                  if (nomeController.text.isNotEmpty) {
+                    cadastraPrepa();
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(width: 1, color: Colors.purple),
+                  ),
+                  child: const Text(
+                    'Modo de Preparo',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              ListPrepa(list: listPrepa),
             ],
           ),
         ),
@@ -259,10 +344,12 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
 
   Widget nomeTextFormField() {
     return CustomTextField(
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.text,
       textEditingController: nomeController,
       focus: true,
+      tm: 60,
       ftm: 12,
+      maxLine: 1,
       hint: "Nome da receita",
       validator: (value) {
         if (value.isEmpty) {
@@ -278,6 +365,9 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       keyboardType: TextInputType.number,
       textEditingController: tempoController,
       hint: "Tempo de Preparo",
+      sufix: 'minutos',
+      maxLine: 1,
+      tm: 3,
       ftm: 12,
       focus: false,
     );
@@ -288,6 +378,9 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       keyboardType: TextInputType.number,
       textEditingController: rendiController,
       hint: "Rendimento",
+      sufix: 'porções',
+      maxLine: 1,
+      tm: 3,
       ftm: 12,
       focus: false,
     );
@@ -345,10 +438,13 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               ElevatedButton(
                 child: const Text("Salva"),
                 onPressed: () {
-                  if (_formkey.currentState!.validate()) {
-                    salvarIngre(
-                        quanController.text, selecionado, descController.text);
-                  }
+                  setState(() {
+                    if (_formkey.currentState!.validate()) {
+                      salvarIngre(quanController.text, selecionado,
+                          descController.text);
+                      limparIngre();
+                    }
+                  });
                 },
               ),
               ElevatedButton(
@@ -421,6 +517,56 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       },
     );
   }
+
+  Widget formPrepa() {
+    return Form(
+      key: _formkey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Cadastrar Modo de Preparo'),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: 290,
+                height: 80,
+                child: descTextFormField(),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                child: const Text("Salva"),
+                onPressed: () {
+                  setState(() {
+                    if (_formkey.currentState!.validate()) {
+                      salvarPrepa(descController.text);
+                      limparPrepa();
+                    }
+                  });
+                },
+              ),
+              ElevatedButton(
+                child: const Text("Cancela"),
+                onPressed: () {
+                  limparPrepa();
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 Widget pick() {
@@ -489,7 +635,32 @@ class CustomShapeClipper2 extends CustomClipper<Path> {
 }
 
 class CustomAppBar extends StatefulWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
+  String? id;
+  String data;
+  String descricao;
+  bool favorita;
+  String iduser;
+  String imagem;
+  List ingredientes;
+  List preparo;
+  String rendimento;
+  String tempoPreparo;
+  String tipo;
+
+  CustomAppBar(
+      {Key? key,
+      this.id,
+      required this.data,
+      required this.descricao,
+      required this.favorita,
+      required this.iduser,
+      required this.imagem,
+      required this.ingredientes,
+      required this.preparo,
+      required this.rendimento,
+      required this.tempoPreparo,
+      required this.tipo})
+      : super(key: key);
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();
@@ -534,7 +705,19 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 icon: const Icon(
                   Icons.save,
                 ),
-                onPressed: () {}),
+                onPressed: () {
+                  //salvarReceitas();
+                  print(widget.data +
+                      widget.descricao +
+                      widget.favorita.toString() +
+                      widget.iduser +
+                      widget.imagem +
+                      widget.ingredientes.toString() +
+                      widget.preparo.toString() +
+                      widget.rendimento +
+                      widget.tempoPreparo +
+                      widget.tipo);
+                }),
           ],
         ),
       ),

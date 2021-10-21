@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ListDemo extends StatelessWidget {
-  late double _height;
-  late double _width;
-
   final List list;
 
   ListDemo({Key? key, required this.list}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    _height = MediaQuery.of(context).size.height;
-    _width = MediaQuery.of(context).size.width;
     return ListView.builder(
       shrinkWrap: true,
       itemCount: list.length,
