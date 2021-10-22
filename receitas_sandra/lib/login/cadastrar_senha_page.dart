@@ -46,6 +46,8 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   bool _senhaVisible = true;
   bool _confirmaVisible = true;
 
+  String imageUrl = '';
+
   @override
   initState() {
     _focusNome = FocusNode();

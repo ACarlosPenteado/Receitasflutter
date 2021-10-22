@@ -11,5 +11,7 @@ String get getDate {
 
 String get getId {
   var uid = Uuid();
-  return uid.v1.toString();
+  var v4 = uid.v4();
+  String novo = v4.toString();
+  return novo;
 }

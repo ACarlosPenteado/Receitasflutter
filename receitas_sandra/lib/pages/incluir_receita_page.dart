@@ -102,12 +102,14 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     listIngre.add(
       Ingrediente(quantidade: quantidade, medida: medida, descricao: descricao),
     );
+    limparIngre();
   }
 
   salvarPrepa(String descricao) {
     listPrepa.add(
       Preparo(descricao: descricao),
     );
+    limparPrepa();
   }
 
   limparIngre() {
@@ -553,7 +555,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                 onPressed: () {
                   setState(() {
                     if (_formkey.currentState!.validate()) {
-                      salvarPrepa(descController.text);
+                      salvarPrepa(prepaController.text);
                       limparPrepa();
                     }
                   });
@@ -677,6 +679,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
   late Ingrediente ingMap;
   late Preparo preMap;
 
+  List<Ingrediente> ingres = [];
+  List<Preparo> prepas = [];
+
   salvarReceitas(
       String data,
       String descricao,
@@ -694,26 +699,37 @@ class _CustomAppBarState extends State<CustomAppBar> {
           quantidade: ingredientes[i].quantidade,
           medida: ingredientes[i].medida,
           descricao: ingredientes[i].descricao);
+      fireDb.collection('Receitas').doc(id).set({
+        'data': data,
+        'descricao': descricao,
+        'favorita': favorita,
+        'id': id,
+        'iduser': iduser,
+        'imagem': imagem,
+        'ingredientes': FieldValue.arrayUnion([ingMap.toMap()]),
+        'preparo': FieldValue.arrayUnion([preMap.toMap()]),
+        'rendimento': rendimento,
+        'tempoPreparo': tempo,
+        'tipo': tipo
+      }, SetOptions(merge: true));
     }
 
     for (var i = 0; i < preparo.length; i++) {
       preMap = Preparo(descricao: ingredientes[i].descricao);
+      fireDb.collection('Receitas').doc(id).set({
+        'data': data,
+        'descricao': descricao,
+        'favorita': favorita,
+        'id': id,
+        'iduser': iduser,
+        'imagem': imagem,
+        'ingredientes': FieldValue.arrayUnion([ingMap.toMap()]),
+        'preparo': FieldValue.arrayUnion([preMap.toMap()]),
+        'rendimento': rendimento,
+        'tempoPreparo': tempo,
+        'tipo': tipo,
+      }, SetOptions(merge: true));
     }
-
-    fireDb.collection('Receitas').doc().set({
-      'data': data,
-      'descricao': descricao,
-      'favorita': favorita,
-      'id': id,
-      'iduser': iduser,
-      'imagem': imagem,
-      'ingredientes': FieldValue.arrayUnion([ingMap.toMap()]),
-      'preparo': FieldValue.arrayUnion([preMap.toMap()]),
-      'rendimento': rendimento,
-      'tempoPreparo': tempo,
-      'tipo': tipo
-    });
-    SetOptions(merge: true);
   }
 
   @override
