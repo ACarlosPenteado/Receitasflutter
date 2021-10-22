@@ -38,6 +38,7 @@ dependencies:
   curved_navigation_bar: ^1.0.1
   webview_flutter: ^2.0.12
   intl:
+  uuid: ^3.0.5
   provider: ^6.0.0  
   firebase_core: ^1.6.0
   firebase_auth: ^3.1.0

@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/model/receitas.dart';
+import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/widgets/listingre.dart';
 import 'package:receitas_sandra/widgets/listprepa.dart';
@@ -47,6 +49,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   String selecionado = '';
 
   String data = getDate;
+  String id = getId;
 
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
@@ -178,8 +181,10 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             data: data,
             descricao: nomeController.text,
             favorita: false,
+            id: id,
             iduser: auth.currentUser!.uid.toString(),
-            imagem: 'sem imagem',
+            imagem:
+                'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
             ingredientes: listIngre,
             preparo: listPrepa,
             rendimento: rendiController.text,
@@ -635,24 +640,24 @@ class CustomShapeClipper2 extends CustomClipper<Path> {
 }
 
 class CustomAppBar extends StatefulWidget {
-  String? id;
   String data;
   String descricao;
   bool favorita;
+  String id;
   String iduser;
   String imagem;
-  List ingredientes;
-  List preparo;
+  List<Ingrediente> ingredientes;
+  List<Preparo> preparo;
   String rendimento;
   String tempoPreparo;
   String tipo;
 
   CustomAppBar(
       {Key? key,
-      this.id,
       required this.data,
       required this.descricao,
       required this.favorita,
+      required this.id,
       required this.iduser,
       required this.imagem,
       required this.ingredientes,
@@ -667,6 +672,50 @@ class CustomAppBar extends StatefulWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
+  FirebaseFirestore fireDb = FirebaseFirestore.instance;
+
+  late Ingrediente ingMap;
+  late Preparo preMap;
+
+  salvarReceitas(
+      String data,
+      String descricao,
+      bool favorita,
+      String id,
+      String iduser,
+      String imagem,
+      List<Ingrediente> ingredientes,
+      List<Preparo> preparo,
+      String rendimento,
+      String tempo,
+      String tipo) {
+    for (var i = 0; i < ingredientes.length; i++) {
+      ingMap = Ingrediente(
+          quantidade: ingredientes[i].quantidade,
+          medida: ingredientes[i].medida,
+          descricao: ingredientes[i].descricao);
+    }
+
+    for (var i = 0; i < preparo.length; i++) {
+      preMap = Preparo(descricao: ingredientes[i].descricao);
+    }
+
+    fireDb.collection('Receitas').doc().set({
+      'data': data,
+      'descricao': descricao,
+      'favorita': favorita,
+      'id': id,
+      'iduser': iduser,
+      'imagem': imagem,
+      'ingredientes': FieldValue.arrayUnion([ingMap.toMap()]),
+      'preparo': FieldValue.arrayUnion([preMap.toMap()]),
+      'rendimento': rendimento,
+      'tempoPreparo': tempo,
+      'tipo': tipo
+    });
+    SetOptions(merge: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -706,16 +755,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   Icons.save,
                 ),
                 onPressed: () {
-                  //salvarReceitas();
-                  print(widget.data +
-                      widget.descricao +
-                      widget.favorita.toString() +
-                      widget.iduser +
-                      widget.imagem +
-                      widget.ingredientes.toString() +
-                      widget.preparo.toString() +
-                      widget.rendimento +
-                      widget.tempoPreparo +
+                  salvarReceitas(
+                      widget.data,
+                      widget.descricao,
+                      widget.favorita,
+                      widget.id,
+                      widget.iduser,
+                      widget.imagem,
+                      widget.ingredientes,
+                      widget.preparo,
+                      widget.rendimento,
+                      widget.tempoPreparo,
                       widget.tipo);
                 }),
           ],

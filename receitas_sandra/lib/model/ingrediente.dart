@@ -21,6 +21,12 @@ class Ingrediente {
 
   set setDescricao(descricao) => this.descricao = descricao;
 
+  Map<String, dynamic> toMap() => {
+        'quantidade': quantidade,
+        'medida': medida,
+        'descricao': descricao,
+      };
+      
   @override
   String toString() {
     return '{ quantidade: ${quantidade}, medida: ${medida}, descricao: ${descricao} }';

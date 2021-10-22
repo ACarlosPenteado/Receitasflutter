@@ -9,6 +9,10 @@ class Preparo {
 
   set setDescricao(descricao) => this.descricao = descricao;
 
+  Map<String, dynamic> toMap() => {
+        'descricao': descricao,
+      };
+
   @override
   String toString() {
     return '{ descricao: ${descricao} }';

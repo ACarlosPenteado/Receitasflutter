@@ -49,26 +49,6 @@ class ReceitasRepository extends ChangeNotifier {
     return favoritaList;
   }
 
-  saveAll(List<Receitas> receitas) async {
-    receitas.forEach((receita) async {
-      if (!_lista.any((atual) => atual.id == receita.id)) {
-        _lista.add(receita);
-        await fireDb.collection('Receitas').doc(auth.currentUser!.uid).set({
-          'data': receita.data,
-          'descricao': receita.descricao,
-          'id_user': receita.iduser,
-          'imagem': receita.imagem,
-          'ingredientes': receita.ingredientes,
-          'preparo': receita.preparo,
-          'rendimento': receita.rendimento,
-          'tempoPreparo': receita.tempoPreparo,
-          'tipo': receita.tipo,
-        });
-      }
-    });
-    notifyListeners();
-  }
-
   remove(Receitas receitas) async {
     await fireDb.collection('Receitas').doc(receitas.id).delete();
     _lista.remove(receitas);
