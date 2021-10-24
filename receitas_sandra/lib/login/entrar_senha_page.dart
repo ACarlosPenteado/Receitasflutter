@@ -25,6 +25,7 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
   final GlobalKey<FormState> _formkey = GlobalKey();
 
   final FocusNode _focusNome = FocusNode();
+  final FocusNode _focusEmail = FocusNode();
   final FocusNode _focusSenha = FocusNode();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -41,7 +42,12 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
           .where('nome', isEqualTo: nomeController.text)
           .snapshots()
           .listen((event) {
-        emailController.text = event.docs[0]['email'].toString();
+        if (event.docs.isNotEmpty) {
+          emailController.text = event.docs[0]['email'].toString();
+        } else {
+          emailController.text = '';
+          senhaController.text = '';
+        }
       });
     });
   }
@@ -53,25 +59,49 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
     emailController.dispose();
     senhaController.dispose();
     _focusNome.dispose();
+    _focusEmail.dispose();
     _focusSenha.dispose();
   }
 
-  login(String email, String senha) {
-    _auth
-        .signInWithEmailAndPassword(email: email, password: senha)
-        .then((result) {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  HomePage(uid: _auth.currentUser!.uid.toString())));
-    }).catchError((err) {
+  bool isLogginIn = false;
+
+  login(String email, String senha) async {
+    setState(() {
+      isLogginIn = true;
+    });
+    try {
+      await _auth
+          .signInWithEmailAndPassword(email: email, password: senha)
+          .then((result) {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    HomePage(uid: _auth.currentUser!.uid.toString())));
+      });
+    } on FirebaseAuthException catch (e) {
+      var mensagem = '';
+      switch (e.code) {
+        case 'invalid-email':
+          mensagem = 'O email não é válido!';
+          break;
+        case 'user-disabled':
+          mensagem = 'O email está desabilitado!';
+          break;
+        case 'user-not-found':
+          mensagem = 'Email não encontrado!';
+          break;
+        case 'wrong-password':
+          mensagem = 'Senha incorreta!';
+          break;
+        default:
+      }
       showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('ERRO'),
-              content: Text(err.message),
+              title: const Text('Falha para entrar!'),
+              content: Text(mensagem),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -82,7 +112,11 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
               ],
             );
           });
-    });
+    } finally {
+      setState(() {
+        isLogginIn = false;
+      });
+    }
   }
 
   @override
@@ -105,7 +139,11 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
               signInTextRow(),
               form(),
               forgetPassTextRow(),
-              button(),
+              !isLogginIn
+                  ? button()
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
               signUpTextRow(),
             ],
           ),
@@ -247,10 +285,15 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
       textEditingController: emailController,
       icon: Icons.email,
       hint: "Email",
+      focusNode: _focusEmail,
       focus: false,
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu email!';
+        } else {
+          if (!emailController.text.contains('@')) {
+            return 'Email inválido!';
+          }
         }
         return null;
       },

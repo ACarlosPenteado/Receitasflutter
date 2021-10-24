@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Receitas da Sandra</string>
+    <string name="facebook_app_id">4457372257684384</string>
+    <string name="fb_login_protocol_scheme">fb4457372257684384</string>
+</resources>

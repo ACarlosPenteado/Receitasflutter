@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/login/entrar_senha_page.dart';
-import 'package:receitas_sandra/login/entrar_facebook_page.dart';
 import 'package:receitas_sandra/login/entrar_fone_page.dart';
-import 'package:receitas_sandra/login/entrar_google_page.dart';
+import 'package:receitas_sandra/uteis/funtions.dart';
 
 class EntrarPage extends StatefulWidget {
   static const routeName = '/EntrarPage';
@@ -21,6 +25,196 @@ class _EntrarPageState extends State<EntrarPage> {
   late double _pixelRatio;
   late bool _large;
   late bool _medium;
+
+  FirebaseFirestore fireDb = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  String id = '';
+  String nome = '';
+  String email = '';
+  String foto = '';
+  String data = getDate;
+
+  var loading = false;
+
+  void _loginFacebook() async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      final facebookLoginResult = await FacebookAuth.instance.login();
+      final userData = await FacebookAuth.instance.getUserData();
+
+      final facebookAuthCredential = FacebookAuthProvider.credential(
+          facebookLoginResult.accessToken!.token);
+      await auth.signInWithCredential(facebookAuthCredential);
+
+      id = auth.currentUser!.uid;
+      email = userData['email'];
+      foto = userData['picture']['data']['url'];
+      nome = userData['name'];
+
+      fireDb.collection('Users').doc(id).get().then((value) async {
+        if (!value.exists) {
+          await fireDb.collection('Users').doc(id).set({
+            'data': data,
+            'email': email,
+            'fone': 'fone',
+            'image': foto,
+            'nome': nome,
+            'provedor': 'Facebook',
+          });
+        }
+      });
+
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => HomePage(uid: id)),
+          (route) => false);
+    } on FirebaseAuthException catch (e) {
+      var title = '';
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          title = 'Esta conta existe com um provedor de login diferente!';
+          break;
+        case 'invalid-credential':
+          title = 'Ocorreu um erro desconhecido!';
+          break;
+        case 'operation-not-allowed':
+          title = 'Esta operação não é permitida!';
+          break;
+        case 'user-disabled':
+          title = 'O usuário que você tentou acessar está desabilitado!';
+          break;
+        case 'User-not-found':
+          title = 'O usuário que você tentou acessar não foi encontrado!';
+          break;
+        default:
+      }
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Entrar com Facebook falhou!'),
+              content: Text(title),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          });
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  void _loginGoogle() async {
+    setState(() {
+      loading = true;
+    });
+    final googleSignIn = GoogleSignIn(scopes: ['email']);
+
+    try {
+      final googleSignInAccount = await googleSignIn.signIn();
+      if (googleSignInAccount == null) {
+        setState(() {
+          loading = false;
+        });
+        return;
+      }
+      final googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+      await auth.signInWithCredential(credential);
+
+      id = auth.currentUser!.uid;
+      email = googleSignInAccount.email;
+      foto = googleSignInAccount.photoUrl!;
+      nome = googleSignInAccount.displayName!;
+
+      fireDb.collection('Users').doc(id).get().then((value) async {
+        if (!value.exists) {
+          await fireDb.collection('Users').doc(id).set({
+            'data': data,
+            'email': email,
+            'fone': 'fone',
+            'image': foto,
+            'nome': nome,
+            'provedor': 'Google',
+          });
+        }
+      });
+
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => HomePage(uid: id)),
+          (route) => false);
+    } on FirebaseAuthException catch (e) {
+      var title = '';
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          title = 'Esta conta existe com um provedor de login diferente!';
+          break;
+        case 'invalid-credential':
+          title = 'Ocorreu um erro desconhecido!';
+          break;
+        case 'operation-not-allowed':
+          title = 'Esta operação não é permitida!';
+          break;
+        case 'user-disabled':
+          title = 'O usuário que você tentou acessar está desabilitado!';
+          break;
+        case 'User-not-found':
+          title = 'O usuário que você tentou acessar não foi encontrado!';
+          break;
+        default:
+      }
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Entrar com Google falhou!'),
+              content: Text(title),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          });
+    } catch (e) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Entrar com Google falhou!'),
+              content: const Text('Um erro desconhecido ocorreu'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          });
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +233,17 @@ class _EntrarPageState extends State<EntrarPage> {
           child: Column(
             children: <Widget>[
               clipShape(),
-              btnEmailSenha(),
-              btnGoogle(),
-              btnFacebook(),
-              btnFone(),
+              if (loading) ...[
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ],
+              if (!loading) ...[
+                btnEmailSenha(),
+                btnGoogle(),
+                btnFacebook(),
+                btnFone(),
+              ]
             ],
           ),
         ),
@@ -124,8 +325,7 @@ class _EntrarPageState extends State<EntrarPage> {
       child: SignInButton(
         Buttons.Google,
         onPressed: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const EntrarGoogle()));
+          _loginGoogle();
         },
       ),
     );
@@ -137,8 +337,7 @@ class _EntrarPageState extends State<EntrarPage> {
       child: SignInButton(
         Buttons.Facebook,
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const EntrarFacebookPage()));
+          _loginFacebook();
         },
       ),
     );

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/pages/termos_page.dart';
@@ -81,27 +80,18 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     _focusConfirma.dispose();
   }
 
-  /* getDate() {
-    String data = DateTime.now().toString();
-    var inputFormat = DateFormat('yyyy-MM-dd');
-    var inputDate = inputFormat.parse(data);
-    var outputFormat = DateFormat('dd/MM/yyyy');
-    return outputFormat.format(inputDate);
-  } */
-
   cadastrar() {
     _auth
         .createUserWithEmailAndPassword(
             email: emailController.text, password: senhaController.text)
         .then((result) {
       colRef.doc(result.user!.uid).set({
-        'nome': nomeController.text,
+        'data': getDate,
         'email': emailController.text,
         'fone': foneController.text,
-        'id': result.user!.uid,
-        'provedor': 'email',
-        'data': getDate,
         'imagem': 'imagem',
+        'nome': nomeController.text,
+        'provedor': 'email',
       }).then((value) {
         Navigator.pushReplacement(
           context,

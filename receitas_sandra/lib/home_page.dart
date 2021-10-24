@@ -43,12 +43,17 @@ class _HomePageState extends State<HomePage>
       duration: const Duration(seconds: 3),
     )..repeat();
 
-    final FirebaseFirestore fireDb = FirebaseFirestore.instance;
-    DocumentReference colRef = fireDb.collection('Users').doc(widget.uid);
-    colRef.get().then((value) {
-      nome = value.get('nome').toString();
-      email = value.get('email').toString();
-      imagem = value.get('imagem').toString();
+    FirebaseFirestore.instance
+        .collection('Users')
+        .doc(widget.uid)
+        .get()
+        .then((DocumentSnapshot snapshot) async {
+      if (snapshot.exists) {
+        nome = snapshot.get('nome');
+        email = snapshot.get('email');
+        imagem = snapshot.get('imagem');
+        print(snapshot.data());
+      }
     });
   }
 
@@ -77,8 +82,7 @@ class _HomePageState extends State<HomePage>
           child: Column(
             children: <Widget>[
               clipShape(),
-               animeLetter(),
-              
+              animeLetter(),
               const SizedBox(
                 height: 60,
               ),
@@ -139,11 +143,12 @@ class _HomePageState extends State<HomePage>
             ],
           ),
           onTap: () {
-            Navigator.of(context).push(
+            print(nome + ' ' + email + ' ' + imagem);
+            /* Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const ListarReceitaPage(tipo: 'Salgadas'),
               ),
-            );
+            ); */
           },
         ),
       ],
@@ -151,7 +156,6 @@ class _HomePageState extends State<HomePage>
   }
 
   _buildDrawer() {
-    const String image = 'assets/images/receitas/escondidinho.jpg';
     return ClipPath(
       /// ---------------------------
       /// Building Shape for drawer .
@@ -213,9 +217,9 @@ class _HomePageState extends State<HomePage>
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
                             colors: [Colors.orange, Colors.deepOrange])),
-                    child: const CircleAvatar(
+                    child: CircleAvatar(
                       radius: 40,
-                      //backgroundImage: AssetImage(image),
+                      backgroundImage: NetworkImage(imagem),
                     ),
                   ),
                   const SizedBox(height: 5.0),

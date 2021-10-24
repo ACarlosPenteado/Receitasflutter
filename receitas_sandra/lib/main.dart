@@ -19,14 +19,13 @@ void main() async {
             create: (context) => ReceitasRepository(auth: auth)),
         ChangeNotifierProvider(create: (context) => FavoritasRepository()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
-  FirebaseAuth auth = FirebaseAuth.instance;
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
