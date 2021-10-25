@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:receitas_sandra/home_page.dart';
+import 'package:receitas_sandra/image_select/select_image.dart';
 import 'package:receitas_sandra/pages/termos_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 
 class CadatrarSenhaPage extends StatefulWidget {
   static const routeName = '/CadatrarSenhaPage';
@@ -89,10 +91,14 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
         'data': getDate,
         'email': emailController.text,
         'fone': foneController.text,
-        'imagem': 'imagem',
+        'imagem': imageUrl,
         'nome': nomeController.text,
-        'provedor': 'email',
+        'provedor': 'Email',
       }).then((value) {
+        Global.email = emailController.text;
+        Global.nome = nomeController.text;
+        Global.foto = imageUrl;
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -193,29 +199,32 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
         Padding(
           padding: const EdgeInsets.only(top: 60),
           child: Container(
-            height: _height / 5.5,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                    spreadRadius: 0.0,
-                    color: Colors.black45,
-                    offset: Offset(1.0, 10.0),
-                    blurRadius: 20.0),
-              ],
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: GestureDetector(
-                onTap: () {
-                  print('teste1');
-                },
-                child: Icon(
-                  Icons.add_a_photo,
-                  size: _large ? 40 : (_medium ? 33 : 31),
-                  color: Colors.blue[200]!,
-                )),
-          ),
+              height: _height / 5.5,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                      spreadRadius: 0.0,
+                      color: Colors.black45,
+                      offset: Offset(1.0, 10.0),
+                      blurRadius: 20.0),
+                ],
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SelectImage(
+                    onFileChanged: (_imageUrl) {
+                      setState(() {
+                        imageUrl = _imageUrl;
+                      });
+                    },
+                  ),
+                ],
+              )),
         ),
       ],
     );

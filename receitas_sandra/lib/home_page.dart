@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/login/entrar_page.dart';
 import 'package:receitas_sandra/pages/listar_receita_page.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/HomePage';
@@ -219,7 +220,7 @@ class _HomePageState extends State<HomePage>
                             colors: [Colors.orange, Colors.deepOrange])),
                     child: CircleAvatar(
                       radius: 40,
-                      backgroundImage: NetworkImage(imagem),
+                      backgroundImage: NetworkImage(Global.foto),
                     ),
                   ),
                   const SizedBox(height: 5.0),
@@ -229,14 +230,14 @@ class _HomePageState extends State<HomePage>
                   /// ---------------------------
 
                   Text(
-                    nome,
+                    Global.nome,
                     style: const TextStyle(
                         color: Colors.black,
                         fontSize: 18.0,
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    email,
+                    Global.email,
                     style: TextStyle(color: active, fontSize: 16.0),
                   ),
 

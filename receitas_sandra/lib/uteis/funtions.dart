@@ -15,3 +15,10 @@ String get getId {
   String novo = v4.toString();
   return novo;
 }
+
+String get getUser {
+  var uid = Uuid();
+  var v4 = uid.v1();
+  String novo = v4.toString();
+  return novo;
+}

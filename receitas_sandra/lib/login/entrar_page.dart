@@ -9,6 +9,7 @@ import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/login/entrar_senha_page.dart';
 import 'package:receitas_sandra/login/entrar_fone_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 
 class EntrarPage extends StatefulWidget {
   static const routeName = '/EntrarPage';
@@ -66,7 +67,9 @@ class _EntrarPageState extends State<EntrarPage> {
           });
         }
       });
-
+      Global.email = email;
+      Global.nome = nome;
+      Global.foto = foto;
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => HomePage(uid: id)),
           (route) => false);
@@ -152,7 +155,9 @@ class _EntrarPageState extends State<EntrarPage> {
           });
         }
       });
-
+      Global.email = email;
+      Global.nome = nome;
+      Global.foto = foto;
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => HomePage(uid: id)),
           (route) => false);
@@ -242,7 +247,7 @@ class _EntrarPageState extends State<EntrarPage> {
                 btnEmailSenha(),
                 btnGoogle(),
                 btnFacebook(),
-                btnFone(),
+                //btnFone(),
               ]
             ],
           ),
