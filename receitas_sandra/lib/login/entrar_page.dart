@@ -2,14 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:flutter_signin_button/button_list.dart';
-import 'package:flutter_signin_button/button_view.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/login/entrar_senha_page.dart';
 import 'package:receitas_sandra/login/entrar_fone_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/button_login.dart';
 
 class EntrarPage extends StatefulWidget {
   static const routeName = '/EntrarPage';
@@ -247,7 +246,7 @@ class _EntrarPageState extends State<EntrarPage> {
                 btnEmailSenha(),
                 btnGoogle(),
                 btnFacebook(),
-                //btnFone(),
+                btnFone(),
               ]
             ],
           ),
@@ -312,79 +311,42 @@ class _EntrarPageState extends State<EntrarPage> {
   }
 
   Widget btnEmailSenha() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: SignInButton(
-        Buttons.Email,
+    return Button_Login(
+        color: Colors.grey.shade600,
+        image: const AssetImage('images/icones/email.png'),
+        text: 'Entrar com seu Email',
         onPressed: () {
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const EntrarSenhaPage()));
-        },
-      ),
-    );
+        });
   }
 
   Widget btnGoogle() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: SignInButton(
-        Buttons.Google,
+    return Button_Login(
+        color: Colors.grey.shade600,
+        image: const AssetImage('images/icones/google.png'),
+        text: 'Entrar sua conta Google',
         onPressed: () {
           _loginGoogle();
-        },
-      ),
-    );
+        });
   }
 
   Widget btnFacebook() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: SignInButton(
-        Buttons.Facebook,
+    return Button_Login(
+        color: Colors.grey.shade600,
+        image: const AssetImage('images/icones/facebook.png'),
+        text: 'Entrar sua conta Facebook',
         onPressed: () {
           _loginFacebook();
-        },
-      ),
-    );
+        });
   }
 
   Widget btnFone() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: InkWell(
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.cyanAccent,
-              borderRadius: BorderRadius.circular(5),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3), // changes position of shadow
-                ),
-              ]),
-          height: 35,
-          width: 220,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: const [
-              SizedBox(width: 10),
-              Icon(Icons.phone),
-              SizedBox(width: 20),
-              Text(
-                'Sign in with Mobile',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
-        onTap: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const EntrarFonePage()));
-        },
-      ),
-    );
+    return Button_Login(
+        color: Colors.grey.shade600,
+        image: const AssetImage('images/icones/fone.png'),
+        text: 'Entrar número celular',
+        onPressed: () {});
   }
 }
 
@@ -459,30 +421,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
           gradient:
               LinearGradient(colors: [Colors.blue[200]!, Colors.cyanAccent]),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-                iconSize: 30,
-                icon: const Icon(
-                  Icons.arrow_back,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            const Text(
-              'Receitas da Sandra',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
+        child: const Center(
+          child: Text(
+            'Receitas da Sandra',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
             ),
-            const SizedBox(
-              width: 30,
-            ),
-          ],
+          ),
         ),
       ),
     );

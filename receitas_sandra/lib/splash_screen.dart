@@ -21,6 +21,8 @@ class _SplashScreenState extends State<SplashScreen>
   late bool _large;
   late bool _medium;
 
+  User? result = FirebaseAuth.instance.currentUser;
+
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   @override
   void initState() {
@@ -30,13 +32,12 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(seconds: 3),
     )..repeat();
 
-    User? result = FirebaseAuth.instance.currentUser;
     Timer(const Duration(seconds: 5), () {
       if (result != null) {
         Navigator.pushAndRemoveUntil(
             context,
             CustomPageRoute(
-              HomePage(uid: result.uid),
+              HomePage(uid: result!.uid),
             ),
             (Route<dynamic> route) => false);
       } else {
@@ -48,6 +49,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void dispose() {
     controller.dispose();
+
     super.dispose();
   }
 
@@ -64,42 +66,122 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         height: _height,
         width: _width,
-        padding: const EdgeInsets.only(top: 48),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              clipShape(),
-              animeLetter(),
-              const SizedBox(
-                height: 40,
-              ),
-              const Text(
-                'Carregando...',
-                style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.cyan,
-                    shadows: <Shadow>[
-                      Shadow(
-                        offset: Offset(3.0, 3.0),
-                        blurRadius: 3.0,
-                        color: Color.fromARGB(55, 0, 162, 232),
-                      ),
-                    ]),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(Colors.blue),
-                strokeWidth: 5.0,
-              ),
-            ],
-          ),
+        padding: const EdgeInsets.only(top: 48, bottom: 20),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.blue.shade200,
+            Colors.cyanAccent,
+          ],
+        )),
+        child: OrientationBuilder(
+          builder: (context, orientation) => orientation == Orientation.portrait
+              ? buildPortrait()
+              : buildLandscape(),
         ),
       ),
     );
   }
+
+  Widget buildPortrait() => SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            clipShape(),
+            animeLetter(),
+            const SizedBox(
+              height: 40,
+            ),
+            const Text(
+              'Carregando...',
+              style: TextStyle(
+                fontSize: 30,
+                color: Colors.cyan,
+                shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(3.0, 3.0),
+                    blurRadius: 3.0,
+                    color: Color.fromARGB(55, 0, 162, 232),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 40,
+            ),
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(Colors.blue),
+              strokeWidth: 5.0,
+            ),
+          ],
+        ),
+      );
+
+  Widget buildLandscape() => SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 50.0),
+        child: Column(
+          children: [
+            clipShapeL(),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Column(
+                  children: [
+                    Hero(
+                      tag: 'image1',
+                      child: Container(
+                        //alignment: Alignment.bottomLeft,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        margin: EdgeInsets.only(
+                            top: _large
+                                ? _height / 60
+                                : (_medium ? _height / 65 : _height / 60)),
+                        child: Image.network(
+                          'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
+                          height: _height / 2.0,
+                          width: _width / 2.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    animeLetter(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      'Carregando...',
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.cyan,
+                          shadows: <Shadow>[
+                            Shadow(
+                              offset: Offset(3.0, 3.0),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(55, 0, 162, 232),
+                            ),
+                          ]),
+                    ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(Colors.purple),
+                      strokeWidth: 5.0,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
 
   Widget clipShape() {
     return Stack(
@@ -158,6 +240,45 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
+  Widget clipShapeL() {
+    return Stack(
+      children: <Widget>[
+        Opacity(
+          opacity: 0.75,
+          child: ClipPath(
+            clipper: CustomShapeClipper(),
+            child: Container(
+              width: _large
+                  ? _height / 4
+                  : (_medium ? _height / 3.75 : _height / 3.5),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue[200]!, Colors.cyanAccent],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Opacity(
+          opacity: 0.5,
+          child: ClipPath(
+            clipper: CustomShapeClipper2(),
+            child: Container(
+              width: _large
+                  ? _height / 4.5
+                  : (_medium ? _height / 4.25 : _height / 4),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue[200]!, Colors.cyanAccent],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget animeLetter() {
     return AnimatedBuilder(
       animation: controller,
@@ -165,7 +286,7 @@ class _SplashScreenState extends State<SplashScreen>
         return ShaderMask(
           shaderCallback: (rect) {
             return LinearGradient(
-              colors: const [Colors.grey, Colors.white, Colors.grey],
+              colors: const [Colors.blue, Colors.white, Colors.blue],
               stops: [
                 controller.value - 0.3,
                 controller.value,
@@ -177,7 +298,7 @@ class _SplashScreenState extends State<SplashScreen>
           },
           child: const Text(
             'Receitas da Sandra',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 40),
           ),
           blendMode: BlendMode.srcIn,
         );
@@ -186,7 +307,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-class OvalRightBorderClipper extends CustomClipper<Path> {
+/* class OvalRightBorderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
@@ -204,7 +325,7 @@ class OvalRightBorderClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) {
     return true;
   }
-}
+} */
 
 class CustomShapeClipper extends CustomClipper<Path> {
   @override

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/login/entrar_page.dart';
@@ -9,7 +10,8 @@ import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/splash_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding();
+  WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp();
   FirebaseAuth auth = FirebaseAuth.instance;
   runApp(
