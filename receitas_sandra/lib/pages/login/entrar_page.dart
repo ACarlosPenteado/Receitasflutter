@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:receitas_sandra/home_page.dart';
-import 'package:receitas_sandra/login/entrar_senha_page.dart';
-import 'package:receitas_sandra/login/entrar_fone_page.dart';
+import 'package:receitas_sandra/pages/login/entrar_senha_page.dart';
+import 'package:receitas_sandra/pages/login/entrar_fone_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/button_login.dart';
@@ -76,7 +76,7 @@ class _EntrarPageState extends State<EntrarPage> {
       var title = '';
       switch (e.code) {
         case 'account-exists-with-different-credential':
-          title = 'Esta conta existe com um provedor de login diferente!';
+          title = 'Esta conta existe com um provedor de pages.login diferente!';
           break;
         case 'invalid-credential':
           title = 'Ocorreu um erro desconhecido!';
@@ -164,7 +164,7 @@ class _EntrarPageState extends State<EntrarPage> {
       var title = '';
       switch (e.code) {
         case 'account-exists-with-different-credential':
-          title = 'Esta conta existe com um provedor de login diferente!';
+          title = 'Esta conta existe com um provedor de pages.login diferente!';
           break;
         case 'invalid-credential':
           title = 'Ocorreu um erro desconhecido!';

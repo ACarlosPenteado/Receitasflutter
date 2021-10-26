@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:receitas_sandra/model/receitas.dart';
-import 'package:receitas_sandra/pages/favoritas_page.dart';
-import 'package:receitas_sandra/pages/incluir_receita_page.dart';
+import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
+import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 
 class ListarReceitaPage extends StatefulWidget {

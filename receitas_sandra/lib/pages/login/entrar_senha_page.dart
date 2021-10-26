@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/home_page.dart';
-import 'package:receitas_sandra/login/cadastrar_senha_page.dart';
+import 'package:receitas_sandra/pages/login/cadastrar_senha_page.dart';
 
 class EntrarSenhaPage extends StatefulWidget {
   const EntrarSenhaPage({Key? key}) : super(key: key);

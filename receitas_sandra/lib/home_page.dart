@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:receitas_sandra/login/entrar_page.dart';
-import 'package:receitas_sandra/pages/listar_receita_page.dart';
+import 'package:receitas_sandra/pages/drawer/busca.dart';
+import 'package:receitas_sandra/pages/login/entrar_page.dart';
+import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
 class HomePage extends StatefulWidget {
@@ -35,6 +36,9 @@ class _HomePageState extends State<HomePage>
   String nome = '';
   String email = '';
   String imagem = '';
+
+  var isPortrait;
+  var isLandscape;
 
   @override
   void initState() {
@@ -78,22 +82,50 @@ class _HomePageState extends State<HomePage>
       body: Container(
         height: _height,
         width: _width,
-        padding: const EdgeInsets.only(top: 48),
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              clipShape(),
-              animeLetter(),
-              const SizedBox(
-                height: 60,
-              ),
-              buttonRec(),
-            ],
-          ),
+        padding: const EdgeInsets.only(top: 48, bottom: 20),
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Colors.blue,
+                Colors.cyanAccent,
+              ],
+            )),
+        child: OrientationBuilder(
+          builder: (context, orientation) => orientation == Orientation.portrait
+              ? buildPortrait()
+              : buildLandscape(),
         ),
       ),
     );
   }
+
+  Widget buildPortrait() => SingleChildScrollView(
+    child: Column(
+      children: <Widget>[
+        clipShape(),
+        animeLetter(),
+        const SizedBox(
+          height: 60,
+        ),
+        buttonRec(),
+      ],
+    ),
+  );
+
+  Widget buildLandscape() => SingleChildScrollView(
+    child: Column(
+      children: <Widget>[
+        clipShape(),
+        animeLetter(),
+        const SizedBox(
+          height: 30,
+        ),
+        buttonRec(),
+      ],
+    ),
+  );
 
   Widget buttonRec() {
     return Row(
@@ -206,11 +238,6 @@ class _HomePageState extends State<HomePage>
                       },
                     ),
                   ),
-
-                  /// ---------------------------
-                  /// Building header for drawer .
-                  /// ---------------------------
-
                   Container(
                     height: 90,
                     alignment: Alignment.center,
@@ -223,12 +250,7 @@ class _HomePageState extends State<HomePage>
                       backgroundImage: NetworkImage(Global.foto),
                     ),
                   ),
-                  const SizedBox(height: 5.0),
-
-                  /// ---------------------------
-                  /// Building header title for drawer .
-                  /// ---------------------------
-
+                  const SizedBox(height: 15.0),
                   Text(
                     Global.nome,
                     style: const TextStyle(
@@ -240,11 +262,6 @@ class _HomePageState extends State<HomePage>
                     Global.email,
                     style: TextStyle(color: active, fontSize: 16.0),
                   ),
-
-                  /// ---------------------------
-                  /// Building items list  for drawer .
-                  /// ---------------------------
-
                   const SizedBox(height: 30.0),
                   _buildRow(Icons.search, "Busca na Internet"),
                   _buildDivider(),
@@ -293,7 +310,11 @@ class _HomePageState extends State<HomePage>
         onTap: () {
           switch (title) {
             case 'Busca na Internet':
-              print('Busca na Internet');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BuscaPage()),
+              );
               break;
             case 'Dados do Usuário':
               print("Dados do Usuário");
@@ -378,7 +399,7 @@ class _HomePageState extends State<HomePage>
         ),
         Opacity(opacity: 0.88, child: CustomAppBar(mkey: _key)),
         const SizedBox(
-          height: 40,
+          height: 60,
         ),
         Hero(
           tag: 'image1',
@@ -486,6 +507,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    var isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Material(
       child: Container(
         height: 40,
@@ -513,6 +537,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 }), */
+            /*if(isPortrait)
             const Text(
               'Receitas da Sandra',
               style: TextStyle(
@@ -523,7 +548,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ),
             const SizedBox(
               width: 30,
-            ),
+            ),*/
           ],
         ),
       ),
