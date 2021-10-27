@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/pages/drawer/busca.dart';
+import 'package:receitas_sandra/pages/drawer/data_user.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
@@ -51,13 +52,18 @@ class _HomePageState extends State<HomePage>
     FirebaseFirestore.instance
         .collection('Users')
         .doc(widget.uid)
-        .get()
-        .then((DocumentSnapshot snapshot) async {
-      if (snapshot.exists) {
-        nome = snapshot.get('nome');
-        email = snapshot.get('email');
-        imagem = snapshot.get('imagem');
-        print(snapshot.data());
+        .snapshots()
+        .listen((event) {
+      if (event.exists) {
+        Global.nome = event.get('nome').toString();
+        Global.email = event.get('email').toString();
+        Global.fone = event.get('fone').toString();
+        if (event.get('imagem').toString().isNotEmpty) {
+          Global.foto = event.get('imagem').toString();
+        } else {
+          Global.foto =
+              'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
+        }
       }
     });
   }
@@ -85,13 +91,13 @@ class _HomePageState extends State<HomePage>
         padding: const EdgeInsets.only(top: 48, bottom: 20),
         decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                Colors.blue,
-                Colors.cyanAccent,
-              ],
-            )),
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.blue,
+            Colors.cyanAccent,
+          ],
+        )),
         child: OrientationBuilder(
           builder: (context, orientation) => orientation == Orientation.portrait
               ? buildPortrait()
@@ -102,30 +108,30 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget buildPortrait() => SingleChildScrollView(
-    child: Column(
-      children: <Widget>[
-        clipShape(),
-        animeLetter(),
-        const SizedBox(
-          height: 60,
+        child: Column(
+          children: <Widget>[
+            clipShape(),
+            animeLetter(),
+            const SizedBox(
+              height: 60,
+            ),
+            buttonRec(),
+          ],
         ),
-        buttonRec(),
-      ],
-    ),
-  );
+      );
 
   Widget buildLandscape() => SingleChildScrollView(
-    child: Column(
-      children: <Widget>[
-        clipShape(),
-        animeLetter(),
-        const SizedBox(
-          height: 30,
+        child: Column(
+          children: <Widget>[
+            clipShape(),
+            animeLetter(),
+            const SizedBox(
+              height: 30,
+            ),
+            buttonRec(),
+          ],
         ),
-        buttonRec(),
-      ],
-    ),
-  );
+      );
 
   Widget buttonRec() {
     return Row(
@@ -311,13 +317,15 @@ class _HomePageState extends State<HomePage>
           switch (title) {
             case 'Busca na Internet':
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const BuscaPage()),
+                context,
+                MaterialPageRoute(builder: (context) => const BuscaPage()),
               );
               break;
             case 'Dados do Usuário':
-              print("Dados do Usuário");
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataUserPage()),
+              );
               break;
             case 'Configuração':
               print("Configuração");
@@ -508,7 +516,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    var isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Material(
       child: Container(

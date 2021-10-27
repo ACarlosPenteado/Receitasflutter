@@ -1,8 +1,11 @@
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/pages/login/cadastrar_senha_page.dart';
+import 'package:receitas_sandra/pages/login/entrar_page.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 
 class EntrarSenhaPage extends StatefulWidget {
   const EntrarSenhaPage({Key? key}) : super(key: key);
@@ -31,6 +34,10 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool _senhaVisible = true;
+  bool _enabledEmail = false;
+  bool _enabledSenha = false;
+
+  int qB = 0;
 
   @override
   initState() {
@@ -43,13 +50,93 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
           .snapshots()
           .listen((event) {
         if (event.docs.isNotEmpty) {
-          emailController.text = event.docs[0]['email'].toString();
+          Global.nome = event.docs[0]['nome'].toString();
+          Global.email = event.docs[0]['email'].toString();
+          Global.fone = event.docs[0]['fone'].toString();
+          if (event.docs[0]['foto'].toString().isNotEmpty) {
+            Global.foto = event.docs[0]['foto'].toString();
+          } else {
+            Global.foto =
+                'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
+          }
+          emailController.text = Global.email;
+          _enabledSenha = true;
         } else {
           emailController.text = '';
           senhaController.text = '';
+          if (nomeController.text.isNotEmpty) {
+            showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Nome não encontrado!'),
+                    content: const Text('Esqueceu seu nome de acesso?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CadatrarSenhaPage()),
+                              (Route<dynamic> route) => false);
+                        },
+                        child: const Text('Se cadastrar!'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _enabledEmail = true;
+                            _enabledSenha = true;
+                            Navigator.of(context).pop();
+                          });
+                        },
+                        child: const Text('Tentar com email!'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const EntrarPage()),
+                              (Route<dynamic> route) => false);
+                        },
+                        child: const Text('Sair'),
+                      ),
+                    ],
+                  );
+                });
+          }
         }
       });
     });
+  }
+
+  resetSenha() {
+    _auth.sendPasswordResetEmail(email: emailController.text);
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Verificação"),
+            content: Text(
+                'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
+            actions: [
+              TextButton(
+                child: const Text("Ok"),
+                onPressed: () {
+                  setState(() {
+                    _enabledSenha = true;
+                    qB = 1;
+                    Navigator.of(context).pop();
+                  });
+                },
+              )
+            ],
+          );
+        });
   }
 
   @override
@@ -274,8 +361,17 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
       textEditingController: nomeController,
       focusNode: _focusNome,
       focus: true,
+      enabled: true,
       icon: Icons.person,
       hint: "Nome",
+      validator: (value) {
+        if (qB == 0) {
+          if (value.isEmpty) {
+            return 'Entre com seu nome!';
+          }
+          return null;
+        }
+      },
     );
   }
 
@@ -287,6 +383,7 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
       hint: "Email",
       focusNode: _focusEmail,
       focus: false,
+      enabled: _enabledEmail,
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu email!';
@@ -308,6 +405,7 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
         controller: senhaController,
         keyboardType: TextInputType.visiblePassword,
         cursorColor: Colors.orange[200]!,
+        enabled: _enabledSenha,
         validator: (value) {
           if (value!.isEmpty) {
             return 'Entre com a senha!';
@@ -368,9 +466,25 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
             width: 5,
           ),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              if (emailController.text.isEmpty) {
+                Fluttertoast.showToast(
+                    msg: 'Digite seu email!',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.blue,
+                    textColor: Colors.white,
+                    fontSize: 30.0);
+                setState(() {
+                  _enabledEmail = true;
+                });
+              } else {
+                resetSenha();
+              }
+            },
             child: Text(
-              "Recuperar",
+              "Alterar senha",
               style: TextStyle(
                   fontWeight: FontWeight.w800, color: Colors.purple[300]!),
             ),
@@ -571,6 +685,7 @@ class CustomTextField extends StatefulWidget {
   final FormFieldValidator? validator;
   final FocusNode? focusNode;
   final bool focus;
+  final bool enabled;
 
   const CustomTextField({
     Key? key,
@@ -581,6 +696,7 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.focusNode,
     required this.focus,
+    required this.enabled,
   });
 
   @override
@@ -612,6 +728,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         validator: widget.validator,
         focusNode: widget.focusNode,
         autofocus: widget.focus,
+        enabled: widget.enabled,
         decoration: InputDecoration(
           prefixIcon: Icon(
             widget.icon,

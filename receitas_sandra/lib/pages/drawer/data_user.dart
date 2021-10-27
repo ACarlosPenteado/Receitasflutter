@@ -6,22 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:receitas_sandra/home_page.dart';
-import 'package:receitas_sandra/image_select/select_image.dart';
-import 'package:receitas_sandra/pages/login/termos_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
-class CadatrarSenhaPage extends StatefulWidget {
-  static const routeName = '/CadatrarSenhaPage';
-
-  const CadatrarSenhaPage({Key? key}) : super(key: key);
+class DataUserPage extends StatefulWidget {
+  const DataUserPage({Key? key}) : super(key: key);
 
   @override
-  _CadatrarSenhaPageState createState() => _CadatrarSenhaPageState();
+  _DataUserPageState createState() => _DataUserPageState();
 }
 
-class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
-  bool checkBoxValue = false;
+class _DataUserPageState extends State<DataUserPage> {
   late double _height;
   late double _width;
   late double _pixelRatio;
@@ -34,14 +29,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   TextEditingController senhaController = TextEditingController();
   TextEditingController confirmaController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey();
-
   final GlobalKey<FormFieldState> _nomekey = GlobalKey<FormFieldState>();
-
-  late FocusNode _focusNome;
-  late FocusNode _focusEmail;
-  late FocusNode _focusFone;
-  late FocusNode _focusSenha;
-  late FocusNode _focusConfirma;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late User user;
@@ -51,29 +39,30 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   bool _senhaVisible = true;
   bool _confirmaVisible = true;
 
-  bool isLogginIn = false;
-
   String imageUrl = '';
 
+  bool isLogginIn = false;
+
+  String senhaMessage = '''* Mínimo 1 letra maiúscula;  
+* Mínimo 1 letra minúsculo;
+* Mínimo 1 Número;
+* Mínimo 1 caractere especial;''';
+
   @override
-  initState() {
-    _focusNome = FocusNode();
-    _focusEmail = FocusNode();
-    _focusFone = FocusNode();
-    _focusSenha = FocusNode();
-    _focusConfirma = FocusNode();
+  void initState() {
+    nomeController.text = Global.nome;
+    emailController.text = Global.email;
+    foneController.text = Global.fone;
+    imageUrl = Global.foto;
     super.initState();
   }
 
-  cadastrar() async {
+  cadastrar() {
     setState(() {
       isLogginIn = true;
     });
     try {
-      _auth
-          .createUserWithEmailAndPassword(
-              email: emailController.text, password: senhaController.text)
-          .then((__) {
+      _auth.currentUser!.updateEmail(emailController.text).then((__) {
         user = _auth.currentUser!;
         user.sendEmailVerification();
         timer = Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -110,6 +99,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
             Global.foto = imageUrl;
           });
         });
+        user.updatePassword(confirmaController.text).then((value) {});
       });
     } on FirebaseAuthException catch (e) {
       var mensagem = '';
@@ -123,6 +113,9 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
         case 'requires-recent-login':
           mensagem =
               'Tempo para entrar não atende aos requisitos de segurança!';
+          break;
+        case 'weak-password':
+          mensagem = 'A senha não for forte o suficiente.';
           break;
         default:
       }
@@ -161,18 +154,12 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
 
   @override
   dispose() {
-    timer.cancel();
+    super.dispose();
     nomeController.dispose();
     emailController.dispose();
     foneController.dispose();
     senhaController.dispose();
     confirmaController.dispose();
-    _focusNome.dispose();
-    _focusEmail.dispose();
-    _focusFone.dispose();
-    _focusSenha.dispose();
-    _focusConfirma.dispose();
-    super.dispose();
   }
 
   @override
@@ -187,96 +174,50 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       body: Container(
         height: _height,
         width: _width,
-        margin: const EdgeInsets.only(top: 48),
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              clipShape(),
-              form(),
-              aceitarTermsTextRow(),
-              const SizedBox(
-                height: 25,
-              ),
-              button(),
-            ],
-          ),
+        padding: const EdgeInsets.only(top: 48, bottom: 20),
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.blue,
+            Colors.cyanAccent,
+          ],
+        )),
+        child: OrientationBuilder(
+          builder: (context, orientation) => orientation == Orientation.portrait
+              ? buildPortrait()
+              : buildLandscape(),
         ),
       ),
     );
   }
 
-  Widget clipShape() {
-    return Stack(
-      children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
+  Widget buildPortrait() => SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            clipShape(),
+            form(),
+            const SizedBox(
+              height: 25,
             ),
-          ),
+            button(),
+          ],
         ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
+      );
+
+  Widget buildLandscape() => SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            clipShape(),
+            form(),
+            const SizedBox(
+              height: 25,
             ),
-          ),
+            button(),
+          ],
         ),
-        const Opacity(opacity: 0.88, child: CustomAppBar()),
-        const SizedBox(
-          height: 40,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 60),
-          child: Container(
-              height: _height / 5.5,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                      spreadRadius: 0.0,
-                      color: Colors.black45,
-                      offset: Offset(1.0, 10.0),
-                      blurRadius: 20.0),
-                ],
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SelectImage(
-                    onFileChanged: (_imageUrl) {
-                      setState(() {
-                        imageUrl = _imageUrl;
-                      });
-                    },
-                  ),
-                ],
-              )),
-        ),
-      ],
-    );
-  }
+      );
 
   Widget form() {
     return Container(
@@ -304,12 +245,10 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   Widget nomeTextFormField() {
     return CustomTextField(
       key: _nomekey,
-      focusNode: _focusNome,
       textEditingController: nomeController,
       mask: MaskTextInputFormatter(mask: ''),
       inputAction: TextInputAction.next,
       keyboardType: TextInputType.text,
-      focus: true,
       icon: Icons.person,
       hint: "Nome",
       validator: (value) {
@@ -327,7 +266,6 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       textEditingController: emailController,
       inputAction: TextInputAction.next,
       mask: MaskTextInputFormatter(mask: ''),
-      focus: false,
       icon: Icons.email,
       hint: "Email",
       validator: (value) {
@@ -344,7 +282,6 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       keyboardType: TextInputType.number,
       textEditingController: foneController,
       inputAction: TextInputAction.next,
-      focus: false,
       mask: MaskTextInputFormatter(
           mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')}),
       icon: Icons.phone,
@@ -364,15 +301,67 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       elevation: 10,
       child: TextFormField(
         controller: senhaController,
-        keyboardType: TextInputType.number,
+        keyboardType: TextInputType.text,
         textInputAction: TextInputAction.next,
+        onFieldSubmitted: (txt) {
+          bool passValid = RegExp(
+                  "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*(),.?:{}|<>]).*")
+              .hasMatch(txt);
+          if (!passValid) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Center(
+                      child: Text(
+                        'Senha muito fraca!',
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    content: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.cyan.shade100,
+                      ),
+                      padding: const EdgeInsets.all(15),
+                      width: 200,
+                      height: 100,
+                      child: Text(
+                        senhaMessage,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.purple,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text(
+                          "OK",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                  );
+                });
+          }
+        },
         cursorColor: Colors.cyan[400]!,
         validator: (value) {
           if (value!.isEmpty) {
             return 'Entre com a senha';
           } else {
             if (value.length < 6) {
-              return 'O mínimo de 6 dígitos!';
+              return 'Senha tem que ter o mínimo de 6 dígitos';
             }
           }
           return null;
@@ -472,38 +461,6 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     );
   }
 
-  Widget aceitarTermsTextRow() {
-    return Container(
-      margin: EdgeInsets.only(top: _height / 100.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Checkbox(
-              activeColor: Colors.blue[200]!,
-              value: checkBoxValue,
-              onChanged: (bool? newValue) {
-                setState(() {
-                  if (newValue != null) checkBoxValue = newValue;
-                });
-              }),
-          Text(
-            "Eu aceito todos os termos e condições",
-            style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: _large ? 12 : (_medium ? 11 : 10)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const TermosPage()));
-            },
-            child: const Text('clique aqui'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget button() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -514,26 +471,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       ),
       onPressed: () {
         if (_formkey.currentState!.validate()) {
-          if (checkBoxValue == true) {
-            cadastrar();
-          } else {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text("AVISO"),
-                    content: const Text('Favor aceitar os termos'),
-                    actions: [
-                      TextButton(
-                        child: const Text("Ok"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  );
-                });
-          }
+          cadastrar();
         }
       },
       child: Container(
@@ -551,6 +489,63 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
           style: TextStyle(fontSize: _large ? 14 : (_medium ? 12 : 10)),
         ),
       ),
+    );
+  }
+
+  Widget clipShape() {
+    return Stack(
+      children: <Widget>[
+        Opacity(
+          opacity: 0.75,
+          child: ClipPath(
+            clipper: CustomShapeClipper(),
+            child: Container(
+              height: _large
+                  ? _height / 4
+                  : (_medium ? _height / 3.75 : _height / 3.5),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue[200]!, Colors.cyanAccent],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Opacity(
+          opacity: 0.5,
+          child: ClipPath(
+            clipper: CustomShapeClipper2(),
+            child: Container(
+              height: _large
+                  ? _height / 4.5
+                  : (_medium ? _height / 4.25 : _height / 4),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue[200]!, Colors.cyanAccent],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Hero(
+          tag: 'image1',
+          child: Container(
+            alignment: Alignment.bottomCenter,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(40),
+            ),
+            margin: EdgeInsets.only(
+                top: _large
+                    ? _height / 50
+                    : (_medium ? _height / 55 : _height / 50)),
+            child: Image.network(
+              imageUrl,
+              height: _height / 3.5,
+              width: _width / 3.5,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -605,57 +600,6 @@ class CustomShapeClipper2 extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper oldClipper) => true;
 }
 
-class CustomAppBar extends StatefulWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
-
-  @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
-}
-
-class _CustomAppBarState extends State<CustomAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-    return Material(
-      child: Container(
-        height: 40,
-        width: width,
-        padding: const EdgeInsets.only(left: 0, top: 5, right: 5),
-        decoration: BoxDecoration(
-          gradient:
-              LinearGradient(colors: [Colors.blue[200]!, Colors.cyanAccent]),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-                iconSize: 30,
-                icon: const Icon(
-                  Icons.arrow_back,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            const Text(
-              'Receitas da Sandra',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-            const SizedBox(
-              width: 30,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class ResponsiveWidget {
   static bool isScreenLarge(double width, double pixel) {
     return width * pixel >= 1440;
@@ -679,7 +623,6 @@ class CustomTextField extends StatefulWidget {
   final bool obscureText;
   final IconData icon;
   final FocusNode? focusNode;
-  final bool focus;
   final FormFieldValidator? validator;
 
   const CustomTextField({
@@ -692,7 +635,6 @@ class CustomTextField extends StatefulWidget {
     required this.icon,
     this.obscureText = false,
     this.focusNode,
-    required this.focus,
     this.validator,
   });
 
@@ -728,7 +670,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
         inputFormatters: [widget.mask],
         cursorColor: Colors.cyan[400]!,
         validator: widget.validator,
-        autofocus: widget.focus,
         decoration: InputDecoration(
           prefixIcon:
               Icon(widget.icon, color: Colors.indigoAccent[200]!, size: 20),
