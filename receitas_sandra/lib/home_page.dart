@@ -43,7 +43,6 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    super.initState();
     controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
@@ -66,6 +65,7 @@ class _HomePageState extends State<HomePage>
         }
       }
     });
+    super.initState();
   }
 
   @override

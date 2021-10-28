@@ -67,6 +67,20 @@ class _DataUserPageState extends State<DataUserPage> {
         user.sendEmailVerification();
         timer = Timer.periodic(const Duration(seconds: 5), (timer) {
           checkEmailVerified();
+          if (user.emailVerified) {
+            colRef.doc(_auth.currentUser!.uid).set({
+              'data': getDate,
+              'email': emailController.text,
+              'fone': foneController.text,
+              'imagem': imageUrl,
+              'nome': nomeController.text,
+              'provedor': 'Email',
+            }).then((value) {
+              Global.email = emailController.text;
+              Global.nome = nomeController.text;
+              Global.foto = imageUrl;
+            });
+          }
         });
         showDialog(
             barrierDismissible: false,
@@ -85,22 +99,9 @@ class _DataUserPageState extends State<DataUserPage> {
                   )
                 ],
               );
-            }).then((result) {
-          colRef.doc(_auth.currentUser!.uid).set({
-            'data': getDate,
-            'email': emailController.text,
-            'fone': foneController.text,
-            'imagem': imageUrl,
-            'nome': nomeController.text,
-            'provedor': 'Email',
-          }).then((value) {
-            Global.email = emailController.text;
-            Global.nome = nomeController.text;
-            Global.foto = imageUrl;
-          });
-        });
-        user.updatePassword(confirmaController.text).then((value) {});
+            });
       });
+      user.updatePassword(confirmaController.text).then((value) {});
     } on FirebaseAuthException catch (e) {
       var mensagem = '';
       switch (e.code) {
@@ -123,7 +124,7 @@ class _DataUserPageState extends State<DataUserPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text("Falha ao cadastrar!"),
+              title: const Text("Falha ao alterar dados!"),
               content: Text(mensagem),
               actions: [
                 TextButton(
@@ -361,7 +362,7 @@ class _DataUserPageState extends State<DataUserPage> {
             return 'Entre com a senha';
           } else {
             if (value.length < 6) {
-              return 'Senha tem que ter o mínimo de 6 dígitos';
+              return 'Senha tem que ter o mínimo de 6 dígitos!';
             }
           }
           return null;

@@ -247,6 +247,10 @@ class _EntrarPageState extends State<EntrarPage> {
                 btnGoogle(),
                 btnFacebook(),
                 btnFone(),
+                const SizedBox(
+                  height: 20,
+                ),
+                btnAjuda(),
               ]
             ],
           ),
@@ -347,6 +351,17 @@ class _EntrarPageState extends State<EntrarPage> {
         image: const AssetImage('images/icones/fone.png'),
         text: 'Entrar número celular',
         onPressed: () {});
+  }
+
+  Widget btnAjuda() {
+    return Button_Login(
+        color: Colors.grey.shade600,
+        image: const AssetImage('images/icones/duvida.png'),
+        text: 'Problemas? Entre em contato!',
+        onPressed: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const EntrarSenhaPage()));
+        });
   }
 }
 

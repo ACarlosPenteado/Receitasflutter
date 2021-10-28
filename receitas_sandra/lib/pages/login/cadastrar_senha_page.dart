@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,6 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   TextEditingController senhaController = TextEditingController();
   TextEditingController confirmaController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey();
-
   final GlobalKey<FormFieldState> _nomekey = GlobalKey<FormFieldState>();
 
   late FocusNode _focusNome;
@@ -53,7 +52,14 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
 
   bool isLogginIn = false;
 
-  String imageUrl = '';
+  String imageUrl =
+      'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
+
+  String senhaMessage = '''* Mínimo 6 caracteres, sendo:
+* Mínimo 1 letra maiúscula;  
+* Mínimo 1 letra minúscula;
+* Mínimo 1 Número;
+* Mínimo 1 caractere especial;''';
 
   @override
   initState() {
@@ -63,90 +69,122 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     _focusSenha = FocusNode();
     _focusConfirma = FocusNode();
     super.initState();
+    nomeController.text = Global.nome;
   }
 
   cadastrar() async {
     setState(() {
       isLogginIn = true;
     });
-    try {
-      _auth
-          .createUserWithEmailAndPassword(
-              email: emailController.text, password: senhaController.text)
-          .then((__) {
-        user = _auth.currentUser!;
-        user.sendEmailVerification();
-        timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-          checkEmailVerified();
-        });
+
+    Future<List<String>> providers =
+        FirebaseAuth.instance.fetchSignInMethodsForEmail(emailController.text);
+    providers.then((value) {
+      if (value.isEmpty) {
+        try {
+          _auth
+              .createUserWithEmailAndPassword(
+                  email: emailController.text, password: senhaController.text)
+              .then((__) {
+            user = _auth.currentUser!;
+            user.sendEmailVerification();
+            timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+              checkEmailVerified();
+              if (user.emailVerified) {
+                colRef.doc(_auth.currentUser!.uid).set({
+                  'data': getDate,
+                  'email': emailController.text,
+                  'fone': foneController.text,
+                  'imagem': imageUrl,
+                  'nome': nomeController.text,
+                  'provedor': 'Email',
+                }).then((value) {
+                  Global.email = emailController.text;
+                  Global.nome = nomeController.text;
+                  Global.foto = imageUrl;
+                });
+              }
+            });
+            showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Verificação"),
+                    content: Text(
+                        'Um mensagem foi enviada para ${emailController.text}, por favor verifique seu email!'),
+                    actions: [
+                      TextButton(
+                        child: const Text("Ok"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                  );
+                }).then((result) {});
+          });
+        } on FirebaseAuthException catch (e) {
+          var mensagem = '';
+          switch (e.code) {
+            case "ERROR_INVALID_EMAIL":
+            case 'invalid-email':
+              mensagem = 'O email não é válido!';
+              break;
+            case "ERROR_EMAIL_ALREADY_IN_USE":
+            case "account-exists-with-different-credential":
+            case 'email-already-in-use':
+              mensagem = 'Email já foi usado por outro usuário!';
+              break;
+            case 'requires-recent-login':
+              mensagem =
+                  'Tempo para entrar não atende aos requisitos de segurança!';
+              break;
+            default:
+              mensagem = "Login falhou. Por favor tente novamente!";
+              break;
+          }
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Falha ao cadastrar!"),
+                  content: Text(mensagem),
+                  actions: [
+                    TextButton(
+                      child: const Text("Ok"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                );
+              });
+        } finally {
+          setState(() {
+            isLogginIn = false;
+          });
+        }
+      } else {
         showDialog(
-            barrierDismissible: false,
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: const Text("Verificação"),
-                content: Text(
-                    'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
+                title: const Text("Falha ao cadastrar!"),
+                content: const Text('Email já utilizado por outro usuário!'),
                 actions: [
                   TextButton(
                     child: const Text("Ok"),
                     onPressed: () {
+                      emailController.clear();
                       Navigator.of(context).pop();
                     },
                   )
                 ],
               );
-            }).then((result) {
-          colRef.doc(_auth.currentUser!.uid).set({
-            'data': getDate,
-            'email': emailController.text,
-            'fone': foneController.text,
-            'imagem': imageUrl,
-            'nome': nomeController.text,
-            'provedor': 'Email',
-          }).then((value) {
-            Global.email = emailController.text;
-            Global.nome = nomeController.text;
-            Global.foto = imageUrl;
-          });
-        });
-      });
-    } on FirebaseAuthException catch (e) {
-      var mensagem = '';
-      switch (e.code) {
-        case 'invalid-email':
-          mensagem = 'O email não é válido!';
-          break;
-        case 'email-already-in-use':
-          mensagem = 'Email já for usado por outro usuário!';
-          break;
-        case 'requires-recent-login':
-          mensagem =
-              'Tempo para entrar não atende aos requisitos de segurança!';
-          break;
-        default:
+            });
       }
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Falha ao cadastrar!"),
-              content: Text(mensagem),
-              actions: [
-                TextButton(
-                  child: const Text("Ok"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          });
-    } finally {
-      setState(() {
-        isLogginIn = false;
-      });
-    }
+    });
   }
 
   Future<void> checkEmailVerified() async {
@@ -364,15 +402,70 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       elevation: 10,
       child: TextFormField(
         controller: senhaController,
-        keyboardType: TextInputType.number,
+        keyboardType: TextInputType.text,
         textInputAction: TextInputAction.next,
+        onFieldSubmitted: (txt) {
+          bool passValid = RegExp(
+                  "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*(),.?:{}|<>]).*")
+              .hasMatch(txt);
+          if (!passValid) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Center(
+                      child: Text(
+                        'Senha muito fraca!',
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    content: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.cyan.shade100,
+                      ),
+                      padding: const EdgeInsets.all(15),
+                      width: 200,
+                      height: 100,
+                      child: Text(
+                        senhaMessage,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.purple,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text(
+                          "OK",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            senhaController.clear();
+                            Navigator.of(context).pop();
+                          });
+                        },
+                      )
+                    ],
+                  );
+                });
+          }
+        },
         cursorColor: Colors.cyan[400]!,
         validator: (value) {
           if (value!.isEmpty) {
             return 'Entre com a senha';
           } else {
             if (value.length < 6) {
-              return 'O mínimo de 6 dígitos!';
+              return 'Senha tem que ter o mínimo de 6 dígitos!';
             }
           }
           return null;
@@ -421,7 +514,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       elevation: 10,
       child: TextFormField(
         controller: confirmaController,
-        keyboardType: TextInputType.number,
+        keyboardType: TextInputType.text,
         textInputAction: TextInputAction.done,
         cursorColor: Colors.cyan[400]!,
         validator: (value) {
@@ -433,6 +526,18 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
             } else {}
           }
           return null;
+        },
+        onFieldSubmitted: (txt) {
+          if (txt != senhaController.text) {
+            Fluttertoast.showToast(
+              msg: 'Contra-Senha deve ser igual a senha!',
+              fontSize: 20,
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              textColor: Colors.amber,
+              backgroundColor: Colors.black,
+            );
+          }
         },
         obscureText: _confirmaVisible,
         decoration: InputDecoration(
@@ -458,7 +563,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
                   _confirmaVisible = !_confirmaVisible;
                 });
               }),
-          labelText: 'Senha',
+          labelText: 'Contra-Senha',
           hintText: 'Confirme sua Senha',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),

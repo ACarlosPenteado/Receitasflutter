@@ -39,77 +39,82 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
 
   int qB = 0;
 
+  String imageUrl =
+      'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
+
   @override
   initState() {
     super.initState();
     _focusNome.addListener(() {
-      CollectionReference colRef =
-          FirebaseFirestore.instance.collection('Users');
-      colRef
-          .where('nome', isEqualTo: nomeController.text)
-          .snapshots()
-          .listen((event) {
-        if (event.docs.isNotEmpty) {
-          Global.nome = event.docs[0]['nome'].toString();
-          Global.email = event.docs[0]['email'].toString();
-          Global.fone = event.docs[0]['fone'].toString();
-          if (event.docs[0]['foto'].toString().isNotEmpty) {
-            Global.foto = event.docs[0]['foto'].toString();
-          } else {
-            Global.foto =
-                'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
-          }
-          emailController.text = Global.email;
-          _enabledSenha = true;
+      getData(nomeController.text);
+    });
+  }
+
+  getData(String nome) async {
+    var doc = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('nome', isEqualTo: nome);
+    doc.get().then((event) {
+      if (event.docs.isNotEmpty) {
+        Global.nome = event.docs.elementAt(0).get('nome');
+        Global.email = event.docs.elementAt(0).get('email');
+        Global.fone = event.docs.elementAt(0).get('fone');
+        if (event.docs.elementAt(0).get('imagem').isNotEmpty) {
+          Global.foto = event.docs.elementAt(0).get('imagem');
         } else {
-          emailController.text = '';
-          senhaController.text = '';
-          if (nomeController.text.isNotEmpty) {
-            showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Nome não encontrado!'),
-                    content: const Text('Esqueceu seu nome de acesso?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CadatrarSenhaPage()),
-                              (Route<dynamic> route) => false);
-                        },
-                        child: const Text('Se cadastrar!'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _enabledEmail = true;
-                            _enabledSenha = true;
-                            Navigator.of(context).pop();
-                          });
-                        },
-                        child: const Text('Tentar com email!'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const EntrarPage()),
-                              (Route<dynamic> route) => false);
-                        },
-                        child: const Text('Sair'),
-                      ),
-                    ],
-                  );
-                });
-          }
+          Global.foto = imageUrl;
         }
-      });
+        emailController.text = Global.email;
+        _enabledSenha = true;
+      } else {
+        Global.nome = nomeController.text;
+        emailController.text = '';
+        senhaController.text = '';
+        if (nomeController.text.isNotEmpty) {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Nome não encontrado!'),
+                  content: const Text('Esqueceu seu nome de acesso?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const CadatrarSenhaPage()),
+                            (Route<dynamic> route) => false);
+                      },
+                      child: const Text('Se cadastrar!'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _enabledEmail = true;
+                          _enabledSenha = true;
+                          Navigator.of(context).pop();
+                        });
+                      },
+                      child: const Text('Tentar com email!'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EntrarPage()),
+                            (Route<dynamic> route) => false);
+                      },
+                      child: const Text('Sair'),
+                    ),
+                  ],
+                );
+              });
+        }
+      }
     });
   }
 
@@ -356,7 +361,47 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
   }
 
   Widget nomeTextFormField() {
-    return CustomTextField(
+    return TextFormField(
+      controller: nomeController,
+      keyboardType: TextInputType.text,
+      textCapitalization: TextCapitalization.words,
+      textInputAction: TextInputAction.next,
+      cursorColor: Colors.orange[200]!,
+      validator: (value) {
+        if (qB == 0) {
+          if (value!.isEmpty) {
+            return 'Entre com seu nome!';
+          }
+          return null;
+        }
+      },
+      onFieldSubmitted: (txt) {
+        setState(() {
+          getData(txt);
+        });
+      },
+      focusNode: _focusNome,
+      autofocus: true,
+      enabled: true,
+      decoration: InputDecoration(
+        prefixIcon: const Icon(
+          Icons.person,
+          color: Colors.indigoAccent,
+          size: 20,
+        ),
+        hintText: 'Nome',
+        labelText: 'Nome',
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+      ),
+    );
+
+    /* CustomTextField(
       keyboardType: TextInputType.emailAddress,
       textEditingController: nomeController,
       focusNode: _focusNome,
@@ -372,7 +417,11 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
           return null;
         }
       },
-    );
+      onSubmit: (txt) {
+        setState(() {
+          getData(nomeController.text);
+        });
+      }, */
   }
 
   Widget emailTextFormField() {
@@ -683,6 +732,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final IconData icon;
   final FormFieldValidator? validator;
+  final FormFieldValidator? onSubmit;
   final FocusNode? focusNode;
   final bool focus;
   final bool enabled;
@@ -694,6 +744,7 @@ class CustomTextField extends StatefulWidget {
     required this.keyboardType,
     required this.icon,
     this.validator,
+    this.onSubmit,
     this.focusNode,
     required this.focus,
     required this.enabled,
@@ -726,6 +777,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         keyboardType: widget.keyboardType,
         cursorColor: Colors.orange[200]!,
         validator: widget.validator,
+        onFieldSubmitted: widget.onSubmit,
         focusNode: widget.focusNode,
         autofocus: widget.focus,
         enabled: widget.enabled,
