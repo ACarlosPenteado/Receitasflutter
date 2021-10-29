@@ -1,11 +1,12 @@
 import 'dart:async';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:receitas_sandra/home_page.dart';
+import 'package:receitas_sandra/image_select/select_image.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
@@ -43,11 +44,6 @@ class _DataUserPageState extends State<DataUserPage> {
 
   bool isLogginIn = false;
 
-  String senhaMessage = '''* Mínimo 1 letra maiúscula;  
-* Mínimo 1 letra minúsculo;
-* Mínimo 1 Número;
-* Mínimo 1 caractere especial;''';
-
   @override
   void initState() {
     nomeController.text = Global.nome;
@@ -61,86 +57,93 @@ class _DataUserPageState extends State<DataUserPage> {
     setState(() {
       isLogginIn = true;
     });
-    try {
-      _auth.currentUser!.updateEmail(emailController.text).then((__) {
-        user = _auth.currentUser!;
-        user.sendEmailVerification();
-        timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-          checkEmailVerified();
-          if (user.emailVerified) {
-            colRef.doc(_auth.currentUser!.uid).set({
-              'data': getDate,
-              'email': emailController.text,
-              'fone': foneController.text,
-              'imagem': imageUrl,
-              'nome': nomeController.text,
-              'provedor': 'Email',
-            }).then((value) {
-              Global.email = emailController.text;
-              Global.nome = nomeController.text;
-              Global.foto = imageUrl;
+
+    Future<List<String>> providers =
+        FirebaseAuth.instance.fetchSignInMethodsForEmail(emailController.text);
+    providers.then((value) {
+      if (value.isEmpty) {
+        try {
+          _auth.currentUser!.updateEmail(emailController.text).then((__) {
+            user = _auth.currentUser!;
+            user.sendEmailVerification();
+            timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+              checkEmailVerified();
+              if (user.emailVerified) {
+                colRef.doc(_auth.currentUser!.uid).set({
+                  'data': getDate,
+                  'email': emailController.text,
+                  'fone': foneController.text,
+                  'imagem': imageUrl,
+                  'nome': nomeController.text,
+                  'provedor': 'Email',
+                }).then((value) {
+                  Global.email = emailController.text;
+                  Global.nome = nomeController.text;
+                  Global.foto = imageUrl;
+                });
+              }
             });
-          }
-        });
-        showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("Verificação"),
-                content: Text(
-                    'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
-                actions: [
-                  TextButton(
-                    child: const Text("Ok"),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
-                ],
-              );
-            });
-      });
-      user.updatePassword(confirmaController.text).then((value) {});
-    } on FirebaseAuthException catch (e) {
-      var mensagem = '';
-      switch (e.code) {
-        case 'invalid-email':
-          mensagem = 'O email não é válido!';
-          break;
-        case 'email-already-in-use':
-          mensagem = 'Email já for usado por outro usuário!';
-          break;
-        case 'requires-recent-login':
-          mensagem =
-              'Tempo para entrar não atende aos requisitos de segurança!';
-          break;
-        case 'weak-password':
-          mensagem = 'A senha não for forte o suficiente.';
-          break;
-        default:
-      }
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Falha ao alterar dados!"),
-              content: Text(mensagem),
-              actions: [
-                TextButton(
-                  child: const Text("Ok"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
+            showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Verificação"),
+                    content: Text(
+                        'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
+                    actions: [
+                      TextButton(
+                        child: const Text("Ok"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                  );
+                });
           });
-    } finally {
-      setState(() {
-        isLogginIn = false;
-      });
-    }
+          user.updatePassword(confirmaController.text).then((value) {});
+        } on FirebaseAuthException catch (e) {
+          var mensagem = '';
+          switch (e.code) {
+            case 'invalid-email':
+              mensagem = 'O email não é válido!';
+              break;
+            case 'email-already-in-use':
+              mensagem = 'Email já for usado por outro usuário!';
+              break;
+            case 'requires-recent-login':
+              mensagem =
+                  'Tempo para entrar não atende aos requisitos de segurança!';
+              break;
+            case 'weak-password':
+              mensagem = 'A senha não for forte o suficiente.';
+              break;
+            default:
+          }
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Falha ao alterar dados!"),
+                  content: Text(mensagem),
+                  actions: [
+                    TextButton(
+                      child: const Text("Ok"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                );
+              });
+        } finally {
+          setState(() {
+            isLogginIn = false;
+          });
+        }
+      }
+    });
   }
 
   Future<void> checkEmailVerified() async {
@@ -151,6 +154,102 @@ class _DataUserPageState extends State<DataUserPage> {
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomePage()));
     }
+  }
+
+  alteraSenha() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            elevation: 10,
+            title: const Center(
+              child: Text(
+                "Alteração de Senha",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            contentPadding: const EdgeInsets.fromLTRB(5, 10, 5, 5),
+            content: Container(
+              margin: EdgeInsets.only(
+                  left: _width / 12.0,
+                  right: _width / 12.0,
+                  top: _height / 20.0),
+              width: 400,
+              height: 200,
+              decoration: BoxDecoration(
+                //color: Colors.black45,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: senhaTextFormField(),
+                  ),
+                  SizedBox(height: _height / 50.0),
+                  Expanded(
+                    child: confirmaTextFormField(),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: const Text(
+                  "Cancela",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text(
+                  "Ok",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void alterei() async {
+    user = _auth.currentUser!;
+    user.updatePassword(senhaController.text).then((__) {
+      Fluttertoast.showToast(msg: 'Senha alterada');
+    }).catchError((onError) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Falha ao alterar dados!"),
+              content: Text(onError.toString()),
+              actions: [
+                TextButton(
+                  child: const Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    });
   }
 
   @override
@@ -202,6 +301,8 @@ class _DataUserPageState extends State<DataUserPage> {
             const SizedBox(
               height: 25,
             ),
+            forgetPassTextRow(),
+            const SizedBox(height: 25),
             button(),
           ],
         ),
@@ -212,6 +313,10 @@ class _DataUserPageState extends State<DataUserPage> {
           children: <Widget>[
             clipShape(),
             form(),
+            const SizedBox(
+              height: 25,
+            ),
+            forgetPassTextRow(),
             const SizedBox(
               height: 25,
             ),
@@ -234,9 +339,9 @@ class _DataUserPageState extends State<DataUserPage> {
             SizedBox(height: _height / 60.0),
             foneTextFormField(),
             SizedBox(height: _height / 60.0),
-            senhaTextFormField(),
+            /* senhaTextFormField(),
             SizedBox(height: _height / 60.0),
-            confirmaTextFormField(),
+            confirmaTextFormField(), */
           ],
         ),
       ),
@@ -296,167 +401,220 @@ class _DataUserPageState extends State<DataUserPage> {
     );
   }
 
+  Widget forgetPassTextRow() {
+    return Container(
+      margin: EdgeInsets.only(top: _height / 40.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            "Quer alterar sua senha?",
+            style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: _large ? 14 : (_medium ? 12 : 10)),
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          InkWell(
+            onTap: () {
+              if (emailController.text.isEmpty) {
+                Fluttertoast.showToast(
+                    msg: 'Digite seu email!',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.blue,
+                    textColor: Colors.white,
+                    fontSize: 30.0);
+              } else {
+                alteraSenha();
+              }
+            },
+            child: Text(
+              "Click aqui",
+              style: TextStyle(
+                  fontWeight: FontWeight.w800, color: Colors.purple[300]!),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget senhaTextFormField() {
-    return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 10,
-      child: TextFormField(
-        controller: senhaController,
-        keyboardType: TextInputType.text,
-        textInputAction: TextInputAction.next,
-        onFieldSubmitted: (txt) {
-          bool passValid = RegExp(
-                  "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*(),.?:{}|<>]).*")
-              .hasMatch(txt);
-          if (!passValid) {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Center(
-                      child: Text(
-                        'Senha muito fraca!',
+    return TextFormField(
+      controller: senhaController,
+      keyboardType: TextInputType.text,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (txt) {
+        bool passValid = RegExp(
+                "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*(),.?:{}|<>]).*")
+            .hasMatch(txt);
+        if (!passValid) {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Center(
+                    child: Text(
+                      'Senha muito fraca!',
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  content: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.cyan.shade100,
+                    ),
+                    padding: const EdgeInsets.all(15),
+                    width: 200,
+                    height: 100,
+                    child: Text(
+                      Global.senhaMessage,
+                      style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.purple,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      child: const Text(
+                        "OK",
                         style: TextStyle(
                             fontSize: 18,
                             color: Colors.blue,
                             fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    content: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.cyan.shade100,
-                      ),
-                      padding: const EdgeInsets.all(15),
-                      width: 200,
-                      height: 100,
-                      child: Text(
-                        senhaMessage,
-                        style: const TextStyle(
-                            fontSize: 15,
-                            color: Colors.purple,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: const Text(
-                          "OK",
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  );
-                });
-          }
-        },
-        cursorColor: Colors.cyan[400]!,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Entre com a senha';
-          } else {
-            if (value.length < 6) {
-              return 'Senha tem que ter o mínimo de 6 dígitos!';
-            }
-          }
-          return null;
-        },
-        obscureText: _senhaVisible,
-        decoration: InputDecoration(
-          prefixIcon: const Icon(
-            Icons.lock,
-            color: Colors.indigoAccent,
-            size: 20,
-          ),
-          suffixIcon: InkWell(
-              child: _senhaVisible
-                  ? const Icon(
-                      Icons.visibility,
-                      color: Colors.indigoAccent,
-                      size: 20,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                     )
-                  : const Icon(
-                      Icons.visibility_off,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    ),
-              onTap: () {
-                setState(() {
-                  _senhaVisible = !_senhaVisible;
-                });
-              }),
-          labelText: 'Senha',
-          hintText: 'Digite sua Senha',
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
+                  ],
+                );
+              });
+        }
+      },
+      cursorColor: Colors.cyan[400]!,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Entre com a senha';
+        } else {
+          if (value.length < 6) {
+            return 'Senha tem que ter o mínimo de 6 dígitos!';
+          }
+        }
+        return null;
+      },
+      obscureText: _senhaVisible,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.blue, width: 4.0),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        prefixIcon: const Icon(
+          Icons.lock,
+          color: Colors.indigoAccent,
+          size: 20,
+        ),
+        suffixIcon: InkWell(
+            child: _senhaVisible
+                ? const Icon(
+                    Icons.visibility,
+                    color: Colors.indigoAccent,
+                    size: 20,
+                  )
+                : const Icon(
+                    Icons.visibility_off,
+                    color: Colors.indigoAccent,
+                    size: 20,
+                  ),
+            onTap: () {
+              setState(() {
+                _senhaVisible = !_senhaVisible;
+              });
+            }),
+        labelText: 'Senha',
+        hintText: 'Digite sua Senha',
+        hintStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
   Widget confirmaTextFormField() {
-    return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 10,
-      child: TextFormField(
-        controller: confirmaController,
-        keyboardType: TextInputType.number,
-        textInputAction: TextInputAction.done,
-        cursorColor: Colors.cyan[400]!,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Confirme a senha';
-          } else {
-            if (value != senhaController.text) {
-              return 'Deve ser igual a senha!';
-            } else {}
-          }
-          return null;
-        },
-        obscureText: _confirmaVisible,
-        decoration: InputDecoration(
-          prefixIcon: const Icon(
-            Icons.lock,
-            color: Colors.indigoAccent,
-            size: 20,
-          ),
-          suffixIcon: InkWell(
-              child: _confirmaVisible
-                  ? const Icon(
-                      Icons.visibility,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    )
-                  : const Icon(
-                      Icons.visibility_off,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    ),
-              onTap: () {
-                setState(() {
-                  _confirmaVisible = !_confirmaVisible;
-                });
-              }),
-          labelText: 'Senha',
-          hintText: 'Confirme sua Senha',
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
+    return TextFormField(
+      controller: confirmaController,
+      keyboardType: TextInputType.text,
+      textInputAction: TextInputAction.done,
+      cursorColor: Colors.cyan[400]!,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Confirme a senha';
+        } else {
+          if (value != senhaController.text) {
+            return 'Deve ser igual a senha!';
+          } else {}
+        }
+        return null;
+      },
+      obscureText: _confirmaVisible,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.blue, width: 4.0),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        prefixIcon: const Icon(
+          Icons.lock,
+          color: Colors.indigoAccent,
+          size: 20,
+        ),
+        suffixIcon: InkWell(
+            child: _confirmaVisible
+                ? const Icon(
+                    Icons.visibility,
+                    color: Colors.indigoAccent,
+                    size: 20,
+                  )
+                : const Icon(
+                    Icons.visibility_off,
+                    color: Colors.indigoAccent,
+                    size: 20,
+                  ),
+            onTap: () {
+              setState(() {
+                _confirmaVisible = !_confirmaVisible;
+              });
+            }),
+        labelText: 'Redigite Senha',
+        hintText: 'Confirme sua Senha',
+        hintStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -528,23 +686,38 @@ class _DataUserPageState extends State<DataUserPage> {
             ),
           ),
         ),
-        Hero(
-          tag: 'image1',
+        const SizedBox(
+          height: 40,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 60),
           child: Container(
-            alignment: Alignment.bottomCenter,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
-            ),
-            margin: EdgeInsets.only(
-                top: _large
-                    ? _height / 50
-                    : (_medium ? _height / 55 : _height / 50)),
-            child: Image.network(
-              imageUrl,
-              height: _height / 3.5,
-              width: _width / 3.5,
-            ),
-          ),
+              height: _height / 5.5,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                      spreadRadius: 0.0,
+                      color: Colors.black45,
+                      offset: Offset(1.0, 10.0),
+                      blurRadius: 20.0),
+                ],
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SelectImage(
+                    onFileChanged: (_imageUrl) {
+                      setState(() {
+                        imageUrl = _imageUrl;
+                      });
+                    },
+                  ),
+                ],
+              )),
         ),
       ],
     );

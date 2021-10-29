@@ -55,12 +55,6 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   String imageUrl =
       'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
 
-  String senhaMessage = '''* Mínimo 6 caracteres, sendo:
-* Mínimo 1 letra maiúscula;  
-* Mínimo 1 letra minúscula;
-* Mínimo 1 Número;
-* Mínimo 1 caractere especial;''';
-
   @override
   initState() {
     _focusNome = FocusNode();
@@ -431,7 +425,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
                       width: 200,
                       height: 100,
                       child: Text(
-                        senhaMessage,
+                        Global.senhaMessage,
                         style: const TextStyle(
                             fontSize: 15,
                             color: Colors.purple,
