@@ -5,6 +5,7 @@ import 'package:receitas_sandra/pages/drawer/busca.dart';
 import 'package:receitas_sandra/pages/drawer/data_user.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
+import 'package:receitas_sandra/teste.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
 class HomePage extends StatefulWidget {
@@ -48,24 +49,27 @@ class _HomePageState extends State<HomePage>
       duration: const Duration(seconds: 3),
     )..repeat();
 
-    FirebaseFirestore.instance
+    print(widget.uid);
+    getData();
+    super.initState();
+  }
+
+  getData() async {
+    var doc = FirebaseFirestore.instance
         .collection('Users')
         .doc(widget.uid)
-        .snapshots()
-        .listen((event) {
-      if (event.exists) {
-        Global.nome = event.get('nome').toString();
-        Global.email = event.get('email').toString();
-        Global.fone = event.get('fone').toString();
-        if (event.get('imagem').toString().isNotEmpty) {
-          Global.foto = event.get('imagem').toString();
-        } else {
-          Global.foto =
-              'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
-        }
+        .get()
+        .then((event) {
+      Global.nome = event.data()!['nome'];
+      Global.email = event.data()!['email'];
+      Global.fone = event.data()!['fone'];
+      if (event.data()!['imagem'].isNotEmpty) {
+        Global.foto = event.data()!['imagem'];
+      } else {
+        Global.foto =
+            'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
       }
     });
-    super.initState();
   }
 
   @override
@@ -318,7 +322,7 @@ class _HomePageState extends State<HomePage>
             case 'Busca na Internet':
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const BuscaPage()),
+                MaterialPageRoute(builder: (context) => const TestePage()),
               );
               break;
             case 'Dados do Usuário':

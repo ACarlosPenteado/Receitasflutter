@@ -58,39 +58,75 @@ class _DataUserPageState extends State<DataUserPage> {
       isLogginIn = true;
     });
 
-    Future<List<String>> providers =
-        FirebaseAuth.instance.fetchSignInMethodsForEmail(emailController.text);
-    providers.then((value) {
-      if (value.isEmpty) {
-        try {
-          _auth.currentUser!.updateEmail(emailController.text).then((__) {
-            user = _auth.currentUser!;
-            user.sendEmailVerification();
-            timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-              checkEmailVerified();
-              if (user.emailVerified) {
-                colRef.doc(_auth.currentUser!.uid).set({
-                  'data': getDate,
-                  'email': emailController.text,
-                  'fone': foneController.text,
-                  'imagem': imageUrl,
-                  'nome': nomeController.text,
-                  'provedor': 'Email',
-                }).then((value) {
-                  Global.email = emailController.text;
-                  Global.nome = nomeController.text;
-                  Global.foto = imageUrl;
-                });
-              }
+    if (Global.email != emailController.text) {
+      Future<List<String>> providers = FirebaseAuth.instance
+          .fetchSignInMethodsForEmail(emailController.text);
+      providers.then((value) {
+        if (value.isEmpty) {
+          try {
+            _auth.currentUser!.updateEmail(emailController.text).then((__) {
+              user = _auth.currentUser!;
+              user.sendEmailVerification();
+              timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+                checkEmailVerified();
+                if (user.emailVerified) {
+                  colRef.doc(_auth.currentUser!.uid).set({
+                    'data': getDate,
+                    'email': emailController.text,
+                    'fone': foneController.text,
+                    'imagem': imageUrl,
+                    'nome': nomeController.text,
+                    'provedor': 'Email',
+                  }).then((value) {
+                    Global.email = emailController.text;
+                    Global.nome = nomeController.text;
+                    Global.foto = imageUrl;
+                  });
+                }
+              });
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Verificação"),
+                      content: Text(
+                          'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
+                      actions: [
+                        TextButton(
+                          child: const Text("Ok"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    );
+                  });
             });
+          } on FirebaseAuthException catch (e) {
+            var mensagem = '';
+            switch (e.code) {
+              case 'invalid-email':
+                mensagem = 'O email não é válido!';
+                break;
+              case 'email-already-in-use':
+                mensagem = 'Email já for usado por outro usuário!';
+                break;
+              case 'requires-recent-login':
+                mensagem =
+                    'Tempo para entrar não atende aos requisitos de segurança!';
+                break;
+              case 'weak-password':
+                mensagem = 'A senha não for forte o suficiente.';
+                break;
+              default:
+            }
             showDialog(
-                barrierDismissible: false,
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("Verificação"),
-                    content: Text(
-                        'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
+                    title: const Text("Falha ao alterar dados!"),
+                    content: Text(mensagem),
                     actions: [
                       TextButton(
                         child: const Text("Ok"),
@@ -101,49 +137,31 @@ class _DataUserPageState extends State<DataUserPage> {
                     ],
                   );
                 });
-          });
-          user.updatePassword(confirmaController.text).then((value) {});
-        } on FirebaseAuthException catch (e) {
-          var mensagem = '';
-          switch (e.code) {
-            case 'invalid-email':
-              mensagem = 'O email não é válido!';
-              break;
-            case 'email-already-in-use':
-              mensagem = 'Email já for usado por outro usuário!';
-              break;
-            case 'requires-recent-login':
-              mensagem =
-                  'Tempo para entrar não atende aos requisitos de segurança!';
-              break;
-            case 'weak-password':
-              mensagem = 'A senha não for forte o suficiente.';
-              break;
-            default:
+          } finally {
+            setState(() {
+              isLogginIn = false;
+            });
           }
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text("Falha ao alterar dados!"),
-                  content: Text(mensagem),
-                  actions: [
-                    TextButton(
-                      child: const Text("Ok"),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    )
-                  ],
-                );
-              });
-        } finally {
-          setState(() {
-            isLogginIn = false;
-          });
         }
-      }
-    });
+      });
+    } else {
+      colRef.doc(_auth.currentUser!.uid).set({
+        'data': getDate,
+        'email': emailController.text,
+        'fone': foneController.text,
+        'imagem': imageUrl,
+        'nome': nomeController.text,
+        'provedor': 'Email',
+      }).then((__) {
+        setState(() {
+          Global.email = emailController.text;
+          Global.nome = nomeController.text;
+          Global.foto = imageUrl;
+        });
+      });
+    }
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomePage()));
   }
 
   Future<void> checkEmailVerified() async {
@@ -695,14 +713,14 @@ class _DataUserPageState extends State<DataUserPage> {
               height: _height / 5.5,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
-                boxShadow: [
+                /* boxShadow: [
                   BoxShadow(
                       spreadRadius: 0.0,
                       color: Colors.black45,
                       offset: Offset(1.0, 10.0),
                       blurRadius: 20.0),
-                ],
-                color: Colors.white,
+                ], */
+                color: Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: Column(
@@ -713,6 +731,7 @@ class _DataUserPageState extends State<DataUserPage> {
                     onFileChanged: (_imageUrl) {
                       setState(() {
                         imageUrl = _imageUrl;
+                        Global.foto = imageUrl;
                       });
                     },
                   ),

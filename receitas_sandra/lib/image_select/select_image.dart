@@ -8,14 +8,15 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:receitas_sandra/uteis/funtions.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 
 class SelectImage extends StatefulWidget {
   //const SelectImage({Key? key, required this.onFileChanged}) : super(key: key);
 
-  final Function(String imageUrl)? onFileChanged;
+  final Function(String imageUrl) onFileChanged;
 
   const SelectImage({
-    this.onFileChanged,
+    required this.onFileChanged,
   });
 
   @override
@@ -25,7 +26,7 @@ class SelectImage extends StatefulWidget {
 class _SelectImageState extends State<SelectImage> {
   final ImagePicker _picker = ImagePicker();
 
-  String imageUrl = '';
+  String imageUrl = Global.foto;
   String id = getUser;
 
   Future _selectPhoto() async {
@@ -100,7 +101,7 @@ class _SelectImageState extends State<SelectImage> {
       imageUrl = fileUrl;
     });
 
-    widget.onFileChanged!(fileUrl);
+    widget.onFileChanged(fileUrl);
   }
 
   @override
@@ -114,12 +115,26 @@ class _SelectImageState extends State<SelectImage> {
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             onTap: () => _selectPhoto(),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image(
-                image: NetworkImage(imageUrl),
-                width: 80,
-                height: 80,
+            child: Container(
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                      spreadRadius: 0.0,
+                      color: Colors.black45,
+                      offset: Offset(1.0, 10.0),
+                      blurRadius: 20.0),
+                ],
+                color: Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Image(
+                  image: NetworkImage(imageUrl),
+                  width: 110,
+                  height: 110,
+                ),
               ),
             ),
           ),
