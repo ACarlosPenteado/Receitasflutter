@@ -5,8 +5,8 @@ import 'package:receitas_sandra/pages/drawer/busca.dart';
 import 'package:receitas_sandra/pages/drawer/data_user.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
-import 'package:receitas_sandra/teste.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/dialog_custom.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/HomePage';
@@ -320,10 +320,20 @@ class _HomePageState extends State<HomePage>
         onTap: () {
           switch (title) {
             case 'Busca na Internet':
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TestePage()),
-              );
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DialogCustom(
+                      qchama: 1,
+                      txt: 'Que receita procura?',
+                      label: 'Receita',
+                      txtBtnCancel: 'Cancelar',
+                      txtBtnOk: 'Buscar',
+                      route: MaterialPageRoute(
+                          builder: (context) => const BuscaPage()),
+                    );
+                  });
               break;
             case 'Dados do Usuário':
               Navigator.push(
@@ -335,7 +345,22 @@ class _HomePageState extends State<HomePage>
               print("Configuração");
               break;
             case 'Contate-nos':
-              print("Contate-nos");
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DialogCustom(
+                      qchama: 2,
+                      txt: 'Quer falar sobre oquê?',
+                      labelrec: 'para: Receitas da Sandra',
+                      labelsub: 'Assunto',
+                      labelbod: 'Escrever mensagem',
+                      txtBtnCancel: 'Cancelar',
+                      txtBtnOk: 'Enviar',
+                      route: MaterialPageRoute(
+                          builder: (context) => const HomePage()),
+                    );
+                  });
               break;
             case 'Ajuda':
               print('Ajuda');

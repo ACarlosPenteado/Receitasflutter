@@ -4,6 +4,8 @@ class Global {
   static String fone = '';
   static String foto = '';
 
+  static String nomeRec = '';
+
   static String senhaMessage = '''* Mínimo 6 caracteres, sendo:
 * Mínimo 1 letra maiúscula;  
 * Mínimo 1 letra minúscula;
