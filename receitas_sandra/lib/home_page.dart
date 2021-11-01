@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:receitas_sandra/pages/drawer/busca.dart';
 import 'package:receitas_sandra/pages/drawer/data_user.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
+import 'package:receitas_sandra/providers/theme_provider.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/change_theme_button_widget.dart';
 import 'package:receitas_sandra/widgets/dialog_custom.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,6 +35,7 @@ class _HomePageState extends State<HomePage>
   late bool _medium;
 
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+
   final Color primary = Colors.white;
   final Color active = Colors.cyan;
   final Color divider = Colors.grey.shade600;
@@ -72,6 +77,8 @@ class _HomePageState extends State<HomePage>
     });
   }
 
+  DateTime time = DateTime.now();
+
   @override
   void dispose() {
     controller.dispose();
@@ -86,26 +93,48 @@ class _HomePageState extends State<HomePage>
     _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
 
-    return Scaffold(
-      key: _key,
-      drawer: _buildDrawer(),
-      body: Container(
-        height: _height,
-        width: _width,
-        padding: const EdgeInsets.only(top: 48, bottom: 20),
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            Colors.blue,
-            Colors.cyanAccent,
-          ],
-        )),
-        child: OrientationBuilder(
-          builder: (context, orientation) => orientation == Orientation.portrait
-              ? buildPortrait()
-              : buildLandscape(),
+    return WillPopScope(
+      onWillPop: () async {
+        final diff = DateTime.now().difference(time);
+        final isExit = diff >= const Duration(seconds: 2);
+
+        time = DateTime.now();
+
+        if (isExit) {
+          Fluttertoast.showToast(
+            msg: 'Pressione novamente para sair',
+            fontSize: 18,
+            textColor: Colors.amber,
+            backgroundColor: Colors.grey.shade700,
+          );
+          return false;
+        } else {
+          Fluttertoast.cancel();
+          return true;
+        }
+      },
+      child: Scaffold(
+        key: _key,
+        drawer: _buildDrawer(),
+        body: Container(
+          height: _height,
+          width: _width,
+          padding: const EdgeInsets.only(top: 48, bottom: 20),
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Colors.blue,
+              Colors.cyanAccent,
+            ],
+          )),
+          child: OrientationBuilder(
+            builder: (context, orientation) =>
+                orientation == Orientation.portrait
+                    ? buildPortrait()
+                    : buildLandscape(),
+          ),
         ),
       ),
     );
@@ -271,6 +300,10 @@ class _HomePageState extends State<HomePage>
                   Text(
                     Global.email,
                     style: TextStyle(color: active, fontSize: 16.0),
+                  ),
+                  const Divider(
+                    height: 5,
+                    color: Colors.purple,
                   ),
                   const SizedBox(height: 30.0),
                   _buildRow(Icons.search, "Busca na Internet"),
@@ -552,41 +585,31 @@ class _CustomAppBarState extends State<CustomAppBar> {
       child: Container(
         height: 40,
         width: width,
-        padding: const EdgeInsets.only(left: 0, top: 5, right: 5),
         decoration: BoxDecoration(
           gradient:
               LinearGradient(colors: [Colors.blue[200]!, Colors.cyanAccent]),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            IconButton(
-              onPressed: () {
-                widget.mkey.currentState?.openDrawer();
-              },
-              icon: const Icon(Icons.menu),
-            ),
-            /* IconButton(
-                iconSize: 30,
-                icon: const Icon(
-                  Icons.arrow_back,
+            Padding(
+              padding: const EdgeInsets.only(left: 5),
+              child: SizedBox(
+                height: 30,
+                width: 30,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent,
+                    padding: const EdgeInsets.only(top: 2, left: 4),
+                    //elevation: 10,
+                    alignment: Alignment.centerLeft,
+                  ),
+                  onPressed: () {
+                    widget.mkey.currentState?.openDrawer();
+                  },
+                  child: Icon(Icons.menu, color: Colors.indigo.shade900),
                 ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }), */
-            /*if(isPortrait)
-            const Text(
-              'Receitas da Sandra',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
               ),
             ),
-            const SizedBox(
-              width: 30,
-            ),*/
           ],
         ),
       ),

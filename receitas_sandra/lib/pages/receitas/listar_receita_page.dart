@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
-import 'package:provider/provider.dart';
-import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
+import 'package:receitas_sandra/providers/storage_manager.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 
 class ListarReceitaPage extends StatefulWidget {
@@ -53,6 +52,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   selecionar(int index) {
     if (selecionadas.contains(receitas[index]['id'])) {
       selecionadas.remove(receitas[index]['id']);
+      StorageManager.saveData('id_rec', receitas[index]['id']);
       ReceitasRepository.favoritar(receitas[index]['id'], false);
     } else {
       selecionadas.add(receitas[index]['id']);
@@ -87,7 +87,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           child: Column(
             children: <Widget>[
               clipShape(),
-              listRec(),
             ],
           ),
         ),
@@ -102,10 +101,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           fabSize: 64.0,
           fabElevation: 8.0,
           fabIconBorder: const CircleBorder(),
-          fabOpenColor: Colors.blue[200],
-          fabCloseColor: Colors.blue[900],
+          fabOpenColor: Colors.blue[100],
+          fabCloseColor: Colors.blue[300],
           fabColor: Colors.orange,
-          fabOpenIcon: Icon(Icons.menu, color: primaryColor),
+          fabOpenIcon: const Icon(Icons.menu, color: Colors.pink),
           fabCloseIcon: Icon(Icons.close, color: primaryColor),
           fabMargin: const EdgeInsets.all(16.0),
           animationDuration: const Duration(milliseconds: 800),
@@ -214,11 +213,12 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
         const Opacity(opacity: 0.88, child: CustomAppBar()),
         Container(
           alignment: Alignment.bottomCenter,
-          margin: const EdgeInsets.only(top: 100),
+          margin: const EdgeInsets.only(top: 60),
           //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
           child: Column(
             children: [
               tipoRec(),
+              listRec(),
             ],
           ),
         ),
@@ -247,7 +247,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           child: SafeArea(
             child: Center(
               child: Container(
-                margin: const EdgeInsets.all(16),
+                height: 150,
+                width: _width,
+                margin: const EdgeInsets.only(
+                    left: 16, top: 0, right: 16, bottom: 5),
                 child: InkWell(
                     child: Stack(
                       children: [

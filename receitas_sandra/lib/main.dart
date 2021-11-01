@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
+import 'package:receitas_sandra/providers/theme_provider.dart';
 import 'package:receitas_sandra/repository/favoritas_repository.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/splash_screen.dart';
@@ -33,9 +33,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Receitas da Sandra',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       initialRoute: '/splash',

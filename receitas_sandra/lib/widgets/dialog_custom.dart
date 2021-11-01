@@ -38,10 +38,11 @@ class _DialogCustomState extends State<DialogCustom>
   List<String> attach = [];
   bool isHtml = false;
 
-  final _nomeController = TextEditingController();
-  final _recipientController = TextEditingController();
-  final _subjectController = TextEditingController();
-  final _bodyController = TextEditingController();
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _recipientController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _bodyController = TextEditingController();
+  final GlobalKey _formKey = GlobalKey<FormState>();
 
   bool _isRadio = false;
 
@@ -177,6 +178,7 @@ class _DialogCustomState extends State<DialogCustom>
                   ),
                 if (widget.qchama == 2)
                   Form(
+                    key: _formKey,
                     child: Column(
                       children: [
                         Container(
@@ -190,7 +192,7 @@ class _DialogCustomState extends State<DialogCustom>
                               ),
                             ],
                           ),
-                          child: TextField(
+                          child: TextFormField(
                             controller: _recipientController,
                             autofocus: true,
                             enabled: false,
@@ -224,7 +226,7 @@ class _DialogCustomState extends State<DialogCustom>
                               ),
                             ],
                           ),
-                          child: TextField(
+                          child: TextFormField(
                             controller: _subjectController,
                             autofocus: true,
                             keyboardType: TextInputType.text,
@@ -248,7 +250,7 @@ class _DialogCustomState extends State<DialogCustom>
                         ),
                         const SizedBox(height: 10),
                         Container(
-                          height: 80,
+                          height: 150,
                           width: 300,
                           padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
@@ -259,14 +261,14 @@ class _DialogCustomState extends State<DialogCustom>
                               ),
                             ],
                           ),
-                          child: TextField(
+                          child: TextFormField(
                             controller: _bodyController,
                             autofocus: true,
                             keyboardType: TextInputType.text,
                             textCapitalization: TextCapitalization.sentences,
                             cursorColor: Colors.purpleAccent,
-                            maxLines: null,
-                            expands: true,
+                            maxLines: 3,
+                            //expands: true,
                             maxLength: 300,
                             textAlignVertical: TextAlignVertical.top,
                             decoration: InputDecoration(
@@ -284,58 +286,50 @@ class _DialogCustomState extends State<DialogCustom>
                             ),
                           ),
                         ),
-                        Expanded(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CheckboxListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 0.0, horizontal: 100.0),
-                                  title: const Text('HTML'),
-                                  value: isHtml,
-                                  onChanged: (bool? value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        isHtml = value;
-                                      });
-                                    }
-                                  }),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
+                        CheckboxListTile(
+                            /* contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 0.0, horizontal: 100.0), */
+                            title: const Text('HTML'),
+                            value: isHtml,
+                            onChanged: (bool? value) {
+                              if (value != null) {
+                                setState(() {
+                                  isHtml = value;
+                                });
+                              }
+                            }),
+                        /* Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: <Widget>[
+                              for (var i = 0; i < attach.length; i++)
+                                Row(
                                   children: <Widget>[
-                                    for (var i = 0; i < attach.length; i++)
-                                      Row(
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: Text(
-                                              attach[i],
-                                              softWrap: false,
-                                              overflow: TextOverflow.fade,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              _removeAttach(i);
-                                            },
-                                            icon:
-                                                const Icon(Icons.remove_circle),
-                                          ),
-                                        ],
+                                    Expanded(
+                                      child: Text(
+                                        attach[i],
+                                        softWrap: false,
+                                        overflow: TextOverflow.fade,
                                       ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: IconButton(
-                                        onPressed: _openImagePicker,
-                                        icon: const Icon(Icons.attach_file),
-                                      ),
-                                    )
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        _removeAttach(i);
+                                      },
+                                      icon: const Icon(Icons.remove_circle),
+                                    ),
                                   ],
                                 ),
-                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  onPressed: _openImagePicker,
+                                  icon: const Icon(Icons.attach_file),
+                                ),
+                              )
                             ],
                           ),
-                        ),
+                        ), */
                       ],
                     ),
                   ),
@@ -400,12 +394,15 @@ class _DialogCustomState extends State<DialogCustom>
                             ),
                             onPressed: () {
                               setState(() {
-                                if (_subjectController.text.isEmpty) {
-                                  Global.nomeRec = 'receitas';
+                                if (widget.qchama == 1) {
+                                  if (_nomeController.text.isEmpty) {
+                                    Global.nomeRec = 'receitas';
+                                  } else {
+                                    Global.nomeRec = _nomeController.text;
+                                  }
                                 } else {
-                                  Global.nomeRec = _subjectController.text;
+                                  envia();
                                 }
-
                                 Navigator.pushReplacement(
                                     context, widget.route);
                               });
