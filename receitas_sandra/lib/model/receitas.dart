@@ -2,7 +2,6 @@ class Receitas {
   String? id;
   String data;
   String descricao;
-  bool favorita;
   String iduser;
   String imagem;
   List<String> ingredientes;
@@ -15,7 +14,6 @@ class Receitas {
     this.id,
     required this.data,
     required this.descricao,
-    required this.favorita,
     required this.iduser,
     required this.imagem,
     required this.ingredientes,
@@ -27,6 +25,6 @@ class Receitas {
 
   @override
   String toString() {
-    return '{ id: ${id}, data: ${data}, descricao: ${descricao}, favorita: ${favorita}, iduser: ${iduser}, imagem: ${imagem}, ingredientes: ${ingredientes}, preparo: ${preparo}, rendimento: ${rendimento}, tempoPreparo: ${tempoPreparo}, tipo: ${tipo}, }';
+    return '{ id: ${id}, data: ${data}, descricao: ${descricao}, iduser: ${iduser}, imagem: ${imagem}, ingredientes: ${ingredientes}, preparo: ${preparo}, rendimento: ${rendimento}, tempoPreparo: ${tempoPreparo}, tipo: ${tipo}, }';
   }
 }

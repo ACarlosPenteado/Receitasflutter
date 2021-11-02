@@ -1,32 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fab_circular_menu/fab_circular_menu.dart';
-import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
-import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
-import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
-import 'package:receitas_sandra/providers/storage_manager.dart';
-import 'package:receitas_sandra/repository/receitas_repository.dart';
-import 'package:receitas_sandra/uteis/globais.dart';
 
-class ListarReceitaPage extends StatefulWidget {
-  static const routeName = '/ListarReceitaPage';
-  final String tipo;
+class MostrarReceitaPage extends StatefulWidget {
+  static const routeName = '/MostrarReceitaPage';
 
-  const ListarReceitaPage({Key? key, required this.tipo}) : super(key: key);
+  const MostrarReceitaPage({Key? key}) : super(key: key);
 
   @override
-  _ListarReceitaPageState createState() => _ListarReceitaPageState();
+  _MostrarReceitaPageState createState() => _MostrarReceitaPageState();
 }
 
-class _ListarReceitaPageState extends State<ListarReceitaPage> {
+class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   late double _height;
   late double _width;
   late double _pixelRatio;
   late bool _large;
   late bool _medium;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  double size = 150;
 
   final FirebaseFirestore fireDb = FirebaseFirestore.instance;
 
@@ -34,13 +25,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   late List favoritas = [];
   late List selecionadas = [];
 
-  final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
-
   @override
   void initState() {
     super.initState();
-    fabKey.currentState?.close();
-    ReceitasRepository.listReceita(widget.tipo).then((List list) {
+    /* ReceitasRepository.listReceita(widget.tipo).then((List list) {
       setState(() {
         receitas = list;
       });
@@ -49,18 +37,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
       setState(() {
         favoritas = list;
       });
-    });
-  }
-
-  selecionar(int index) {
-    if (selecionadas.contains(receitas[index]['id'])) {
-      selecionadas.remove(receitas[index]['id']);
-      StorageManager.saveData('id_rec', receitas[index]['id']);
-      ReceitasRepository.favoritar(receitas[index]['id'], false);
-    } else {
-      selecionadas.add(receitas[index]['id']);
-      ReceitasRepository.favoritar(receitas[index]['id'], true);
-    }
+    }); */
   }
 
   @override
@@ -70,7 +47,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
     _pixelRatio = MediaQuery.of(context).devicePixelRatio;
     _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
-    final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
       body: Container(
@@ -92,87 +68,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
               clipShape(),
             ],
           ),
-        ),
-      ),
-      floatingActionButton: Builder(
-        builder: (context) => FabCircularMenu(
-          key: fabKey,
-          alignment: Alignment.bottomRight,
-          ringColor: Colors.blue.withAlpha(25),
-          ringDiameter: 350.0,
-          ringWidth: 100.0,
-          fabSize: 64.0,
-          fabElevation: 8.0,
-          fabIconBorder: const CircleBorder(),
-          fabOpenColor: Colors.blue[100],
-          fabCloseColor: Colors.blue[300],
-          fabColor: Colors.orange,
-          fabOpenIcon: const Icon(Icons.menu, color: Colors.pink),
-          fabCloseIcon: Icon(Icons.close, color: primaryColor),
-          fabMargin: const EdgeInsets.all(16.0),
-          animationDuration: const Duration(milliseconds: 800),
-          animationCurve: Curves.easeInOutCirc,
-          children: <Widget>[
-            RawMaterialButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => FavoritasPage(tipo: widget.tipo)),
-                );
-
-                fabKey.currentState!.close();
-              },
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(14.0),
-              child: const Icon(
-                Icons.favorite,
-                color: Colors.pinkAccent,
-                size: 30,
-              ),
-            ),
-            RawMaterialButton(
-              onPressed: () {
-                fabKey.currentState!.close();
-              },
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(14.0),
-              child: const Icon(
-                Icons.search,
-                color: Colors.pinkAccent,
-                size: 30,
-              ),
-            ),
-            RawMaterialButton(
-              onPressed: () {
-                fabKey.currentState!.close();
-              },
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(14.0),
-              child: const Icon(
-                Icons.home,
-                color: Colors.pinkAccent,
-                size: 30,
-              ),
-            ),
-            RawMaterialButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          IncluirReceitaPage(tipo: widget.tipo)),
-                );
-
-                fabKey.currentState!.close();
-              },
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(14.0),
-              child: const Icon(
-                Icons.add,
-                color: Colors.pinkAccent,
-                size: 30,
-              ),
-            )
-          ],
         ),
       ),
     );
@@ -220,41 +115,13 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
           child: Column(
             children: [
-              tipoRec(),
-              listRec(),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget tipoRec() {
-    return Text(
-      widget.tipo,
-      style: const TextStyle(
-        fontSize: 30,
-        fontStyle: FontStyle.italic,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF01579B),
-      ),
-    );
-  }
-
-  Widget listRec() {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: receitas.length,
-      itemBuilder: (_, index) {
-        return SingleChildScrollView(
-          child: SafeArea(
-            child: Center(
-              child: Container(
-                height: size,
-                width: _width,
-                margin: const EdgeInsets.only(
-                    left: 16, top: 0, right: 16, bottom: 5),
-                child: InkWell(
+              SafeArea(
+                child: Center(
+                  child: Container(
+                    height: _height,
+                    width: _width,
+                    margin: const EdgeInsets.only(
+                        left: 16, top: 0, right: 16, bottom: 5),
                     child: Stack(
                       children: [
                         Card(
@@ -286,19 +153,12 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                receitas[index]['imagem'] != 'Sem Imagem'
-                                    ? Image.network(
-                                        receitas[index]['imagem'],
-                                        height: 80,
-                                        width: 80,
-                                        fit: BoxFit.fill,
-                                      )
-                                    : Image.asset(
-                                        'images/receitas/receitas.prn',
-                                        height: 80,
-                                        width: 80,
-                                        fit: BoxFit.fill,
-                                      ),
+                                Image.asset(
+                                  'images/receitas/receitas.prn',
+                                  height: 80,
+                                  width: 80,
+                                  fit: BoxFit.fill,
+                                ),
                                 const SizedBox(
                                   width: 16,
                                 ),
@@ -308,17 +168,17 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                                         CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      Text(
-                                        receitas[index]['descricao'],
-                                        style: const TextStyle(
+                                      const Text(
+                                        'Nome da receita',
+                                        style: TextStyle(
                                           fontSize: 25,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.cyanAccent,
                                         ),
                                       ),
                                       Row(
-                                        children: [
-                                          const Text(
+                                        children: const [
+                                          Text(
                                             'Tempo de Preparo: ',
                                             style: TextStyle(
                                               fontSize: 15,
@@ -327,14 +187,14 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                                             ),
                                           ),
                                           Text(
-                                            receitas[index]['tempoPreparo'],
-                                            style: const TextStyle(
+                                            '30',
+                                            style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.pinkAccent,
                                             ),
                                           ),
-                                          const Text(
+                                          Text(
                                             ' minutos',
                                             style: TextStyle(
                                               fontSize: 15,
@@ -345,8 +205,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                                         ],
                                       ),
                                       Row(
-                                        children: [
-                                          const Text(
+                                        children: const [
+                                          Text(
                                             'Rendimento: ',
                                             style: TextStyle(
                                               fontSize: 15,
@@ -355,14 +215,14 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                                             ),
                                           ),
                                           Text(
-                                            receitas[index]['rendimento'],
-                                            style: const TextStyle(
+                                            '6',
+                                            style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.pinkAccent,
                                             ),
                                           ),
-                                          const Text(
+                                          Text(
                                             ' porções',
                                             style: TextStyle(
                                               fontSize: 15,
@@ -379,46 +239,15 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                             ),
                           ),
                         ),
-                        /* if (receitas[index]['favorita'] ||
-                            selecionadas.contains(receitas[index]['id']))
-                          favorita() */
                       ],
                     ),
-                    onTap: () {
-                      setState(() {
-                        Global.descricao = receitas[index]['descricao'];
-                        Global.id = receitas[index]['id'];
-                        Global.iduser = receitas[index]['iduser'];
-                        Global.imagem = receitas[index]['imagem'];
-                        Global.ingredientes = receitas[index]['ingredientes'];
-                        Global.preparo = receitas[index]['preparo'];
-                      
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const MostrarReceitaPage()));
-                      });
-                    },
-                    onLongPress: () {
-                      setState(() {
-                        selecionar(index);
-                      });
-                    }),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        );
-      },
-    );
-  }
-
-  Widget favorita() {
-    return const Positioned(
-      left: 8,
-      top: 8,
-      child: Icon(
-        Icons.favorite,
-        size: 32,
-        color: Colors.cyan,
-      ),
+        ),
+      ],
     );
   }
 }

@@ -182,7 +182,6 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           child: CustomAppBar(
             data: data,
             descricao: nomeController.text,
-            favorita: false,
             id: id,
             iduser: auth.currentUser!.uid.toString(),
             imagem:
@@ -644,7 +643,6 @@ class CustomShapeClipper2 extends CustomClipper<Path> {
 class CustomAppBar extends StatefulWidget {
   String data;
   String descricao;
-  bool favorita;
   String id;
   String iduser;
   String imagem;
@@ -658,7 +656,6 @@ class CustomAppBar extends StatefulWidget {
       {Key? key,
       required this.data,
       required this.descricao,
-      required this.favorita,
       required this.id,
       required this.iduser,
       required this.imagem,
@@ -685,7 +682,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
   salvarReceitas(
       String data,
       String descricao,
-      bool favorita,
       String id,
       String iduser,
       String imagem,
@@ -702,7 +698,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
       fireDb.collection('Receitas').doc(id).set({
         'data': data,
         'descricao': descricao,
-        'favorita': favorita,
         'id': id,
         'iduser': iduser,
         'imagem': imagem,
@@ -719,7 +714,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
       fireDb.collection('Receitas').doc(id).set({
         'data': data,
         'descricao': descricao,
-        'favorita': favorita,
         'id': id,
         'iduser': iduser,
         'imagem': imagem,
@@ -774,7 +768,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   salvarReceitas(
                       widget.data,
                       widget.descricao,
-                      widget.favorita,
                       widget.id,
                       widget.iduser,
                       widget.imagem,
