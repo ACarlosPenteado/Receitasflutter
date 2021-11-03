@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/receitas.dart';
 
 class ReceitasRepository extends ChangeNotifier {
-  List<Receitas> _lista = [];
   late FirebaseFirestore fireDb;
   late FirebaseAuth auth;
   late String? tipo;
+  List<Receitas> _lista = [];
 
   ReceitasRepository({required this.auth, this.tipo}) {
     _startRepository();
@@ -32,26 +32,9 @@ class ReceitasRepository extends ChangeNotifier {
     return receitaList;
   }
 
-  static favoritar(String id, bool fav) async {
-    FirebaseFirestore fireDb = FirebaseFirestore.instance;
-    await fireDb.collection('Receitas').doc(id).update({'favorita': fav});
-  }
-
-  static Future<List> listFavoritas(String tipo) async {
-    List? favoritaList = [];
-    FirebaseFirestore fireDb = FirebaseFirestore.instance;
-    QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
-        .collection('Receitas')
-        .where('tipo', isEqualTo: tipo)
-        .where('favorita', isEqualTo: true)
-        .get();
-    favoritaList = colRef.docs;
-    return favoritaList;
-  }
-
-  remove(Receitas receitas) async {
+  /* remove(Receitas receitas) async {
     await fireDb.collection('Receitas').doc(receitas.id).delete();
     _lista.remove(receitas);
     notifyListeners();
-  }
+  } */
 }

@@ -308,7 +308,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                   ),
                 ),
               ),
-              ListIngre(list: listIngre),
+              ListIngre(list: listIngre, fontSize: 15,),
               const SizedBox(
                 height: 10,
               ),
@@ -340,7 +340,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                   ),
                 ),
               ),
-              ListPrepa(list: listPrepa),
+              ListPrepa(list: listPrepa, fontSize: 15),
             ],
           ),
         ),

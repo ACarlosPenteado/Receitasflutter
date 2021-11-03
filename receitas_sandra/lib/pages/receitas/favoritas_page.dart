@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
+import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/widgets/widgets.dart';
 
 class FavoritasPage extends StatefulWidget {
-  final String tipo;
+  final String uid;
 
-  const FavoritasPage({Key? key, required this.tipo}) : super(key: key);
+  const FavoritasPage({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<FavoritasPage> createState() => _FavoritasPageState();
@@ -17,7 +18,7 @@ class _FavoritasPageState extends State<FavoritasPage> {
   @override
   void initState() {
     super.initState();
-    ReceitasRepository.listFavoritas(widget.tipo).then((List list) {
+    UsersRepository.listFavoritas(widget.uid).then((List list) {
       setState(() {
         favoritas = list;
       });

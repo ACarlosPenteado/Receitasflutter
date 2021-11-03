@@ -3,8 +3,10 @@ import 'package:receitas_sandra/model/preparo.dart';
 
 class ListPrepa extends StatelessWidget {
   final List<Preparo> list;
+  double fontSize;
 
-  const ListPrepa({Key? key, required this.list}) : super(key: key);
+  ListPrepa({Key? key, required this.list, required this.fontSize})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +26,18 @@ class ListPrepa extends StatelessWidget {
                         flex: 5,
                         child: Text(
                           ' - ' + list.elementAt(index).descricao,
-                          style: const TextStyle(
+                          style: TextStyle(
+                            fontSize: fontSize,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
-                            color: Colors.purple,
+                            color: Colors.amber.shade800,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black,
+                                blurRadius: 5,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
                           ),
                         ),
                       ),

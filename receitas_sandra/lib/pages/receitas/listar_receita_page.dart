@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
+import 'package:receitas_sandra/model/ingrediente.dart';
+import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
-import 'package:receitas_sandra/providers/storage_manager.dart';
+import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
@@ -29,12 +31,38 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   double size = 150;
 
   final FirebaseFirestore fireDb = FirebaseFirestore.instance;
-
-  late List receitas = [];
-  late List favoritas = [];
-  late List selecionadas = [];
-
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
+
+  List receitas = [];
+  List favoritas = [];
+  List selecionadas = [];
+  List<Ingrediente> listIngre = [];
+  List<Preparo> listPrepa = [];
+
+  preencheListIngre(List<dynamic> list) {
+    listIngre.clear();
+    for (var i = 0; i < list.length; i++) {
+      listIngre.add(
+        Ingrediente(
+            quantidade: list.elementAt(i)['quantidade'],
+            medida: list.elementAt(i)['medida'],
+            descricao: list.elementAt(i)['descricao']),
+      );
+    }
+    Global.ingredientes = listIngre;
+    Global.tamList += list.length;
+  }
+
+  preencheListPrepa(List<dynamic> list) {
+    listPrepa.clear();
+    for (var i = 0; i < list.length; i++) {
+      listPrepa.add(
+        Preparo(descricao: list.elementAt(i)['descricao']),
+      );
+    }
+    Global.preparo = listPrepa;
+    Global.tamList += list.length;
+  }
 
   @override
   void initState() {
@@ -45,7 +73,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
         receitas = list;
       });
     }).whenComplete(() => receitas);
-    ReceitasRepository.listFavoritas(widget.tipo).then((List list) {
+    UsersRepository.listFavoritas(_auth.currentUser!.uid).then((List list) {
       setState(() {
         favoritas = list;
       });
@@ -53,14 +81,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   }
 
   selecionar(int index) {
-    if (selecionadas.contains(receitas[index]['id'])) {
-      selecionadas.remove(receitas[index]['id']);
-      StorageManager.saveData('id_rec', receitas[index]['id']);
-      ReceitasRepository.favoritar(receitas[index]['id'], false);
-    } else {
-      selecionadas.add(receitas[index]['id']);
-      ReceitasRepository.favoritar(receitas[index]['id'], true);
-    }
+    selecionadas.add(receitas[index]['id']);
+    UsersRepository.favoritar(_auth.currentUser!.uid, receitas[index]['id']);
   }
 
   @override
@@ -117,7 +139,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => FavoritasPage(tipo: widget.tipo)),
+                      builder: (context) => FavoritasPage(uid: _auth.currentUser!.uid)),
                 );
 
                 fabKey.currentState!.close();
@@ -263,7 +285,9 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                             borderRadius: BorderRadius.circular(24),
                           ),
                           color: Colors.white,
-                          child: Container(
+                          child: AnimatedContainer(
+                            duration: const Duration(seconds: 5),
+                            height: 150,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 24.0, vertical: 36),
                             decoration: BoxDecoration(
@@ -379,20 +403,23 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                             ),
                           ),
                         ),
-                        /* if (receitas[index]['favorita'] ||
-                            selecionadas.contains(receitas[index]['id']))
-                          favorita() */
+                        if (selecionadas.contains(receitas[index]['id']))
+                          favorita()
                       ],
                     ),
                     onTap: () {
                       setState(() {
+                        preencheListIngre(receitas[index]['ingredientes']);
+                        preencheListPrepa(receitas[index]['preparo']);
                         Global.descricao = receitas[index]['descricao'];
                         Global.id = receitas[index]['id'];
                         Global.iduser = receitas[index]['iduser'];
                         Global.imagem = receitas[index]['imagem'];
-                        Global.ingredientes = receitas[index]['ingredientes'];
-                        Global.preparo = receitas[index]['preparo'];
-                      
+                        Global.rendimento = receitas[index]['rendimento'];
+                        Global.tempoPreparo = receitas[index]['tempoPreparo'];
+                        // Global.ingredientes = receitas[index]['ingredientes'];
+                        // Global.preparo = receitas[index]['preparo'];
+
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => const MostrarReceitaPage()));
                       });

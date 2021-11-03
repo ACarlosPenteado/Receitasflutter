@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:receitas_sandra/model/ingrediente.dart';
+import 'package:receitas_sandra/model/preparo.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/listingre.dart';
+import 'package:receitas_sandra/widgets/listprepa.dart';
 
 class MostrarReceitaPage extends StatefulWidget {
   static const routeName = '/MostrarReceitaPage';
@@ -17,17 +22,20 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   late double _pixelRatio;
   late bool _large;
   late bool _medium;
+  double size = 220;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final FirebaseFirestore fireDb = FirebaseFirestore.instance;
 
-  late List receitas = [];
-  late List favoritas = [];
-  late List selecionadas = [];
+  List receitas = [];
+  List favoritas = [];
+  List selecionadas = [];
 
   @override
   void initState() {
     super.initState();
+    size = 220;
     /* ReceitasRepository.listReceita(widget.tipo).then((List list) {
       setState(() {
         receitas = list;
@@ -38,6 +46,13 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
         favoritas = list;
       });
     }); */
+  }
+
+  @override
+  void dispose() {
+    size = 220;
+    Global.tamList = 0;
+    super.dispose();
   }
 
   @override
@@ -111,7 +126,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
         const Opacity(opacity: 0.88, child: CustomAppBar()),
         Container(
           alignment: Alignment.bottomCenter,
-          margin: const EdgeInsets.only(top: 60),
+          margin: const EdgeInsets.only(top: 30),
           //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
           child: Column(
             children: [
@@ -130,9 +145,13 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                             borderRadius: BorderRadius.circular(24),
                           ),
                           color: Colors.white,
-                          child: Container(
+                          child: AnimatedContainer(
+                            duration: const Duration(seconds: 5),
+                            height: size == 220
+                                ? size + (Global.tamList.toDouble() * 30)
+                                : 220,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 24.0, vertical: 36),
+                                horizontal: 8.0, vertical: 8.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               gradient: const LinearGradient(
@@ -150,89 +169,248 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                 ),
                               ],
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Image.asset(
-                                  'images/receitas/receitas.prn',
-                                  height: 80,
-                                  width: 80,
-                                  fit: BoxFit.fill,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Image.network(
+                                      Global.imagem,
+                                      height: 80,
+                                      width: 80,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(
+                                            Global.descricao,
+                                            style: const TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.cyanAccent,
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              const Text(
+                                                'Tempo de Preparo: ',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              Text(
+                                                Global.tempoPreparo,
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.pinkAccent,
+                                                ),
+                                              ),
+                                              const Text(
+                                                ' minutos',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              const Text(
+                                                'Rendimento: ',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              Text(
+                                                Global.rendimento,
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.pinkAccent,
+                                                ),
+                                              ),
+                                              const Text(
+                                                ' porções',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(
-                                  width: 16,
+                                  height: 10,
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      const Text(
-                                        'Nome da receita',
-                                        style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.cyanAccent,
-                                        ),
-                                      ),
-                                      Row(
-                                        children: const [
-                                          Text(
-                                            'Tempo de Preparo: ',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          Text(
-                                            '30',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.pinkAccent,
-                                            ),
-                                          ),
-                                          Text(
-                                            ' minutos',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: const [
-                                          Text(
-                                            'Rendimento: ',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          Text(
-                                            '6',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.pinkAccent,
-                                            ),
-                                          ),
-                                          Text(
-                                            ' porções',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
+                                const Divider(
+                                  height: 5,
+                                  color: Colors.purple,
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1, color: Colors.purple),
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.grey.shade700,
+                                          Colors.black26,
+                                        ]),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black,
+                                        blurRadius: 8,
+                                        offset: Offset(3, 3),
                                       ),
                                     ],
+                                  ),
+                                  child: const Text(
+                                    'Ingredientes',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.cyanAccent,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black,
+                                          blurRadius: 5,
+                                          offset: Offset(1, 1),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Expanded(
+                                  child: AnimatedContainer(
+                                    duration: const Duration(seconds: 5),
+                                    height: Global.tamList.toDouble() * 30,
+                                    width: 350,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Colors.grey.shade100,
+                                            Colors.black45,
+                                          ]),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.cyan,
+                                          blurRadius: 8,
+                                          offset: Offset(3, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ListIngre(
+                                        fontSize: 15,
+                                        list: Global.ingredientes),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                const Divider(
+                                  height: 5,
+                                  color: Colors.purple,
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1, color: Colors.purple),
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.grey.shade700,
+                                          Colors.black26,
+                                        ]),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black,
+                                        blurRadius: 8,
+                                        offset: Offset(3, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Text(
+                                    'Modo de Preparo',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.cyanAccent,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black,
+                                          blurRadius: 5,
+                                          offset: Offset(1, 1),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Expanded(
+                                  child: AnimatedContainer(
+                                    duration: const Duration(seconds: 5),
+                                    height: Global.tamList.toDouble() * 30,
+                                    width: 350,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Colors.grey.shade100,
+                                            Colors.black45,
+                                          ]),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.cyan,
+                                          blurRadius: 8,
+                                          offset: Offset(3, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ListPrepa(
+                                        fontSize: 15, list: Global.preparo),
                                   ),
                                 ),
                               ],
@@ -248,6 +426,18 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget tipoRec() {
+    return Text(
+      Global.descricao,
+      style: const TextStyle(
+        fontSize: 30,
+        fontStyle: FontStyle.italic,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF01579B),
+      ),
     );
   }
 }

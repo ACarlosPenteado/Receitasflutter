@@ -1,3 +1,6 @@
+import 'package:receitas_sandra/model/ingrediente.dart';
+import 'package:receitas_sandra/model/preparo.dart';
+
 class Global {
   static String nome = '';
   static String email = '';
@@ -11,8 +14,8 @@ class Global {
   static String descricao = '';
   static String iduser = '';
   static String imagem = '';
-  static List<String> ingredientes = [];
-  static List<String> preparo = [];
+  static List<Ingrediente> ingredientes = [];
+  static List<Preparo> preparo = [];
   static String rendimento = '';
   static String tempoPreparo = '';
   static String tipo = '';
@@ -22,4 +25,6 @@ class Global {
 * Mínimo 1 letra minúscula;
 * Mínimo 1 Número;
 * Mínimo 1 caractere especial;''';
+
+  static int tamList = 0;
 }

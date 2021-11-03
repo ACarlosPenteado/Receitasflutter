@@ -3,8 +3,10 @@ import 'package:receitas_sandra/model/ingrediente.dart';
 
 class ListIngre extends StatelessWidget {
   final List<Ingrediente> list;
+  double fontSize;
 
-  const ListIngre({Key? key, required this.list}) : super(key: key);
+  ListIngre({Key? key, required this.list, required this.fontSize})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,38 +21,61 @@ class ListIngre extends StatelessWidget {
               child: Stack(
                 children: <Widget>[
                   Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Expanded(
                         flex: 1,
                         child: Text(
                           list.elementAt(index).quantidade,
-                          style: const TextStyle(
+                          style: TextStyle(
+                            fontSize: fontSize,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
-                            color: Colors.purple,
+                            color: Colors.amber.shade800,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black,
+                                blurRadius: 5,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       Expanded(
-                        flex: 6,
+                        flex: 5,
                         child: Text(
                           ' - ' + list.elementAt(index).medida,
-                          style: const TextStyle(
+                          style: TextStyle(
+                            fontSize: fontSize,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
-                            color: Colors.purple,
+                            color: Colors.amber.shade800,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black,
+                                blurRadius: 5,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       Expanded(
-                        flex: 7,
+                        flex: 5,
                         child: Text(
                           ' - ' + list.elementAt(index).descricao,
-                          style: const TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.purple,
-                          ),
+                          style: TextStyle(
+                              fontSize: fontSize,
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.amber.shade800,
+                              shadows: const [
+                                Shadow(
+                                    color: Colors.black,
+                                    blurRadius: 5,
+                                    offset: Offset(1, 1))
+                              ]),
                         ),
                       ),
                     ],
