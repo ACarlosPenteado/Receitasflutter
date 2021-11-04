@@ -28,18 +28,11 @@ class UsersRepository extends ChangeNotifier {
   }
 
   static Future<List> listFavoritas(String uid) async {
-    List? favoritaList = [];
+    List favoritaList = [];
     FirebaseFirestore fireDb = FirebaseFirestore.instance;
-    fireDb
-        .collection('Users')
-        .doc(uid)
-        .collection('favoritas')
-        .get()
-        .then((querySnapshot) {
-      querySnapshot.docs.forEach((element) {
-        favoritaList.add(element.data());
-      });
-    });
+
+    DocumentSnapshot colRef = await fireDb.collection('Users').doc(uid).get();
+    favoritaList = colRef.get('favoritas');
     return favoritaList;
   }
 }

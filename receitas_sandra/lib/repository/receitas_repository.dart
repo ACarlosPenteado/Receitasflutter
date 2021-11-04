@@ -32,6 +32,8 @@ class ReceitasRepository extends ChangeNotifier {
     return receitaList;
   }
 
+  
+
   /* remove(Receitas receitas) async {
     await fireDb.collection('Receitas').doc(receitas.id).delete();
     _lista.remove(receitas);

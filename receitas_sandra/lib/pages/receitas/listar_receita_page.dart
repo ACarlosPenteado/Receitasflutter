@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
+import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
@@ -34,12 +35,12 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
 
   List receitas = [];
-  List favoritas = [];
+  List<Receitas> loadRec = [];
   List selecionadas = [];
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
 
-  preencheListIngre(List<dynamic> list) {
+  preencheListIngre(List<dynamic> list) async {
     listIngre.clear();
     for (var i = 0; i < list.length; i++) {
       listIngre.add(
@@ -53,7 +54,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
     Global.tamList += list.length;
   }
 
-  preencheListPrepa(List<dynamic> list) {
+  preencheListPrepa(List<dynamic> list) async {
     listPrepa.clear();
     for (var i = 0; i < list.length; i++) {
       listPrepa.add(
@@ -66,18 +67,14 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
 
   @override
   void initState() {
-    super.initState();
     fabKey.currentState?.close();
     ReceitasRepository.listReceita(widget.tipo).then((List list) {
       setState(() {
         receitas = list;
       });
     }).whenComplete(() => receitas);
-    UsersRepository.listFavoritas(_auth.currentUser!.uid).then((List list) {
-      setState(() {
-        favoritas = list;
-      });
-    });
+
+    super.initState();
   }
 
   selecionar(int index) {
@@ -137,9 +134,30 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           children: <Widget>[
             RawMaterialButton(
               onPressed: () {
+                loadRec.clear();
+                for (var i = 0; i < receitas.length; i++) {
+                  loadRec.add(Receitas(
+                    id: receitas[i]['id'],
+                    data: receitas[i]['data'],
+                    descricao: receitas[i]['descricao'],
+                    imagem: receitas[i]['imagem'],
+                    rendimento: receitas[i]['rendimento'],
+                    tempoPreparo: receitas[i]['tempoPreparo'],
+                    ingredientes: Global.ingredientes,
+                    preparo: Global.preparo,
+                    tipo: receitas[i]['tipo'],
+                    iduser: receitas[i]['iduser'],
+                  ));
+                }
+
+                //print(loadRec);
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => FavoritasPage(uid: _auth.currentUser!.uid)),
+                    builder: (context) => FavoritasPage(
+                      uid: _auth.currentUser!.uid,
+                      receitas: loadRec,
+                    ),
+                  ),
                 );
 
                 fabKey.currentState!.close();
@@ -417,8 +435,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                         Global.imagem = receitas[index]['imagem'];
                         Global.rendimento = receitas[index]['rendimento'];
                         Global.tempoPreparo = receitas[index]['tempoPreparo'];
-                        // Global.ingredientes = receitas[index]['ingredientes'];
-                        // Global.preparo = receitas[index]['preparo'];
 
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => const MostrarReceitaPage()));
