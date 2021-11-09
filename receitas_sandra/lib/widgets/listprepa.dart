@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 
 class ListPrepa extends StatelessWidget {
-  final List<Preparo> list;
+  final List list;
   double fontSize;
 
   ListPrepa({Key? key, required this.list, required this.fontSize})
@@ -25,7 +25,7 @@ class ListPrepa extends StatelessWidget {
                       Expanded(
                         flex: 5,
                         child: Text(
-                          ' - ' + list.elementAt(index).descricao,
+                          ' - ' + list.elementAt(index).descricao.toString(),
                           style: TextStyle(
                             fontSize: fontSize,
                             fontStyle: FontStyle.italic,

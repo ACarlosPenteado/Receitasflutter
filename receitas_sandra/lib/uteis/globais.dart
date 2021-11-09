@@ -26,5 +26,6 @@ class Global {
 * Mínimo 1 Número;
 * Mínimo 1 caractere especial;''';
 
-  static int tamList = 0;
+  static int tamListI = 1;
+  static int tamListP = 1;
 }

@@ -9,7 +9,7 @@ import 'package:receitas_sandra/uteis/globais.dart';
 
 class ListDemo extends StatefulWidget {
   final List list;
-  final List<Receitas> receitas;
+  final List receitas;
 
   const ListDemo({Key? key, required this.list, required this.receitas})
       : super(key: key);
@@ -56,7 +56,7 @@ class _ListDemoState extends State<ListDemo> {
       );
     }
     Global.ingredientes = listIngre;
-    Global.tamList += list.length;
+    Global.tamListI += list.length;
   }
 
   preencheListPrepa(List<dynamic> list) async {
@@ -67,7 +67,7 @@ class _ListDemoState extends State<ListDemo> {
       );
     }
     Global.preparo = listPrepa;
-    Global.tamList += list.length;
+    Global.tamListP += list.length;
   }
 
   @override

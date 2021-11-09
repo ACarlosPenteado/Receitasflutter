@@ -21,7 +21,7 @@ class ReceitasRepository extends ChangeNotifier {
     fireDb = FirebaseFirestore.instance;
   }
 
-  static Future<List> listReceita(String tipo) async {
+  Future<List> listReceita(String tipo) async {
     List? receitaList = [];
     FirebaseFirestore fireDb = FirebaseFirestore.instance;
     QuerySnapshot<Map<String, dynamic>> colRef = await fireDb

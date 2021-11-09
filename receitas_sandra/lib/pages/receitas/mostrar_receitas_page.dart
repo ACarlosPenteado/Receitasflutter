@@ -20,7 +20,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   late double _pixelRatio;
   late bool _large;
   late bool _medium;
-  double size = 220;
+  late double size;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -48,8 +48,9 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
 
   @override
   void dispose() {
-    size = 220;
-    Global.tamList = 0;
+    size = 150;
+    Global.tamListI = 1;
+    Global.tamListP = 1;
     super.dispose();
   }
 
@@ -145,9 +146,9 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                           color: Colors.white,
                           child: AnimatedContainer(
                             duration: const Duration(seconds: 5),
-                            height: size == 220
-                                ? size + (Global.tamList.toDouble() * 30)
-                                : 220,
+                            height: Global.tamListI.toDouble() > 1
+                                ? size + Global.tamListI.toDouble() * 50
+                                : size,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0, vertical: 8.0),
                             decoration: BoxDecoration(
@@ -268,73 +269,76 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1, color: Colors.purple),
-                                    borderRadius: BorderRadius.circular(12),
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.grey.shade700,
-                                          Colors.black26,
-                                        ]),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black,
-                                        blurRadius: 8,
-                                        offset: Offset(3, 3),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Text(
-                                    'Ingredientes',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.cyanAccent,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black,
-                                          blurRadius: 5,
-                                          offset: Offset(1, 1),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Expanded(
-                                  child: AnimatedContainer(
-                                    duration: const Duration(seconds: 5),
-                                    height: Global.tamList.toDouble() * 30,
-                                    width: 350,
+                                if (Global.tamListI > 1)
+                                  Container(
+                                    padding: const EdgeInsets.all(5),
                                     decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Colors.purple),
                                       borderRadius: BorderRadius.circular(12),
                                       gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
                                           colors: [
-                                            Colors.grey.shade100,
-                                            Colors.black45,
+                                            Colors.grey.shade700,
+                                            Colors.black26,
                                           ]),
                                       boxShadow: const [
                                         BoxShadow(
-                                          color: Colors.cyan,
+                                          color: Colors.black,
                                           blurRadius: 8,
                                           offset: Offset(3, 3),
                                         ),
                                       ],
                                     ),
-                                    child: ListIngre(
+                                    child: const Text(
+                                      'Ingredientes',
+                                      style: TextStyle(
                                         fontSize: 15,
-                                        list: Global.ingredientes),
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.cyanAccent,
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.black,
+                                            blurRadius: 5,
+                                            offset: Offset(1, 1),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
+                                const SizedBox(
+                                  height: 10,
                                 ),
+                                if (Global.tamListI > 1)
+                                  Expanded(
+                                    child: AnimatedContainer(
+                                      duration: const Duration(seconds: 5),
+                                      height: size +
+                                          Global.tamListI.toDouble() * 50,
+                                      width: 350,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.grey.shade100,
+                                              Colors.black45,
+                                            ]),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.cyan,
+                                            blurRadius: 8,
+                                            offset: Offset(3, 3),
+                                          ),
+                                        ],
+                                      ),
+                                      child: ListIngre(
+                                          fontSize: 15,
+                                          list: Global.ingredientes),
+                                    ),
+                                  ),
                                 const SizedBox(
                                   height: 10,
                                 ),
@@ -345,72 +349,75 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1, color: Colors.purple),
-                                    borderRadius: BorderRadius.circular(12),
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.grey.shade700,
-                                          Colors.black26,
-                                        ]),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black,
-                                        blurRadius: 8,
-                                        offset: Offset(3, 3),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Text(
-                                    'Modo de Preparo',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.cyanAccent,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black,
-                                          blurRadius: 5,
-                                          offset: Offset(1, 1),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Expanded(
-                                  child: AnimatedContainer(
-                                    duration: const Duration(seconds: 5),
-                                    height: Global.tamList.toDouble() * 30,
-                                    width: 350,
+                                if (Global.tamListP > 1)
+                                  Container(
+                                    padding: const EdgeInsets.all(5),
                                     decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Colors.purple),
                                       borderRadius: BorderRadius.circular(12),
                                       gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
                                           colors: [
-                                            Colors.grey.shade100,
-                                            Colors.black45,
+                                            Colors.grey.shade700,
+                                            Colors.black26,
                                           ]),
                                       boxShadow: const [
                                         BoxShadow(
-                                          color: Colors.cyan,
+                                          color: Colors.black,
                                           blurRadius: 8,
                                           offset: Offset(3, 3),
                                         ),
                                       ],
                                     ),
-                                    child: ListPrepa(
-                                        fontSize: 15, list: Global.preparo),
+                                    child: const Text(
+                                      'Modo de Preparo',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.cyanAccent,
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.black,
+                                            blurRadius: 5,
+                                            offset: Offset(1, 1),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
+                                const SizedBox(
+                                  height: 10,
                                 ),
+                                if (Global.tamListP > 1)
+                                  Expanded(
+                                    child: AnimatedContainer(
+                                      duration: const Duration(seconds: 5),
+                                      height: size +
+                                          Global.tamListP.toDouble() * 50,
+                                      width: 350,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.grey.shade100,
+                                              Colors.black45,
+                                            ]),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.cyan,
+                                            blurRadius: 8,
+                                            offset: Offset(3, 3),
+                                          ),
+                                        ],
+                                      ),
+                                      child: ListPrepa(
+                                          fontSize: 15, list: Global.preparo),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),

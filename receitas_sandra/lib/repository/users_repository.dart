@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/users.dart';
 
 class UsersRepository extends ChangeNotifier {
-  late final FirebaseFirestore fireDb;
-  late FirebaseAuth auth;
+  final FirebaseAuth auth;
   List<Users> _lista = [];
 
   UsersRepository({required this.auth}) {
@@ -17,21 +16,30 @@ class UsersRepository extends ChangeNotifier {
   }
 
   _startFirestore() {
+    FirebaseFirestore fireDb;
     fireDb = FirebaseFirestore.instance;
   }
 
-  static favoritar(String uid, String idrec) async {
+  favoritar(FirebaseAuth uid, String idrec) async {
     FirebaseFirestore fireDb = FirebaseFirestore.instance;
-    await fireDb.collection('Users').doc(uid).update({
+    await fireDb.collection('Users').doc(uid.currentUser!.uid).update({
       'favoritas': FieldValue.arrayUnion([idrec])
     });
   }
 
-  static Future<List> listFavoritas(String uid) async {
+  desfavoritar(FirebaseAuth uid, String idrec) async {
+    FirebaseFirestore fireDb = FirebaseFirestore.instance;
+    await fireDb.collection('Users').doc(uid.currentUser!.uid).update({
+      'favoritas': FieldValue.arrayRemove([idrec])
+    });
+  }
+
+  Future<List> listFavoritas(FirebaseAuth uid) async {
     List favoritaList = [];
     FirebaseFirestore fireDb = FirebaseFirestore.instance;
 
-    DocumentSnapshot colRef = await fireDb.collection('Users').doc(uid).get();
+    DocumentSnapshot colRef =
+        await fireDb.collection('Users').doc(uid.currentUser!.uid).get();
     favoritaList = colRef.get('favoritas');
     return favoritaList;
   }

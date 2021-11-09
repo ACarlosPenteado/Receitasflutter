@@ -1,11 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/widgets/list_demo.dart';
 
 class FavoritasPage extends StatefulWidget {
-  final String uid;
-  final List<Receitas> receitas;
+  final FirebaseAuth uid;
+  final List receitas;
 
   const FavoritasPage({Key? key, required this.uid, required this.receitas})
       : super(key: key);
@@ -16,15 +17,21 @@ class FavoritasPage extends StatefulWidget {
 
 class _FavoritasPageState extends State<FavoritasPage> {
   List favoritas = [];
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void initState() {
-    UsersRepository.listFavoritas(widget.uid).then((List list) {
+    listFav();
+    super.initState();
+  }
+
+  listFav() {
+    UsersRepository repoUser = UsersRepository(auth: widget.uid);
+    repoUser.listFavoritas(widget.uid).then((List list) {
       setState(() {
         favoritas = list;
       });
     });
-    super.initState();
   }
 
   @override

@@ -1,8 +1,10 @@
+import 'package:receitas_sandra/uteis/globais.dart';
+
 class Preparo {
-  late final String descricao;
+  late final String? descricao;
 
   Preparo({
-    required this.descricao,
+    this.descricao,
   });
 
   get getDescricao => this.descricao;
@@ -17,4 +19,5 @@ class Preparo {
   String toString() {
     return '{ descricao: ${descricao} }';
   }
+
 }

@@ -1,12 +1,14 @@
+import 'package:receitas_sandra/uteis/globais.dart';
+
 class Ingrediente {
-  late final String quantidade;
-  late final String medida;
-  late final String descricao;
+  late final String? quantidade;
+  late final String? medida;
+  late final String? descricao;
 
   Ingrediente({
-    required this.quantidade,
-    required this.medida,
-    required this.descricao,
+    this.quantidade,
+    this.medida,
+    this.descricao,
   });
 
   get getQuantidade => this.quantidade;
@@ -26,7 +28,7 @@ class Ingrediente {
         'medida': medida,
         'descricao': descricao,
       };
-      
+
   @override
   String toString() {
     return '{ quantidade: ${quantidade}, medida: ${medida}, descricao: ${descricao} }';

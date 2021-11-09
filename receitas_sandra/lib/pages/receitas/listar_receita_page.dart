@@ -35,8 +35,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
 
   List receitas = [];
+  List favoritas = [];
   List<Receitas> loadRec = [];
   List selecionadas = [];
+  bool fav = false;
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
 
@@ -51,7 +53,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
       );
     }
     Global.ingredientes = listIngre;
-    Global.tamList += list.length;
+    Global.tamListI += list.length;
+    print(Global.ingredientes);
   }
 
   preencheListPrepa(List<dynamic> list) async {
@@ -62,24 +65,50 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
       );
     }
     Global.preparo = listPrepa;
-    Global.tamList += list.length;
+    Global.tamListP += list.length;
   }
 
   @override
   void initState() {
     fabKey.currentState?.close();
-    ReceitasRepository.listReceita(widget.tipo).then((List list) {
+    listReceita();
+    loadFavoritas();
+    super.initState();
+  }
+
+  listReceita() {
+    ReceitasRepository repoRec = ReceitasRepository(auth: _auth);
+    repoRec.listReceita(widget.tipo).then((List list) {
       setState(() {
         receitas = list;
       });
     }).whenComplete(() => receitas);
+  }
 
-    super.initState();
+  loadFavoritas() {
+    final userRepo = UsersRepository(auth: _auth);
+    userRepo.listFavoritas(_auth).then((value) => favoritas = value);
   }
 
   selecionar(int index) {
-    selecionadas.add(receitas[index]['id']);
-    UsersRepository.favoritar(_auth.currentUser!.uid, receitas[index]['id']);
+    final userRepo = UsersRepository(auth: _auth);
+    if (!fav) {
+      if (!selecionadas.contains(receitas[index]['id'])) {
+        selecionadas.add(receitas[index]['id']);
+      }
+      if (!favoritas.contains(receitas[index]['id'])) {
+        userRepo.favoritar(_auth, receitas[index]['id']);
+        favoritas.add(receitas[index]['id']);
+      }
+    } else {
+      if (selecionadas.contains(receitas[index]['id'])) {
+        selecionadas.remove(receitas[index]['id']);
+      }
+      if (favoritas.contains(receitas[index]['id'])) {
+        userRepo.desfavoritar(_auth, receitas[index]['id']);
+        favoritas.remove(receitas[index]['id']);
+      }
+    }
   }
 
   @override
@@ -136,6 +165,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
               onPressed: () {
                 loadRec.clear();
                 for (var i = 0; i < receitas.length; i++) {
+                  preencheListIngre(receitas[i]['ingredientes']);
+                  preencheListPrepa(receitas[i]['preparo']);
                   loadRec.add(Receitas(
                     id: receitas[i]['id'],
                     data: receitas[i]['data'],
@@ -154,7 +185,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => FavoritasPage(
-                      uid: _auth.currentUser!.uid,
+                      uid: _auth,
                       receitas: loadRec,
                     ),
                   ),
@@ -305,7 +336,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                           color: Colors.white,
                           child: AnimatedContainer(
                             duration: const Duration(seconds: 5),
-                            height: 150,
+                            height: size,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 24.0, vertical: 36),
                             decoration: BoxDecoration(
@@ -421,7 +452,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                             ),
                           ),
                         ),
-                        if (selecionadas.contains(receitas[index]['id']))
+                        if (favoritas.contains(receitas[index]['id']) ||
+                            selecionadas.contains(receitas[index]['id']))
                           favorita()
                       ],
                     ),
@@ -442,6 +474,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                     },
                     onLongPress: () {
                       setState(() {
+                        fav = !fav;
                         selecionar(index);
                       });
                     }),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 
 class ListIngre extends StatelessWidget {
-  final List<Ingrediente> list;
+  final List list;
   double fontSize;
 
   ListIngre({Key? key, required this.list, required this.fontSize})
@@ -26,7 +26,7 @@ class ListIngre extends StatelessWidget {
                       Expanded(
                         flex: 1,
                         child: Text(
-                          list.elementAt(index).quantidade,
+                          list.elementAt(index).quantidade.toString(),
                           style: TextStyle(
                             fontSize: fontSize,
                             fontStyle: FontStyle.italic,
@@ -45,7 +45,7 @@ class ListIngre extends StatelessWidget {
                       Expanded(
                         flex: 5,
                         child: Text(
-                          ' - ' + list.elementAt(index).medida,
+                          ' - ' + list.elementAt(index).medida.toString(),
                           style: TextStyle(
                             fontSize: fontSize,
                             fontStyle: FontStyle.italic,
@@ -64,7 +64,7 @@ class ListIngre extends StatelessWidget {
                       Expanded(
                         flex: 5,
                         child: Text(
-                          ' - ' + list.elementAt(index).descricao,
+                          ' - ' + list.elementAt(index).descricao.toString(),
                           style: TextStyle(
                               fontSize: fontSize,
                               fontStyle: FontStyle.italic,

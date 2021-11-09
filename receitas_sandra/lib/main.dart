@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
-import 'package:receitas_sandra/providers/theme_provider.dart';
-import 'package:receitas_sandra/repository/favoritas_repository.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
+import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/splash_screen.dart';
 
 void main() async {
@@ -19,7 +18,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
             create: (context) => ReceitasRepository(auth: auth)),
-        ChangeNotifierProvider(create: (context) => FavoritasRepository()),
+        ChangeNotifierProvider(
+            create: (context) => UsersRepository(auth: auth)),
       ],
       child: const MyApp(),
     ),
