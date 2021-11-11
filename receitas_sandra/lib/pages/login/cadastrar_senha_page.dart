@@ -88,6 +88,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
                 colRef.doc(_auth.currentUser!.uid).set({
                   'data': getDate,
                   'email': emailController.text,
+                  'favoritas': '',
                   'fone': foneController.text,
                   'imagem': imageUrl,
                   'nome': nomeController.text,
@@ -279,32 +280,33 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
         Padding(
           padding: const EdgeInsets.only(top: 60),
           child: Container(
-              height: _height / 5.5,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                      spreadRadius: 0.0,
-                      color: Colors.black45,
-                      offset: Offset(1.0, 10.0),
-                      blurRadius: 20.0),
-                ],
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SelectImage(
-                    onFileChanged: (_imageUrl) {
-                      setState(() {
-                        imageUrl = _imageUrl;
-                      });
-                    },
-                  ),
-                ],
-              )),
+            height: _height / 5.5,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                    spreadRadius: 0.0,
+                    color: Colors.black45,
+                    offset: Offset(1.0, 10.0),
+                    blurRadius: 20.0),
+              ],
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SelectImage(
+                  onFileChanged: (_imageUrl) {
+                    setState(() {
+                      imageUrl = _imageUrl;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

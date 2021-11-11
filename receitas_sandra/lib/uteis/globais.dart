@@ -28,4 +28,6 @@ class Global {
 
   static int tamListI = 1;
   static int tamListP = 1;
+
+  static String qual = '';
 }

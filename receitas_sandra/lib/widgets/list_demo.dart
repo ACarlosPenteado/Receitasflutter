@@ -21,7 +21,6 @@ class ListDemo extends StatefulWidget {
 class _ListDemoState extends State<ListDemo> {
   FirebaseFirestore fbDb = FirebaseFirestore.instance;
 
-  List<Receitas> receFav = [];
   late double _height;
   late double _width;
   late double _pixelRatio;
@@ -30,20 +29,38 @@ class _ListDemoState extends State<ListDemo> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   double size = 150;
 
+  List listRec = [];
+  List receFav = [];
+  List<Ingrediente> listIngre = [];
+  List<Preparo> listPrepa = [];
+
   @override
   void initState() {
     for (var i = 0; i < widget.receitas.length; i++) {
+      listRec.add(widget.receitas[i]['id']);
+    }
+    for (var i = 0; i < listRec.length; i++) {
       for (var j = 0; j < widget.list.length; j++) {
-        if (widget.receitas[i].id == widget.list.elementAt(j)) {
-          receFav.add(widget.receitas[i]);
+        if (listRec.elementAt(i).toString() == widget.list[j].toString()) {
+          preencheListIngre(widget.receitas[i]['ingredientes']);
+          preencheListPrepa(widget.receitas[i]['preparo']);
+          receFav.add(Receitas(
+              id: widget.receitas[i]['id'],
+              data: widget.receitas[i]['data'],
+              descricao: widget.receitas[i]['descricao'],
+              tipo: widget.receitas[i]['tipo'],
+              iduser: widget.receitas[i]['iduser'],
+              tempoPreparo: widget.receitas[i]['tempoPreparo'],
+              rendimento: widget.receitas[i]['rendimento'],
+              imagem: widget.receitas[i]['imagem'],
+              preparo: Global.preparo,
+              ingredientes: Global.ingredientes));
         }
       }
     }
+
     super.initState();
   }
-
-  List<Ingrediente> listIngre = [];
-  List<Preparo> listPrepa = [];
 
   preencheListIngre(List<dynamic> list) async {
     listIngre.clear();

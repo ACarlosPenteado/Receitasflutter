@@ -19,7 +19,7 @@ void main() async {
         ChangeNotifierProvider(
             create: (context) => ReceitasRepository(auth: auth)),
         ChangeNotifierProvider(
-            create: (context) => UsersRepository(auth: auth)),
+            create: (context) => UsersRepository(auth: auth.currentUser!.uid)),
       ],
       child: const MyApp(),
     ),

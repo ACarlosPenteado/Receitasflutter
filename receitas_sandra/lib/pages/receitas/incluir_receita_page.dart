@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
-import 'package:receitas_sandra/model/receitas.dart';
-import 'package:receitas_sandra/repository/receitas_repository.dart';
+import 'package:receitas_sandra/image_select/select_image.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/listingre.dart';
 import 'package:receitas_sandra/widgets/listprepa.dart';
 import 'package:receitas_sandra/widgets/search.dart';
@@ -53,6 +53,20 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
 
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
+
+  String imageUrl =
+      'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg';
+
+  @override
+  void initState() {
+    if (Global.qual == 'E') {
+      nomeController.text = Global.descricao;
+      tempoController.text = Global.tempoPreparo;
+      rendiController.text = Global.rendimento;
+    }
+
+    super.initState();
+  }
 
   cadastraIngre() {
     showDialog(
@@ -134,9 +148,22 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       body: Container(
         height: _height,
         width: _width,
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.blue,
+            Colors.cyanAccent,
+          ],
+        )),
         padding: const EdgeInsets.only(top: 48),
         child: SingleChildScrollView(
-          child: clipShape(),
+          child: Column(
+            children: <Widget>[
+              clipShape(),
+            ],
+          ),
         ),
       ),
     );
@@ -184,8 +211,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             descricao: nomeController.text,
             id: id,
             iduser: auth.currentUser!.uid.toString(),
-            imagem:
-                'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
+            imagem: imageUrl,
             ingredientes: listIngre,
             preparo: listPrepa,
             rendimento: rendiController.text,
@@ -197,7 +223,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           height: 40,
         ),
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(15),
           alignment: Alignment.bottomCenter,
           margin: EdgeInsets.only(
               top: _large
@@ -213,21 +239,31 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                   Column(
                     children: [
                       Container(
-                        width: 100,
-                        height: 100,
+                        padding: const EdgeInsets.only(top: 5),
+                        width: 110,
+                        height: 140,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: Colors.blue,
                             width: 1.0,
                           ),
-                          /* image: DecorationImage(
-                        image: NetworkImage(
-                            'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg'),
-                        fit: BoxFit.fill,
-                      ), */
+                          boxShadow: const [
+                            BoxShadow(
+                                spreadRadius: 0.0,
+                                color: Colors.black45,
+                                offset: Offset(1.0, 10.0),
+                                blurRadius: 20.0),
+                          ],
+                          color: Colors.indigo,
                         ),
-                        child: pick(),
+                        child: SelectImage(
+                          onFileChanged: (_imageUrl) {
+                            setState(() {
+                              imageUrl = _imageUrl;
+                            });
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -308,7 +344,16 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                   ),
                 ),
               ),
-              ListIngre(list: listIngre, fontSize: 15,),
+              if (Global.qual == 'I')
+                ListIngre(
+                  list: listIngre,
+                  fontSize: 15,
+                )
+              else
+                ListIngre(
+                  list: Global.ingredientes,
+                  fontSize: 15,
+                ),
               const SizedBox(
                 height: 10,
               ),
@@ -340,7 +385,16 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                   ),
                 ),
               ),
-              ListPrepa(list: listPrepa, fontSize: 15),
+              if (Global.qual == 'I')
+                ListPrepa(
+                  list: listPrepa,
+                  fontSize: 15,
+                )
+              else
+                ListPrepa(
+                  list: Global.preparo,
+                  fontSize: 15,
+                ),
             ],
           ),
         ),
@@ -573,21 +627,21 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       ),
     );
   }
-}
 
-Widget pick() {
-  return Positioned(
-    left: 8,
-    top: 8,
-    child: InkWell(
-      onTap: () {},
-      child: const Icon(
-        Icons.add_a_photo,
-        size: 32,
-        color: Colors.white,
+  Widget pick() {
+    return Positioned(
+      left: 8,
+      top: 8,
+      child: InkWell(
+        onTap: () {},
+        child: const Icon(
+          Icons.add_a_photo,
+          size: 32,
+          color: Colors.white,
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class CustomShapeClipper extends CustomClipper<Path> {

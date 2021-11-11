@@ -26,8 +26,20 @@ class SelectImage extends StatefulWidget {
 class _SelectImageState extends State<SelectImage> {
   final ImagePicker _picker = ImagePicker();
 
-  String imageUrl = Global.foto;
+  late String imageUrl;
   String id = getUser;
+
+  @override
+  void initState() {
+    if (Global.qual == 'E') {
+      imageUrl = Global.imagem;
+    } else if (Global.qual == 'I') {
+      imageUrl = '';
+    } else {
+      imageUrl = Global.foto;
+    }
+    super.initState();
+  }
 
   Future _selectPhoto() async {
     await showModalBottomSheet(
@@ -116,6 +128,8 @@ class _SelectImageState extends State<SelectImage> {
             highlightColor: Colors.transparent,
             onTap: () => _selectPhoto(),
             child: Container(
+              width: 110,
+              height: 130,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 boxShadow: [
@@ -129,23 +143,50 @@ class _SelectImageState extends State<SelectImage> {
                 shape: BoxShape.circle,
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: Image(
-                  image: NetworkImage(imageUrl),
-                  width: 110,
-                  height: 110,
+                borderRadius: BorderRadius.circular(20),
+                child: Column(
+                  children: [
+                    Image(
+                      image: NetworkImage(imageUrl),
+                      width: 100,
+                      height: 100,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Column(
+                        children: [
+                          if (imageUrl.isNotEmpty)
+                            const Text(
+                              'Mudar Imagem',
+                              style: TextStyle(color: Colors.cyan),
+                            )
+                          else
+                            const Text(
+                              'Selecionar Imagem',
+                              style: TextStyle(color: Colors.cyan),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        InkWell(
+        /* InkWell(
           onTap: () => _selectPhoto(),
           child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                imageUrl.isNotEmpty ? 'Mudar foto' : 'Selecione foto',
-              )),
-        ),
+            padding: const EdgeInsets.all(2.0),
+            child: Column(
+              children: [
+                if (imageUrl.isNotEmpty)
+                  const Text('Mudar Imagem')
+                else
+                  const Text('Selecionar Imagem')
+              ],
+            ),
+          ),
+        ), */
       ],
     );
   }

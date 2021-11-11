@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/users.dart';
 
 class UsersRepository extends ChangeNotifier {
-  final FirebaseAuth auth;
+  final String auth;
   List<Users> _lista = [];
 
   UsersRepository({required this.auth}) {
@@ -34,12 +34,11 @@ class UsersRepository extends ChangeNotifier {
     });
   }
 
-  Future<List> listFavoritas(FirebaseAuth uid) async {
+  Future<List> listFavoritas(String uid) async {
     List favoritaList = [];
     FirebaseFirestore fireDb = FirebaseFirestore.instance;
 
-    DocumentSnapshot colRef =
-        await fireDb.collection('Users').doc(uid.currentUser!.uid).get();
+    DocumentSnapshot colRef = await fireDb.collection('Users').doc(uid).get();
     favoritaList = colRef.get('favoritas');
     return favoritaList;
   }

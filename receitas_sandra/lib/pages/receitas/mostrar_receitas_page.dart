@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/listingre.dart';
 import 'package:receitas_sandra/widgets/listprepa.dart';
@@ -22,28 +23,12 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   late bool _medium;
   late double size;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  final FirebaseFirestore fireDb = FirebaseFirestore.instance;
-
-  List receitas = [];
-  List favoritas = [];
-  List selecionadas = [];
-
   @override
   void initState() {
     super.initState();
     size = 220;
-    /* ReceitasRepository.listReceita(widget.tipo).then((List list) {
-      setState(() {
-        receitas = list;
-      });
-    }).whenComplete(() => receitas);
-    ReceitasRepository.listFavoritas(widget.tipo).then((List list) {
-      setState(() {
-        favoritas = list;
-      });
-    }); */
+    print(Global.ingredientes);
+    print(Global.preparo);
   }
 
   @override
@@ -538,9 +523,20 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 color: Colors.blue,
               ),
             ),
-            const SizedBox(
-              width: 30,
-            ),
+            IconButton(
+                iconSize: 30,
+                icon: const Icon(
+                  Icons.edit,
+                ),
+                onPressed: () {
+                  print(Global.ingredientes);
+                  Global.qual = 'E';
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            IncluirReceitaPage(tipo: Global.tipo)),
+                  );
+                }),
           ],
         ),
       ),

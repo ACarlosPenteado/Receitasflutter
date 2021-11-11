@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
-import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
+import 'package:receitas_sandra/providers/storage_manager.dart';
 import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
@@ -36,7 +36,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
 
   List receitas = [];
   List favoritas = [];
-  List<Receitas> loadRec = [];
+  List loadRec = [];
   List selecionadas = [];
   bool fav = false;
   List<Ingrediente> listIngre = [];
@@ -54,7 +54,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
     }
     Global.ingredientes = listIngre;
     Global.tamListI += list.length;
-    print(Global.ingredientes);
   }
 
   preencheListPrepa(List<dynamic> list) async {
@@ -77,8 +76,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   }
 
   listReceita() {
-    ReceitasRepository repoRec = ReceitasRepository(auth: _auth);
-    repoRec.listReceita(widget.tipo).then((List list) {
+    ReceitasRepository recRepo = ReceitasRepository(auth: _auth);
+    recRepo.listReceita(widget.tipo).then((List list) {
       setState(() {
         receitas = list;
       });
@@ -86,12 +85,14 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   }
 
   loadFavoritas() {
-    final userRepo = UsersRepository(auth: _auth);
-    userRepo.listFavoritas(_auth).then((value) => favoritas = value);
+    final userRepo = UsersRepository(auth: _auth.currentUser!.uid);
+    userRepo
+        .listFavoritas(_auth.currentUser!.uid)
+        .then((value) => favoritas = value);
   }
 
   selecionar(int index) {
-    final userRepo = UsersRepository(auth: _auth);
+    final userRepo = UsersRepository(auth: _auth.currentUser!.uid);
     if (!fav) {
       if (!selecionadas.contains(receitas[index]['id'])) {
         selecionadas.add(receitas[index]['id']);
@@ -163,31 +164,9 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           children: <Widget>[
             RawMaterialButton(
               onPressed: () {
-                loadRec.clear();
-                for (var i = 0; i < receitas.length; i++) {
-                  preencheListIngre(receitas[i]['ingredientes']);
-                  preencheListPrepa(receitas[i]['preparo']);
-                  loadRec.add(Receitas(
-                    id: receitas[i]['id'],
-                    data: receitas[i]['data'],
-                    descricao: receitas[i]['descricao'],
-                    imagem: receitas[i]['imagem'],
-                    rendimento: receitas[i]['rendimento'],
-                    tempoPreparo: receitas[i]['tempoPreparo'],
-                    ingredientes: Global.ingredientes,
-                    preparo: Global.preparo,
-                    tipo: receitas[i]['tipo'],
-                    iduser: receitas[i]['iduser'],
-                  ));
-                }
-
-                //print(loadRec);
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => FavoritasPage(
-                      uid: _auth,
-                      receitas: loadRec,
-                    ),
+                    builder: (context) => FavoritasPage(tipo: widget.tipo),
                   ),
                 );
 
@@ -227,6 +206,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
             ),
             RawMaterialButton(
               onPressed: () {
+                Global.qual = 'I';
                 Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) =>
@@ -467,6 +447,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                         Global.imagem = receitas[index]['imagem'];
                         Global.rendimento = receitas[index]['rendimento'];
                         Global.tempoPreparo = receitas[index]['tempoPreparo'];
+                        Global.tipo = receitas[index]['tipo'];
 
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => const MostrarReceitaPage()));
