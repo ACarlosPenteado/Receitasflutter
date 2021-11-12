@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
+import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/listingre.dart';
@@ -40,16 +42,18 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
 
   TextEditingController prepaController = TextEditingController();
 
-  final GlobalKey<FormState> _formkey = GlobalKey();
+  final GlobalKey<FormState> _formkeyI = GlobalKey();
+  final GlobalKey<FormState> _formkeyP = GlobalKey();
 
   FocusNode focusQtd = FocusNode();
   FocusNode focusDropDow = FocusNode();
-  FocusNode focusDesc = FocusNode();
+  FocusNode focusDescI = FocusNode();
+  FocusNode focusDescP = FocusNode();
 
   String selecionado = '';
 
   String data = getDate;
-  String id = getId;
+  String id = '';
 
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
@@ -63,8 +67,11 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       nomeController.text = Global.descricao;
       tempoController.text = Global.tempoPreparo;
       rendiController.text = Global.rendimento;
+      id = Global.id;
+    } else {
+      id = getId;
     }
-
+    print(id);
     super.initState();
   }
 
@@ -116,11 +123,17 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     listIngre.add(
       Ingrediente(quantidade: quantidade, medida: medida, descricao: descricao),
     );
+    Global.ingredientes.add(
+      Ingrediente(quantidade: quantidade, medida: medida, descricao: descricao),
+    );
     limparIngre();
   }
 
   salvarPrepa(String descricao) {
     listPrepa.add(
+      Preparo(descricao: descricao),
+    );
+    Global.preparo.add(
       Preparo(descricao: descricao),
     );
     limparPrepa();
@@ -204,21 +217,38 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             ),
           ),
         ),
-        Opacity(
-          opacity: 0.88,
-          child: CustomAppBar(
-            data: data,
-            descricao: nomeController.text,
-            id: id,
-            iduser: auth.currentUser!.uid.toString(),
-            imagem: imageUrl,
-            ingredientes: listIngre,
-            preparo: listPrepa,
-            rendimento: rendiController.text,
-            tempoPreparo: tempoController.text,
-            tipo: widget.tipo,
+        if (Global.qual == 'I')
+          Opacity(
+            opacity: 0.88,
+            child: CustomAppBar(
+              data: data,
+              descricao: nomeController.text,
+              id: id,
+              iduser: auth.currentUser!.uid.toString(),
+              imagem: imageUrl,
+              ingredientes: listIngre,
+              preparo: listPrepa,
+              rendimento: rendiController.text,
+              tempoPreparo: tempoController.text,
+              tipo: widget.tipo,
+            ),
+          )
+        else
+          Opacity(
+            opacity: 0.88,
+            child: CustomAppBar(
+              data: data,
+              descricao: nomeController.text,
+              id: id,
+              iduser: auth.currentUser!.uid.toString(),
+              imagem: imageUrl,
+              ingredientes: Global.ingredientes,
+              preparo: Global.preparo,
+              rendimento: rendiController.text,
+              tempoPreparo: tempoController.text,
+              tipo: widget.tipo,
+            ),
           ),
-        ),
         const SizedBox(
           height: 40,
         ),
@@ -448,7 +478,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
 
   Widget formIngre() {
     return Form(
-      key: _formkey,
+      key: _formkeyI,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -485,7 +515,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               SizedBox(
                 width: 290,
                 height: 80,
-                child: descTextFormField(),
+                child: descITextFormField(),
               ),
             ],
           ),
@@ -499,7 +529,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                 child: const Text("Salva"),
                 onPressed: () {
                   setState(() {
-                    if (_formkey.currentState!.validate()) {
+                    if (_formkeyI.currentState!.validate()) {
                       salvarIngre(quanController.text, selecionado,
                           descController.text);
                       limparIngre();
@@ -559,7 +589,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     );
   }
 
-  Widget descTextFormField() {
+  Widget descITextFormField() {
     return CustomTextField(
       keyboardType: TextInputType.text,
       textEditingController: descController,
@@ -567,7 +597,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       maxLine: 2,
       ftm: 15,
       focus: false,
-      focusNode: focusDesc,
+      focusNode: focusDescI,
       hint: 'Descrição',
       validator: (value) {
         if (value.isEmpty) {
@@ -580,7 +610,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
 
   Widget formPrepa() {
     return Form(
-      key: _formkey,
+      key: _formkeyP,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -593,7 +623,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               SizedBox(
                 width: 290,
                 height: 80,
-                child: descTextFormField(),
+                child: descPTextFormField(),
               ),
             ],
           ),
@@ -607,7 +637,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                 child: const Text("Salva"),
                 onPressed: () {
                   setState(() {
-                    if (_formkey.currentState!.validate()) {
+                    if (_formkeyP.currentState!.validate()) {
                       salvarPrepa(prepaController.text);
                       limparPrepa();
                     }
@@ -625,6 +655,25 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget descPTextFormField() {
+    return CustomTextField(
+      keyboardType: TextInputType.text,
+      textEditingController: prepaController,
+      tm: 40,
+      maxLine: 2,
+      ftm: 15,
+      focus: false,
+      focusNode: focusDescP,
+      hint: 'Descrição',
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Entre com a descrição';
+        }
+        return null;
+      },
     );
   }
 
@@ -730,9 +779,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
   late Ingrediente ingMap;
   late Preparo preMap;
 
-  List<Ingrediente> ingres = [];
-  List<Preparo> prepas = [];
-
   salvarReceitas(
       String data,
       String descricao,
@@ -749,35 +795,25 @@ class _CustomAppBarState extends State<CustomAppBar> {
           quantidade: ingredientes[i].quantidade,
           medida: ingredientes[i].medida,
           descricao: ingredientes[i].descricao);
-      fireDb.collection('Receitas').doc(id).set({
-        'data': data,
-        'descricao': descricao,
-        'id': id,
-        'iduser': iduser,
-        'imagem': imagem,
-        'ingredientes': FieldValue.arrayUnion([ingMap.toMap()]),
-        'preparo': FieldValue.arrayUnion([preMap.toMap()]),
-        'rendimento': rendimento,
-        'tempoPreparo': tempo,
-        'tipo': tipo
-      }, SetOptions(merge: true));
     }
-
     for (var i = 0; i < preparo.length; i++) {
-      preMap = Preparo(descricao: ingredientes[i].descricao);
-      fireDb.collection('Receitas').doc(id).set({
-        'data': data,
-        'descricao': descricao,
-        'id': id,
-        'iduser': iduser,
-        'imagem': imagem,
-        'ingredientes': FieldValue.arrayUnion([ingMap.toMap()]),
-        'preparo': FieldValue.arrayUnion([preMap.toMap()]),
-        'rendimento': rendimento,
-        'tempoPreparo': tempo,
-        'tipo': tipo,
-      }, SetOptions(merge: true));
+      preMap = Preparo(descricao: preparo[i].descricao);
     }
+    fireDb.collection('Receitas').doc(id).set({
+      'data': data,
+      'descricao': descricao,
+      'id': id,
+      'iduser': iduser,
+      'imagem': imagem,
+      'ingredientes': FieldValue.arrayUnion([ingMap.toMap()]),
+      'preparo': FieldValue.arrayUnion([preMap.toMap()]),
+      'rendimento': rendimento,
+      'tempoPreparo': tempo,
+      'tipo': tipo
+    }, SetOptions(merge: true)).then((_) {
+      Fluttertoast.showToast(msg: 'Receita Salva');
+      Navigator.of(context).pop();
+    });
   }
 
   @override

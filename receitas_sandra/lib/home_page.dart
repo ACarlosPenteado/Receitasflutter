@@ -11,6 +11,7 @@ import 'package:receitas_sandra/providers/theme_provider.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/change_theme_button_widget.dart';
 import 'package:receitas_sandra/widgets/dialog_custom.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/HomePage';
@@ -188,13 +189,16 @@ class _HomePageState extends State<HomePage>
               ),
             ],
           ),
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const ListarReceitaPage(tipo: 'Doces'),
-              ),
-            );
-          },
+          onTap: () => Navigator.push(
+            context,
+            PageTransition(
+              child: const ListarReceitaPage(tipo: 'Doces'),
+              type: PageTransitionType.rotate,
+              alignment: Alignment.bottomCenter,
+              duration: const Duration(milliseconds: 600),
+              reverseDuration: const Duration(milliseconds: 600),
+            ),
+          ),
         ),
         InkWell(
           child: Column(
@@ -214,14 +218,16 @@ class _HomePageState extends State<HomePage>
               ),
             ],
           ),
-          onTap: () {
-            print(nome + ' ' + email + ' ' + imagem);
-            /* Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const ListarReceitaPage(tipo: 'Salgadas'),
-              ),
-            ); */
-          },
+          onTap: () => Navigator.push(
+            context,
+            PageTransition(
+              child: const ListarReceitaPage(tipo: 'Salgadas'),
+              type: PageTransitionType.rotate,
+              alignment: Alignment.bottomCenter,
+              duration: const Duration(milliseconds: 600),
+              reverseDuration: const Duration(milliseconds: 600),
+            ),
+          ),
         ),
       ],
     );

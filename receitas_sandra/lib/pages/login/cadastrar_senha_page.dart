@@ -93,7 +93,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
                   'imagem': imageUrl,
                   'nome': nomeController.text,
                   'provedor': 'Email',
-                }).then((value) {
+                }).then((_) {
                   Global.email = emailController.text;
                   Global.nome = nomeController.text;
                   Global.foto = imageUrl;

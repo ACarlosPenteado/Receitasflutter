@@ -27,8 +27,6 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   void initState() {
     super.initState();
     size = 220;
-    print(Global.ingredientes);
-    print(Global.preparo);
   }
 
   @override
