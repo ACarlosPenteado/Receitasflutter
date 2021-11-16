@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/transitions/transitions.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -34,6 +35,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     Timer(const Duration(seconds: 5), () {
       if (result != null) {
+        Global.nome = result!.displayName.toString();
+        print(Global.nome);
         Navigator.pushAndRemoveUntil(
             context,
             CustomPageRoute(
@@ -296,9 +299,13 @@ class _SplashScreenState extends State<SplashScreen>
               Rect.fromLTWH(0, 0, rect.width, rect.height),
             );
           },
-          child: const Text(
-            'Receitas da Sandra',
-            style: TextStyle(fontSize: 40),
+          child: Column(
+            children: const [
+              Text(
+                'Receitas',
+                style: TextStyle(fontSize: 40),
+              ),
+            ],
           ),
           blendMode: BlendMode.srcIn,
         );
@@ -306,26 +313,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-
-/* class OvalRightBorderClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    path.lineTo(0, 0);
-    path.lineTo(size.width - 40, 0);
-    path.quadraticBezierTo(
-        size.width, size.height / 4, size.width, size.height / 2);
-    path.quadraticBezierTo(size.width, size.height - (size.height / 4),
-        size.width - 40, size.height);
-    path.lineTo(0, size.height);
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return true;
-  }
-} */
 
 class CustomShapeClipper extends CustomClipper<Path> {
   @override

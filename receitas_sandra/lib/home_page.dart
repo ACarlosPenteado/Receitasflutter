@@ -2,14 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:receitas_sandra/pages/drawer/busca.dart';
 import 'package:receitas_sandra/pages/drawer/data_user.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
+import 'package:receitas_sandra/pages/receitas/escolhe_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
-import 'package:receitas_sandra/providers/theme_provider.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
-import 'package:receitas_sandra/widgets/change_theme_button_widget.dart';
 import 'package:receitas_sandra/widgets/dialog_custom.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -45,9 +43,6 @@ class _HomePageState extends State<HomePage>
   String email = '';
   String imagem = '';
 
-  var isPortrait;
-  var isLandscape;
-
   @override
   void initState() {
     controller = AnimationController(
@@ -55,7 +50,6 @@ class _HomePageState extends State<HomePage>
       duration: const Duration(seconds: 3),
     )..repeat();
 
-    print(widget.uid);
     getData();
     super.initState();
   }
@@ -428,9 +422,17 @@ class _HomePageState extends State<HomePage>
               Rect.fromLTWH(0, 0, rect.width, rect.height),
             );
           },
-          child: const Text(
-            'Receitas da Sandra',
-            style: TextStyle(fontSize: 25),
+          child: Column(
+            children: [
+              const Text(
+                'Receitas da(o) ',
+                style: TextStyle(fontSize: 25),
+              ),
+              Text(
+                Global.nome,
+                style: const TextStyle(fontSize: 25),
+              ),
+            ],
           ),
           blendMode: BlendMode.srcIn,
         );

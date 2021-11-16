@@ -25,6 +25,7 @@ class UsersRepository extends ChangeNotifier {
     await fireDb.collection('Users').doc(uid.currentUser!.uid).update({
       'favoritas': FieldValue.arrayUnion([idrec])
     });
+    notifyListeners();
   }
 
   desfavoritar(FirebaseAuth uid, String idrec) async {
@@ -32,6 +33,7 @@ class UsersRepository extends ChangeNotifier {
     await fireDb.collection('Users').doc(uid.currentUser!.uid).update({
       'favoritas': FieldValue.arrayRemove([idrec])
     });
+    notifyListeners();
   }
 
   Future<List> listFavoritas(String uid) async {

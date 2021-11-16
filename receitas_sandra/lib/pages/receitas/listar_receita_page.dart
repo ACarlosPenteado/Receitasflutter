@@ -2,15 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
-import 'package:receitas_sandra/providers/storage_manager.dart';
 import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/position_custom.dart';
 
 class ListarReceitaPage extends StatefulWidget {
   static const routeName = '/ListarReceitaPage';
@@ -22,7 +24,9 @@ class ListarReceitaPage extends StatefulWidget {
   _ListarReceitaPageState createState() => _ListarReceitaPageState();
 }
 
-class _ListarReceitaPageState extends State<ListarReceitaPage> {
+class _ListarReceitaPageState extends State<ListarReceitaPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
   late double _height;
   late double _width;
   late double _pixelRatio;
@@ -41,6 +45,21 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   bool fav = false;
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
+  int currentItem = 0;
+  String qual = '';
+
+  @override
+  void initState() {
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
+
+    fabKey.currentState?.close();
+    listReceita();
+    loadFavoritas();
+    super.initState();
+  }
 
   preencheListIngre(List<dynamic> list) async {
     listIngre.clear();
@@ -65,14 +84,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
     }
     Global.preparo = listPrepa;
     Global.tamListP += list.length;
-  }
-
-  @override
-  void initState() {
-    fabKey.currentState?.close();
-    listReceita();
-    loadFavoritas();
-    super.initState();
   }
 
   listReceita() {
@@ -110,6 +121,12 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
         favoritas.remove(receitas[index]['id']);
       }
     }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -226,6 +243,76 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavyBar(
+        backgroundColor: Colors.cyanAccent,
+        selectedIndex: currentItem,
+        showElevation: true,
+        itemCornerRadius: 8,
+        curve: Curves.easeInBack,
+        onItemSelected: (index) => setState(() {
+          currentItem = index;
+          if (index == 0) {
+            qual = 'Todas';
+          } else if (index == 1) {
+            qual = 'Minhas';
+          } else if (index == 2) {
+            qual = 'Compartilhadas';
+          }
+        }),
+        items: [
+          BottomNavyBarItem(
+            icon: Icon(
+              Icons.all_inbox,
+              color: Colors.indigo.shade800,
+              size: 18,
+            ),
+            title: const Text(
+              'Todas',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.1,
+              ),
+            ),
+            activeColor: Colors.cyan.shade800,
+            textAlign: TextAlign.left,
+          ),
+          BottomNavyBarItem(
+            icon: Icon(
+              Icons.person,
+              color: Colors.indigo.shade800,
+              size: 18,
+            ),
+            title: const Text(
+              'Minhas',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.1,
+              ),
+            ),
+            activeColor: Colors.cyan.shade800,
+            textAlign: TextAlign.left,
+          ),
+          BottomNavyBarItem(
+            icon: Icon(
+              Icons.share,
+              color: Colors.indigo.shade800,
+              size: 18,
+            ),
+            title: const Text(
+              'Compartilhadas',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.1,
+              ),
+            ),
+            activeColor: Colors.cyan.shade800,
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
     );
   }
 
@@ -271,7 +358,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
           //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
           child: Column(
             children: [
-              tipoRec(),
+              if (currentItem == 2) tipoRec2() else tipoRec(),
               listRec(),
             ],
           ),
@@ -282,13 +369,38 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
 
   Widget tipoRec() {
     return Text(
-      widget.tipo,
+      qual + ' Receitas ' + widget.tipo,
       style: const TextStyle(
         fontSize: 30,
         fontStyle: FontStyle.italic,
         fontWeight: FontWeight.bold,
         color: Color(0xFF01579B),
       ),
+    );
+  }
+
+  Widget tipoRec2() {
+    return Column(
+      children: [
+        Text(
+          ' Receitas ' + widget.tipo,
+          style: const TextStyle(
+            fontSize: 30,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF01579B),
+          ),
+        ),
+        Text(
+          qual,
+          style: const TextStyle(
+            fontSize: 30,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF01579B),
+          ),
+        ),
+      ],
     );
   }
 
@@ -434,7 +546,9 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
                         ),
                         if (favoritas.contains(receitas[index]['id']) ||
                             selecionadas.contains(receitas[index]['id']))
-                          favorita()
+                          favorita(),
+                        if (receitas[index]['iduser'] == _auth.currentUser!.uid)
+                          minhasRec(),
                       ],
                     ),
                     onTap: () {
@@ -468,11 +582,23 @@ class _ListarReceitaPageState extends State<ListarReceitaPage> {
   }
 
   Widget favorita() {
-    return const Positioned(
+    return PositionCustom(
       left: 8,
       top: 8,
-      child: Icon(
+      child: const Icon(
         Icons.favorite,
+        size: 32,
+        color: Colors.cyan,
+      ),
+    );
+  }
+
+  Widget minhasRec() {
+    return PositionCustom(
+      right: 8,
+      top: 8,
+      child: const Icon(
+        Icons.person,
         size: 32,
         color: Colors.cyan,
       ),
@@ -563,17 +689,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 }),
-            const Text(
-              'Receitas da Sandra',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-            const SizedBox(
-              width: 30,
-            ),
           ],
         ),
       ),

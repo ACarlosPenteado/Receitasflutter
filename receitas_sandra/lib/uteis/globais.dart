@@ -30,4 +30,5 @@ class Global {
   static int tamListP = 1;
 
   static String qual = '';
+
 }

@@ -15,9 +15,8 @@ import 'package:receitas_sandra/widgets/text_field.dart';
 
 class IncluirReceitaPage extends StatefulWidget {
   static const routeName = '/IncluirReceitaPage';
-
-  final String tipo;
-  const IncluirReceitaPage({Key? key, required this.tipo}) : super(key: key);
+  final String? tipo;
+  const IncluirReceitaPage({Key? key, this.tipo}) : super(key: key);
 
   @override
   _IncluirReceitaPageState createState() => _IncluirReceitaPageState();
@@ -75,7 +74,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     super.initState();
   }
 
-  cadastraIngre() {
+  cadastraIngre() async {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -230,7 +229,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               preparo: listPrepa,
               rendimento: rendiController.text,
               tempoPreparo: tempoController.text,
-              tipo: widget.tipo,
+              tipo: widget.tipo!,
             ),
           )
         else
@@ -246,7 +245,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               preparo: Global.preparo,
               rendimento: rendiController.text,
               tempoPreparo: tempoController.text,
-              tipo: widget.tipo,
+              tipo: widget.tipo!,
             ),
           ),
         const SizedBox(
@@ -811,6 +810,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
       'tempoPreparo': tempo,
       'tipo': tipo
     }, SetOptions(merge: true)).then((_) {
+      Global.descricao = descricao;
+      Global.imagem = imagem;
+      Global.ingredientes = ingredientes;
+      Global.preparo = preparo;
+      Global.tempoPreparo = tempo;
+      Global.rendimento = rendimento;
       Fluttertoast.showToast(msg: 'Receita Salva');
       Navigator.of(context).pop();
     });
@@ -855,17 +860,19 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   Icons.save,
                 ),
                 onPressed: () {
-                  salvarReceitas(
-                      widget.data,
-                      widget.descricao,
-                      widget.id,
-                      widget.iduser,
-                      widget.imagem,
-                      widget.ingredientes,
-                      widget.preparo,
-                      widget.rendimento,
-                      widget.tempoPreparo,
-                      widget.tipo);
+                  setState(() {
+                    salvarReceitas(
+                        widget.data,
+                        widget.descricao,
+                        widget.id,
+                        widget.iduser,
+                        widget.imagem,
+                        widget.ingredientes,
+                        widget.preparo,
+                        widget.rendimento,
+                        widget.tempoPreparo,
+                        widget.tipo);
+                  });
                 }),
           ],
         ),
