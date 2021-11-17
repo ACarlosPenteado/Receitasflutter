@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:receitas_sandra/model/iduser.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
+import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
@@ -70,7 +72,6 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     } else {
       id = getId;
     }
-    print(id);
     super.initState();
   }
 
@@ -223,7 +224,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               data: data,
               descricao: nomeController.text,
               id: id,
-              iduser: auth.currentUser!.uid.toString(),
+              iduser: auth.currentUser!.uid,
               imagem: imageUrl,
               ingredientes: listIngre,
               preparo: listPrepa,
@@ -239,7 +240,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               data: data,
               descricao: nomeController.text,
               id: id,
-              iduser: auth.currentUser!.uid.toString(),
+              iduser: auth.currentUser!.uid,
               imagem: imageUrl,
               ingredientes: Global.ingredientes,
               preparo: Global.preparo,
@@ -252,7 +253,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           height: 40,
         ),
         Container(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(5),
           alignment: Alignment.bottomCenter,
           margin: EdgeInsets.only(
               top: _large
@@ -269,8 +270,8 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                     children: [
                       Container(
                         padding: const EdgeInsets.only(top: 5),
-                        width: 110,
-                        height: 140,
+                        width: 120,
+                        height: 150,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
@@ -789,15 +790,26 @@ class _CustomAppBarState extends State<CustomAppBar> {
       String rendimento,
       String tempo,
       String tipo) {
-    for (var i = 0; i < ingredientes.length; i++) {
-      ingMap = Ingrediente(
-          quantidade: ingredientes[i].quantidade,
-          medida: ingredientes[i].medida,
-          descricao: ingredientes[i].descricao);
+    // ignore: prefer_is_empty
+    if (ingredientes.length < 0) {
+      for (var i = 0; i < ingredientes.length; i++) {
+        ingMap = Ingrediente(
+            quantidade: ingredientes[i].quantidade,
+            medida: ingredientes[i].medida,
+            descricao: ingredientes[i].descricao);
+      }
+    } else {
+      ingMap = Ingrediente(quantidade: '', medida: '', descricao: '');
     }
-    for (var i = 0; i < preparo.length; i++) {
-      preMap = Preparo(descricao: preparo[i].descricao);
+    // ignore: prefer_is_empty
+    if (preparo.length < 0) {
+      for (var i = 0; i < preparo.length; i++) {
+        preMap = Preparo(descricao: preparo[i].descricao);
+      }
+    } else {
+      preMap = Preparo(descricao: '');
     }
+
     fireDb.collection('Receitas').doc(id).set({
       'data': data,
       'descricao': descricao,
@@ -817,7 +829,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
       Global.tempoPreparo = tempo;
       Global.rendimento = rendimento;
       Fluttertoast.showToast(msg: 'Receita Salva');
-      Navigator.of(context).pop();
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ListarReceitaPage(tipo: widget.tipo),
+        ),
+      );
     });
   }
 

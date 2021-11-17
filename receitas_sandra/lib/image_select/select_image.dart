@@ -129,7 +129,7 @@ class _SelectImageState extends State<SelectImage> {
             onTap: () => _selectPhoto(),
             child: Container(
               width: 110,
-              height: 130,
+              height: 150,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 boxShadow: [
@@ -148,8 +148,9 @@ class _SelectImageState extends State<SelectImage> {
                   children: [
                     Image(
                       image: NetworkImage(imageUrl),
-                      width: 100,
-                      height: 100,
+                      width: 115,
+                      height: 120,
+                      fit: BoxFit.fill,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(2.0),
@@ -173,20 +174,26 @@ class _SelectImageState extends State<SelectImage> {
               ),
             ),
           ),
-        /* InkWell(
+        InkWell(
           onTap: () => _selectPhoto(),
           child: Padding(
             padding: const EdgeInsets.all(2.0),
             child: Column(
               children: [
                 if (imageUrl.isNotEmpty)
-                  const Text('Mudar Imagem')
+                  const Text(
+                    'Mudar Imagem',
+                    style: TextStyle(color: Colors.cyan),
+                  )
                 else
-                  const Text('Selecionar Imagem')
+                  const Text(
+                    'Selecionar Imagem',
+                    style: TextStyle(color: Colors.cyan),
+                  ),
               ],
             ),
           ),
-        ), */
+        ),
       ],
     );
   }

@@ -27,7 +27,7 @@ class _FavoritasPageState extends State<FavoritasPage> {
   }
 
   listReceita() {
-    ReceitasRepository repoRec = ReceitasRepository(auth: auth);
+    ReceitasRepository repoRec = ReceitasRepository(auth: auth.currentUser!.uid);
     repoRec.listReceita(widget.tipo).then((List list) {
       setState(() {
         receitas = list;

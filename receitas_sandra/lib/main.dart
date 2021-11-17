@@ -17,7 +17,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) => ReceitasRepository(auth: auth)),
+            create: (context) =>
+                ReceitasRepository(auth: auth.currentUser!.uid)),
         ChangeNotifierProvider(
             create: (context) => UsersRepository(auth: auth.currentUser!.uid)),
       ],

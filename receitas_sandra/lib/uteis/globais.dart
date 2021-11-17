@@ -1,3 +1,4 @@
+import 'package:receitas_sandra/model/iduser.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 
@@ -12,7 +13,7 @@ class Global {
   static String id = '';
   static String data = '';
   static String descricao = '';
-  static String iduser = '';
+  static List iduser = [];
   static String imagem = '';
   static List<Ingrediente> ingredientes = [];
   static List<Preparo> preparo = [];
@@ -30,5 +31,4 @@ class Global {
   static int tamListP = 1;
 
   static String qual = '';
-
 }

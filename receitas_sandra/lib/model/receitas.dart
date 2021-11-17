@@ -1,3 +1,4 @@
+import 'package:receitas_sandra/model/iduser.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 
@@ -5,7 +6,7 @@ class Receitas {
   String? id;
   String data;
   String descricao;
-  String iduser;
+  List<IdUsers> iduser;
   String imagem;
   List<Ingrediente> ingredientes;
   List<Preparo> preparo;

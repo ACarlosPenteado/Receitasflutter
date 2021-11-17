@@ -5,7 +5,7 @@ import 'package:receitas_sandra/model/receitas.dart';
 
 class ReceitasRepository extends ChangeNotifier {
   late FirebaseFirestore fireDb;
-  late FirebaseAuth auth;
+  late String auth;
   late String? tipo;
   List<Receitas> _lista = [];
 
@@ -23,7 +23,6 @@ class ReceitasRepository extends ChangeNotifier {
 
   Future<List> listReceita(String tipo) async {
     List? receitaList = [];
-    FirebaseFirestore fireDb = FirebaseFirestore.instance;
     QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
         .collection('Receitas')
         .where('tipo', isEqualTo: tipo)
@@ -32,11 +31,18 @@ class ReceitasRepository extends ChangeNotifier {
     return receitaList;
   }
 
-  
-
-  /* remove(Receitas receitas) async {
-    await fireDb.collection('Receitas').doc(receitas.id).delete();
-    _lista.remove(receitas);
+  addUser(FirebaseAuth uid, String idrec) async {
+    await fireDb.collection('Receitas').doc(idrec).update({
+      'iduser': FieldValue.arrayUnion([uid])
+    });
     notifyListeners();
-  } */
+  }
+
+  Future<List> listUsers(String idrec) async {
+    List userList = [];
+    DocumentSnapshot colRef =
+        await fireDb.collection('Receitas').doc(idrec).get();
+    userList = colRef.get('iduser');
+    return userList;
+  }
 }

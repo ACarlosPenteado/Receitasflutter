@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:receitas_sandra/model/iduser.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
@@ -43,6 +44,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
   List loadRec = [];
   List selecionadas = [];
   bool fav = false;
+  List listUser = [];
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
   int currentItem = 0;
@@ -58,6 +60,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     fabKey.currentState?.close();
     listReceita();
     loadFavoritas();
+    //loadUser();
     super.initState();
   }
 
@@ -87,11 +90,18 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
   }
 
   listReceita() {
-    ReceitasRepository recRepo = ReceitasRepository(auth: _auth);
+    ReceitasRepository recRepo =
+        ReceitasRepository(auth: _auth.currentUser!.uid);
     recRepo.listReceita(widget.tipo).then((List list) {
       setState(() {
         receitas = list;
       });
+      for (var i = 0; i < receitas.length; i++) {
+        listUser.add(
+          receitas[i]['iduser'].toString(),
+        );
+      }
+      print(listUser);
     }).whenComplete(() => receitas);
   }
 
@@ -547,7 +557,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                         if (favoritas.contains(receitas[index]['id']) ||
                             selecionadas.contains(receitas[index]['id']))
                           favorita(),
-                        if (receitas[index]['iduser'] == _auth.currentUser!.uid)
+                        if (receitas[index]['iduser'].toString() ==
+                            _auth.currentUser!.uid)
                           minhasRec(),
                       ],
                     ),
@@ -557,7 +568,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                         preencheListPrepa(receitas[index]['preparo']);
                         Global.descricao = receitas[index]['descricao'];
                         Global.id = receitas[index]['id'];
-                        Global.iduser = receitas[index]['iduser'];
                         Global.imagem = receitas[index]['imagem'];
                         Global.rendimento = receitas[index]['rendimento'];
                         Global.tempoPreparo = receitas[index]['tempoPreparo'];
