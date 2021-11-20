@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
@@ -12,7 +13,7 @@ class DialogCustom extends StatefulWidget {
   final String? labelbod;
   final String txtBtnCancel;
   final String txtBtnOk;
-  final Route route;
+  final Route? route;
 
   // ignore: use_key_in_widget_constructors
   const DialogCustom({
@@ -24,7 +25,7 @@ class DialogCustom extends StatefulWidget {
     this.labelbod,
     required this.txtBtnCancel,
     required this.txtBtnOk,
-    required this.route,
+    this.route,
   });
 
   @override
@@ -44,8 +45,12 @@ class _DialogCustomState extends State<DialogCustom>
   final TextEditingController _bodyController = TextEditingController();
   final GlobalKey _formKey = GlobalKey<FormState>();
 
-  bool _isRadio = false;
+  List<String> _list = [];
 
+  bool? _isNomeReceita = false;  
+  bool? _isIngrediente = false;
+  bool? _isPreparo = false;
+  
   @override
   void initState() {
     super.initState();
@@ -162,7 +167,6 @@ class _DialogCustomState extends State<DialogCustom>
                         label: const Text('Nome da Receita'),
                         hintText: 'Deixe em branco para todas!',
                         hintStyle: const TextStyle(fontSize: 12),
-                        //labelText: widget.labelrec,
                         labelStyle:
                             TextStyle(color: Colors.deepPurple.shade900),
                         border: OutlineInputBorder(
@@ -268,7 +272,6 @@ class _DialogCustomState extends State<DialogCustom>
                             textCapitalization: TextCapitalization.sentences,
                             cursorColor: Colors.purpleAccent,
                             maxLines: 3,
-                            //expands: true,
                             maxLength: 300,
                             textAlignVertical: TextAlignVertical.top,
                             decoration: InputDecoration(
@@ -287,8 +290,6 @@ class _DialogCustomState extends State<DialogCustom>
                           ),
                         ),
                         CheckboxListTile(
-                            /* contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 0.0, horizontal: 100.0), */
                             title: const Text('HTML'),
                             value: isHtml,
                             onChanged: (bool? value) {
@@ -298,38 +299,111 @@ class _DialogCustomState extends State<DialogCustom>
                                 });
                               }
                             }),
-                        /* Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
+                      ],
+                    ),
+                  ),
+                if (widget.qchama == 3)
+                  Container(
+                    height: 250,
+                    width: 300,
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          child: ListView(
                             children: <Widget>[
-                              for (var i = 0; i < attach.length; i++)
-                                Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: Text(
-                                        attach[i],
-                                        softWrap: false,
-                                        overflow: TextOverflow.fade,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        _removeAttach(i);
-                                      },
-                                      icon: const Icon(Icons.remove_circle),
-                                    ),
-                                  ],
+                              ListTile(
+                                title: const Text(
+                                  "Nome da Receita",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue),
                                 ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                  onPressed: _openImagePicker,
-                                  icon: const Icon(Icons.attach_file),
+                                leading: Checkbox(
+                                  value: _isNomeReceita,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _isNomeReceita = value;
+                                      String selectVal = "descricao";
+                                      value!
+                                          ? _list.add(selectVal)
+                                          : _list.remove(selectVal);
+                                    });
+                                  },
                                 ),
-                              )
+                              ),
+                              ListTile(
+                                title: const Text(
+                                  "Ingrediente",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue),
+                                ),
+                                leading: Checkbox(
+                                  value: _isIngrediente,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _isIngrediente = value;
+                                      String selectVal = "ingrediente";
+                                      value!
+                                          ? _list.add(selectVal)
+                                          : _list.remove(selectVal);
+                                    });
+                                  },
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text(
+                                  "Modo de Preparo",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue),
+                                ),
+                                leading: Checkbox(
+                                  value: _isPreparo,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _isPreparo = value;
+                                      String selectVal = "preparo";
+                                      value!
+                                          ? _list.add(selectVal)
+                                          : _list.remove(selectVal);
+                                    });
+                                  },
+                                ),
+                              ),
                             ],
                           ),
-                        ), */
+                        ),
+                        TextField(
+                          controller: _nomeController,
+                          autofocus: true,
+                          keyboardType: TextInputType.text,
+                          cursorColor: Colors.purpleAccent,
+                          decoration: InputDecoration(
+                            labelText: 'Digite o que procurar',
+                            labelStyle: TextStyle(
+                                color: Colors.deepPurple.shade900,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide.none),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.purple.shade200, width: 2.0),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -394,17 +468,26 @@ class _DialogCustomState extends State<DialogCustom>
                             ),
                             onPressed: () {
                               setState(() {
-                                if (widget.qchama == 1) {
-                                  if (_nomeController.text.isEmpty) {
-                                    Global.nomeRec = 'receitas';
-                                  } else {
-                                    Global.nomeRec = _nomeController.text;
-                                  }
-                                } else {
-                                  envia();
+                                switch (widget.qchama) {
+                                  case 1:
+                                    _nomeController.text.isEmpty
+                                        ? Global.nomeRec = 'receitas'
+                                        : Global.nomeRec = _nomeController.text;
+                                    break;
+                                  case 2:
+                                    envia();
+                                    break;
+                                  case 3:
+                                    if (_nomeController.text.isEmpty) {
+                                        Fluttertoast.showToast(
+                                            gravity: ToastGravity.CENTER,
+                                            msg: 'Digite o que procurar'); }
+                                    else {
+                                      Global.nomeRec = _nomeController.text;
+                                    }
+                                    break;
+                                  default:
                                 }
-                                Navigator.pushReplacement(
-                                    context, widget.route);
                               });
                             },
                           ),

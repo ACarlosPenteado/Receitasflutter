@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/receitas.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 
 class ReceitasRepository extends ChangeNotifier {
   late FirebaseFirestore fireDb;
@@ -21,28 +22,32 @@ class ReceitasRepository extends ChangeNotifier {
     fireDb = FirebaseFirestore.instance;
   }
 
-  Future<List> listReceita(String tipo) async {
+  Future<List> listReceita(String tipo, int qual) async {
     List? receitaList = [];
-    QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
-        .collection('Receitas')
-        .where('tipo', isEqualTo: tipo)
-        .get();
-    receitaList = colRef.docs;
+    if (qual == 0) {
+      QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
+          .collection('Receitas')
+          .where('tipo', isEqualTo: tipo)
+          .orderBy('descricao')
+          .get();
+      receitaList = colRef.docs;
+    } else if (qual == 1) {
+      QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
+          .collection('Receitas')
+          .where('tipo', isEqualTo: tipo)
+          .where('iduser', isEqualTo: auth)
+          .orderBy('descricao')
+          .get();
+      receitaList = colRef.docs;
+    } /* else if (qual == 2) {
+      QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
+          .collection('Receitas')
+          .where('tipo', isEqualTo: tipo)
+          .where('descricao', isEqualTo: Global.nomeRec)
+          .get();
+      receitaList = colRef.docs;
+    } */
+
     return receitaList;
-  }
-
-  addUser(FirebaseAuth uid, String idrec) async {
-    await fireDb.collection('Receitas').doc(idrec).update({
-      'iduser': FieldValue.arrayUnion([uid])
-    });
-    notifyListeners();
-  }
-
-  Future<List> listUsers(String idrec) async {
-    List userList = [];
-    DocumentSnapshot colRef =
-        await fireDb.collection('Receitas').doc(idrec).get();
-    userList = colRef.get('iduser');
-    return userList;
   }
 }

@@ -3,16 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:receitas_sandra/model/iduser.dart';
+import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/pages/receitas/favoritas_page.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
+import 'package:receitas_sandra/pages/receitas/search_page.dart';
 import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
+import 'package:receitas_sandra/widgets/dialog_custom.dart';
 import 'package:receitas_sandra/widgets/position_custom.dart';
 
 class ListarReceitaPage extends StatefulWidget {
@@ -44,11 +46,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
   List loadRec = [];
   List selecionadas = [];
   bool fav = false;
-  List listUser = [];
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
   int currentItem = 0;
-  String qual = '';
+  String qual = 'Todas';
 
   @override
   void initState() {
@@ -58,9 +59,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     )..repeat();
 
     fabKey.currentState?.close();
-    listReceita();
+    listReceita(0);
     loadFavoritas();
-    //loadUser();
     super.initState();
   }
 
@@ -89,19 +89,13 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     Global.tamListP += list.length;
   }
 
-  listReceita() {
+  listReceita(int quale) {
     ReceitasRepository recRepo =
         ReceitasRepository(auth: _auth.currentUser!.uid);
-    recRepo.listReceita(widget.tipo).then((List list) {
+    recRepo.listReceita(widget.tipo, quale).then((List list) {
       setState(() {
         receitas = list;
       });
-      for (var i = 0; i < receitas.length; i++) {
-        listUser.add(
-          receitas[i]['iduser'].toString(),
-        );
-      }
-      print(listUser);
     }).whenComplete(() => receitas);
   }
 
@@ -196,7 +190,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                     builder: (context) => FavoritasPage(tipo: widget.tipo),
                   ),
                 );
-
                 fabKey.currentState!.close();
               },
               shape: const CircleBorder(),
@@ -209,6 +202,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             ),
             RawMaterialButton(
               onPressed: () {
+                searchRec();
                 fabKey.currentState!.close();
               },
               shape: const CircleBorder(),
@@ -221,6 +215,11 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             ),
             RawMaterialButton(
               onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
                 fabKey.currentState!.close();
               },
               shape: const CircleBorder(),
@@ -254,6 +253,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         ),
       ),
       bottomNavigationBar: BottomNavyBar(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         backgroundColor: Colors.cyanAccent,
         selectedIndex: currentItem,
         showElevation: true,
@@ -263,10 +263,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
           currentItem = index;
           if (index == 0) {
             qual = 'Todas';
+            listReceita(0);
           } else if (index == 1) {
             qual = 'Minhas';
-          } else if (index == 2) {
-            qual = 'Compartilhadas';
+            listReceita(1);
           }
         }),
         items: [
@@ -295,23 +295,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             ),
             title: const Text(
               'Minhas',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.1,
-              ),
-            ),
-            activeColor: Colors.cyan.shade800,
-            textAlign: TextAlign.left,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(
-              Icons.share,
-              color: Colors.indigo.shade800,
-              size: 18,
-            ),
-            title: const Text(
-              'Compartilhadas',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -557,9 +540,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                         if (favoritas.contains(receitas[index]['id']) ||
                             selecionadas.contains(receitas[index]['id']))
                           favorita(),
-                        if (receitas[index]['iduser'].toString() ==
-                            _auth.currentUser!.uid)
-                          minhasRec(),
                       ],
                     ),
                     onTap: () {
@@ -614,56 +594,22 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
       ),
     );
   }
-}
 
-class CustomShapeClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final Path path = Path();
-    path.lineTo(0.0, size.height - 70);
-
-    var firstEndPoint = Offset(size.width * .5, size.height - 30.0);
-    var firstControlpoint = Offset(size.width * 0.25, size.height - 50.0);
-    path.quadraticBezierTo(firstControlpoint.dx, firstControlpoint.dy,
-        firstEndPoint.dx, firstEndPoint.dy);
-
-    var secondEndPoint = Offset(size.width, size.height - 50.0);
-    var secondControlPoint = Offset(size.width * .75, size.height - 10);
-    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
-        secondEndPoint.dx, secondEndPoint.dy);
-
-    path.lineTo(size.width, 0.0);
-    path.close();
-    return path;
+  searchRec() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return const DialogCustom(
+            qchama: 3,
+            txt: 'Procura nas receitas',
+            label: 'Receita',
+            txtBtnCancel: 'Cancelar',
+            txtBtnOk: 'Buscar',
+          );
+        });
+    listReceita(2);
   }
-
-  @override
-  bool shouldReclip(CustomClipper oldClipper) => true;
-}
-
-class CustomShapeClipper2 extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final Path path = Path();
-    path.lineTo(0.0, size.height - 20);
-
-    var firstEndPoint = Offset(size.width * .5, size.height - 30.0);
-    var firstControlpoint = Offset(size.width * 0.25, size.height - 50.0);
-    path.quadraticBezierTo(firstControlpoint.dx, firstControlpoint.dy,
-        firstEndPoint.dx, firstEndPoint.dy);
-
-    var secondEndPoint = Offset(size.width, size.height - 5);
-    var secondControlPoint = Offset(size.width * .75, size.height - 20);
-    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
-        secondEndPoint.dx, secondEndPoint.dy);
-
-    path.lineTo(size.width, 0.0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper oldClipper) => true;
 }
 
 class CustomAppBar extends StatefulWidget {
@@ -703,19 +649,5 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
       ),
     );
-  }
-}
-
-class ResponsiveWidget {
-  static bool isScreenLarge(double width, double pixel) {
-    return width * pixel >= 1440;
-  }
-
-  static bool isScreenMedium(double width, double pixel) {
-    return width * pixel < 1440 && width * pixel >= 1080;
-  }
-
-  static bool isScreenSmall(double width, double pixel) {
-    return width * pixel <= 720;
   }
 }

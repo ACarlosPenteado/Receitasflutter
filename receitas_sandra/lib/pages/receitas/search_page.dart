@@ -2,52 +2,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
-import 'package:receitas_sandra/repository/receitas_repository.dart';
-import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
-import 'package:receitas_sandra/widgets/list_demo.dart';
 
-class FavoritasPage extends StatefulWidget {
-  final String tipo;
-  const FavoritasPage({Key? key, required this.tipo}) : super(key: key);
+class SearchPage extends StatefulWidget {
+  const SearchPage({Key? key}) : super(key: key);
 
   @override
-  State<FavoritasPage> createState() => _FavoritasPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
-class _FavoritasPageState extends State<FavoritasPage> {
+class _SearchPageState extends State<SearchPage> {
   late double _height;
   late double _width;
   late double _pixelRatio;
   late bool _large;
   late bool _medium;
 
-  List receitas = [];
-  List favoritas = [];
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore fireDB = FirebaseFirestore.instance;
 
   @override
   void initState() {
-    listFav();
-    listReceita();
     super.initState();
-  }
-
-  listReceita() {
-    ReceitasRepository repoRec =
-        ReceitasRepository(auth: auth.currentUser!.uid);
-    repoRec.listReceita(widget.tipo, 0).then((List list) {
-      setState(() {
-        receitas = list;
-      });
-    }).whenComplete(() => receitas);
-  }
-
-  listFav() {
-    fireDB.collection('Users').doc(auth.currentUser!.uid).get().then((value) {
-      favoritas = value.data()!['favoritas'];
-    });
   }
 
   @override
@@ -133,32 +109,7 @@ class _FavoritasPageState extends State<FavoritasPage> {
           //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (favoritas.isNotEmpty)
-                const Text(
-                  'Receitas Favoritas',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF01579B),
-                  ),
-                ),
-              ListDemo(list: favoritas, receitas: receitas),
-              if (favoritas.isEmpty)
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
-                      'Não há receitas favoritas!',
-                      style: TextStyle(
-                        color: Colors.pink,
-                        fontSize: 30,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
+            children: const [Text('Procurar receitas')],
           ),
         ),
       ],

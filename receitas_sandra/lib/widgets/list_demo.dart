@@ -6,6 +6,7 @@ import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 
 class ListDemo extends StatefulWidget {
   final List list;
@@ -265,16 +266,3 @@ class _ListDemoState extends State<ListDemo> {
   }
 }
 
-class ResponsiveWidget {
-  static bool isScreenLarge(double width, double pixel) {
-    return width * pixel >= 1440;
-  }
-
-  static bool isScreenMedium(double width, double pixel) {
-    return width * pixel < 1440 && width * pixel >= 1080;
-  }
-
-  static bool isScreenSmall(double width, double pixel) {
-    return width * pixel <= 720;
-  }
-}
