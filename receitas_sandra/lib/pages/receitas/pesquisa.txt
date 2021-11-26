@@ -1,0 +1,109 @@
+import 'package:flutter/material.dart';
+
+class PesquisaPage extends StatefulWidget {
+  const PesquisaPage({Key? key}) : super(key: key);
+
+  @override
+  _PesquisaPageState createState() => _PesquisaPageState();
+}
+
+class _PesquisaPageState extends State<PesquisaPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 250,
+      width: 300,
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.white,
+          ),
+        ],
+      ),
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: ListView(
+              children: <Widget>[
+                ListTile(
+                  title: const Text(
+                    "Nome da Receita",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                  ),
+                  leading: Checkbox(
+                    value: _isNomeReceita,
+                    onChanged: (value) {
+                      setState(() {
+                        _isNomeReceita = value;
+                        String selectVal = "descricao";
+                        value! ? _list.add(selectVal) : _list.remove(selectVal);
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text(
+                    "Ingrediente",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                  ),
+                  leading: Checkbox(
+                    value: _isIngrediente,
+                    onChanged: (value) {
+                      setState(() {
+                        _isIngrediente = value;
+                        String selectVal = "ingrediente";
+                        value! ? _list.add(selectVal) : _list.remove(selectVal);
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text(
+                    "Modo de Preparo",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                  ),
+                  leading: Checkbox(
+                    value: _isPreparo,
+                    onChanged: (value) {
+                      setState(() {
+                        _isPreparo = value;
+                        String selectVal = "preparo";
+                        value! ? _list.add(selectVal) : _list.remove(selectVal);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextField(
+            controller: _nomeController,
+            autofocus: true,
+            keyboardType: TextInputType.text,
+            cursorColor: Colors.purpleAccent,
+            decoration: InputDecoration(
+              labelText: 'Digite o que procurar',
+              labelStyle: TextStyle(
+                  color: Colors.deepPurple.shade900,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Colors.purple.shade200, width: 2.0),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -22,15 +22,16 @@ class ReceitasRepository extends ChangeNotifier {
     fireDb = FirebaseFirestore.instance;
   }
 
-  Future<List> listReceita(String tipo, int qual) async {
+  Future<List> listReceita(String tipo) async {
     List? receitaList = [];
-    if (qual == 0) {
-      QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
-          .collection('Receitas')
-          .where('tipo', isEqualTo: tipo)
-          .orderBy('descricao')
-          .get();
-      receitaList = colRef.docs;
+
+    QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
+        .collection('Receitas')
+        .where('tipo', isEqualTo: tipo)
+        .orderBy('descricao')
+        .get();
+    receitaList = colRef.docs;
+    /*
     } else if (qual == 1) {
       QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
           .collection('Receitas')
@@ -39,7 +40,7 @@ class ReceitasRepository extends ChangeNotifier {
           .orderBy('descricao')
           .get();
       receitaList = colRef.docs;
-    } /* else if (qual == 2) {
+    }  else if (qual == 2) {
       QuerySnapshot<Map<String, dynamic>> colRef = await fireDb
           .collection('Receitas')
           .where('tipo', isEqualTo: tipo)

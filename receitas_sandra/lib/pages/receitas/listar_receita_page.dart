@@ -40,6 +40,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
 
   final FirebaseFirestore fireDb = FirebaseFirestore.instance;
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
+  final TextEditingController _nomeController = TextEditingController();
 
   List receitas = [];
   List favoritas = [];
@@ -50,6 +51,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
   List<Preparo> listPrepa = [];
   int currentItem = 0;
   String qual = 'Todas';
+  bool pesquisa = false;
+  String? _grouSelectValue;
 
   @override
   void initState() {
@@ -57,11 +60,17 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
-
+    _grouSelectValue = 'Nome:';
     fabKey.currentState?.close();
-    listReceita(0);
+    listarReceita();
     loadFavoritas();
     super.initState();
+  }
+
+  _groupChange(String? value) {
+    setState(() {
+      _grouSelectValue = value;
+    });
   }
 
   preencheListIngre(List<dynamic> list) async {
@@ -89,10 +98,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     Global.tamListP += list.length;
   }
 
-  listReceita(int quale) {
+  listarReceita() {
     ReceitasRepository recRepo =
         ReceitasRepository(auth: _auth.currentUser!.uid);
-    recRepo.listReceita(widget.tipo, quale).then((List list) {
+    recRepo.listReceita(widget.tipo).then((List list) {
       setState(() {
         receitas = list;
       });
@@ -127,6 +136,14 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     }
   }
 
+  searchRec(String gr, String pq) {
+    print(gr);
+    print(pq);
+    pesquisa = false;
+
+    //listarReceita();
+  }
+
   @override
   void dispose() {
     controller.dispose();
@@ -158,6 +175,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         padding: const EdgeInsets.only(top: 48),
         child: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               clipShape(),
             ],
@@ -202,7 +220,9 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             ),
             RawMaterialButton(
               onPressed: () {
-                searchRec();
+                setState(() {
+                  pesquisa = true;
+                });
                 fabKey.currentState!.close();
               },
               shape: const CircleBorder(),
@@ -263,10 +283,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
           currentItem = index;
           if (index == 0) {
             qual = 'Todas';
-            listReceita(0);
+            listarReceita();
           } else if (index == 1) {
             qual = 'Minhas';
-            listReceita(1);
+            listarReceita();
           }
         }),
         items: [
@@ -350,8 +370,27 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
           margin: const EdgeInsets.only(top: 60),
           //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               if (currentItem == 2) tipoRec2() else tipoRec(),
+              if (pesquisa)
+                Container(
+                  width: 350,
+                  height: 190,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.shade900,
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
+                  child: pesquisaReceita(),
+                )
+              else
+                const Divider(
+                  height: 5,
+                  color: Colors.white,
+                ),
               listRec(),
             ],
           ),
@@ -423,7 +462,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                             duration: const Duration(seconds: 5),
                             height: size,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 24.0, vertical: 36),
+                                horizontal: 14.0, vertical: 26),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               gradient: const LinearGradient(
@@ -595,20 +634,133 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     );
   }
 
-  searchRec() {
-    showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return const DialogCustom(
-            qchama: 3,
-            txt: 'Procura nas receitas',
-            label: 'Receita',
-            txtBtnCancel: 'Cancelar',
-            txtBtnOk: 'Buscar',
-          );
-        });
-    listReceita(2);
+  Widget pesquisaReceita() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Row(
+              children: [
+                Radio(
+                    value: 'Nome',
+                    fillColor:
+                        MaterialStateColor.resolveWith((states) => Colors.pink),
+                    groupValue: _grouSelectValue,
+                    onChanged: _groupChange),
+                const Text(
+                  'Nome',
+                  style: TextStyle(
+                    color: Colors.cyanAccent,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Radio(
+                    value: 'Ingrediente',
+                    fillColor:
+                        MaterialStateColor.resolveWith((states) => Colors.pink),
+                    groupValue: _grouSelectValue,
+                    onChanged: _groupChange),
+                const Text(
+                  'Ingrediente',
+                  style: TextStyle(
+                    color: Colors.cyanAccent,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Radio(
+                    value: 'Preparo',
+                    fillColor:
+                        MaterialStateColor.resolveWith((states) => Colors.pink),
+                    groupValue: _grouSelectValue,
+                    onChanged: _groupChange),
+                const Text(
+                  'Preparo',
+                  style: TextStyle(
+                    color: Colors.cyanAccent,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10, left: 15, right: 15),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: TextField(
+                  style: TextStyle(
+                    color: Colors.cyanAccent.shade100,
+                  ),
+                  controller: _nomeController,
+                  autofocus: true,
+                  keyboardType: TextInputType.text,
+                  cursorColor: Colors.purpleAccent,
+                  decoration: InputDecoration(
+                    labelText: 'Digite o que procurar',
+                    labelStyle: TextStyle(
+                        color: Colors.deepPurple.shade100,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide.none),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.purple.shade200, width: 2.0),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 5, left: 20, right: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _nomeController.text = '';
+                    pesquisa = false;
+                  });
+                },
+                child: const Icon(Icons.close, color: Colors.pinkAccent),
+              ),
+              const SizedBox(
+                width: 80,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  searchRec(_grouSelectValue!, _nomeController.text);
+                  _nomeController.text = '';
+                },
+                child: const Icon(Icons.search, color: Colors.pinkAccent),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 
