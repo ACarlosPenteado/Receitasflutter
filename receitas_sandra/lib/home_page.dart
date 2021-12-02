@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage>
       Global.nome = event.data()!['nome'];
       Global.email = event.data()!['email'];
       Global.fone = event.data()!['fone'];
-      if (event.data()!['imagem'].isNotEmpty) {
+      if (event.data()!['imagem'] != null) {
         Global.foto = event.data()!['imagem'];
       } else {
         Global.foto =

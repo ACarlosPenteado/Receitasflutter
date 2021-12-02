@@ -766,8 +766,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
       'id': id,
       'iduser': iduser,
       'imagem': imagem,
-      'ingredientes': FieldValue.arrayUnion([ingMap.toMap()]),
-      'preparo': FieldValue.arrayUnion([preMap.toMap()]),
+      'ingredientes': FieldValue.arrayUnion([ingMap]),
+      'preparo': FieldValue.arrayUnion([preMap]),
       'rendimento': rendimento,
       'tempoPreparo': tempo,
       'tipo': tipo

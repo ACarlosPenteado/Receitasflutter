@@ -11,13 +11,19 @@ class Ingrediente {
     this.descricao,
   });
 
-  factory Ingrediente.fromJson(Map<dynamic, dynamic> json) => Ingrediente(
-        quantidade: json['quantidade'],
-        medida: json['medida'],
-        descricao: json['descricao'],
-      );
+  get getQuantidade => this.quantidade;
 
-  Map<String, dynamic> toJson() => {
+  set setQuantidade(quantidade) => this.quantidade = quantidade;
+
+  get getMedida => this.medida;
+
+  set setMedida(medida) => this.medida = medida;
+
+  get getDescricao => this.descricao;
+
+  set setDescricao(descricao) => this.descricao = descricao;
+
+  Map<String, dynamic> toMap() => {
         'quantidade': quantidade,
         'medida': medida,
         'descricao': descricao,

@@ -30,11 +30,11 @@ class _FavoritasPageState extends State<FavoritasPage> {
   @override
   void initState() {
     listFav();
-    listReceita();
+    //listReceita();
     super.initState();
   }
 
-  listReceita() {
+  /* listReceita() {
     ReceitasRepository repoRec =
         ReceitasRepository(auth: auth.currentUser!.uid);
     repoRec.listReceita(widget.tipo).then((List list) {
@@ -43,7 +43,7 @@ class _FavoritasPageState extends State<FavoritasPage> {
       });
     }).whenComplete(() => receitas);
   }
-
+ */
   listFav() {
     fireDB.collection('Users').doc(auth.currentUser!.uid).get().then((value) {
       favoritas = value.data()!['favoritas'];
@@ -162,6 +162,46 @@ class _FavoritasPageState extends State<FavoritasPage> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class CustomAppBar extends StatefulWidget {
+  const CustomAppBar({Key? key}) : super(key: key);
+
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    return Material(
+      child: Container(
+        height: 40,
+        width: width,
+        padding: const EdgeInsets.only(left: 0, top: 5, right: 5),
+        decoration: BoxDecoration(
+          gradient:
+              LinearGradient(colors: [Colors.blue[200]!, Colors.cyanAccent]),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(
+                iconSize: 30,
+                icon: const Icon(
+                  Icons.arrow_back,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -7,11 +7,11 @@ class Preparo {
     this.descricao,
   });
 
-  factory Preparo.fromJson(Map<dynamic, dynamic> json) => Preparo(
-        descricao: json['descricao'],
-      );
+  get getDescricao => this.descricao;
 
-  Map<String, dynamic> toJson() => {
+  set setDescricao(descricao) => this.descricao = descricao;
+
+  Map<String, dynamic> toMap() => {
         'descricao': descricao,
       };
 
@@ -19,4 +19,5 @@ class Preparo {
   String toString() {
     return '{ descricao: ${descricao} }';
   }
+
 }

@@ -40,7 +40,7 @@ class _ListDemoState extends State<ListDemo> {
     for (var i = 0; i < widget.receitas.length; i++) {
       listRec.add(widget.receitas[i]['id']);
     }
-    for (var i = 0; i < listRec.length; i++) {
+    /* for (var i = 0; i < listRec.length; i++) {
       for (var j = 0; j < widget.list.length; j++) {
         if (listRec.elementAt(i).toString() == widget.list[j].toString()) {
           preencheListIngre(widget.receitas[i]['ingredientes']);
@@ -54,11 +54,11 @@ class _ListDemoState extends State<ListDemo> {
               tempoPreparo: widget.receitas[i]['tempoPreparo'],
               rendimento: widget.receitas[i]['rendimento'],
               imagem: widget.receitas[i]['imagem'],
-              preparo: Global.preparo,
+              preparo: listPrepa,
               ingredientes: Global.ingredientes));
         }
       }
-    }
+    } */
 
     super.initState();
   }
