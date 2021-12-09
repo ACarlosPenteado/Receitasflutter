@@ -1,6 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
@@ -9,8 +8,9 @@ import 'package:receitas_sandra/widgets/listprepa.dart';
 
 class MostrarReceitaPage extends StatefulWidget {
   static const routeName = '/MostrarReceitaPage';
-
-  const MostrarReceitaPage({Key? key}) : super(key: key);
+  final Receitas receitas;
+  const MostrarReceitaPage({Key? key, required this.receitas})
+      : super(key: key);
 
   @override
   _MostrarReceitaPageState createState() => _MostrarReceitaPageState();
@@ -22,12 +22,19 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   late double _pixelRatio;
   late bool _large;
   late bool _medium;
+  double _screenWidth = 0.0;
   late double size;
 
   @override
   void initState() {
     super.initState();
     size = 220;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _screenWidth = MediaQuery.of(context).size.width;
   }
 
   @override
@@ -51,15 +58,15 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
         height: _height,
         width: _width,
         decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            Colors.blue,
-            Colors.cyanAccent,
-          ],
-        )),
-        padding: const EdgeInsets.only(top: 48),
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Colors.blue,
+              Colors.cyanAccent,
+            ],
+          ),
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -68,371 +75,395 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
           ),
         ),
       ),
+      appBar: AppBar(
+        elevation: 12,
+        centerTitle: true,
+        leading: IconButton(
+          iconSize: 30,
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Text(
+          widget.receitas.descricao,
+          style: const TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Colors.purpleAccent,
+          ),
+        ),
+        actions: [
+          IconButton(
+            iconSize: 30,
+            icon: const Icon(
+              Icons.edit,
+            ),
+            onPressed: () {
+              Global.qual = 'E';
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => IncluirReceitaPage(tipo: Global.tipo),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
   Widget clipShape() {
-    return Stack(
-      children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
+    return Column(
+      children: [
+        SafeArea(
+          child: Center(
             child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
+              height: 150,
+              width: _width,
+              margin: const EdgeInsets.only(
+                  left: 16, top: 16, right: 16, bottom: 5),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 12,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        const Opacity(opacity: 0.88, child: CustomAppBar()),
-        Container(
-          alignment: Alignment.bottomCenter,
-          margin: const EdgeInsets.only(top: 30),
-          //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
-          child: Column(
-            children: [
-              SafeArea(
-                child: Center(
-                  child: Container(
-                    height: _height,
-                    width: _width,
-                    margin: const EdgeInsets.only(
-                        left: 16, top: 0, right: 16, bottom: 5),
-                    child: Stack(
-                      children: [
-                        Card(
-                          elevation: 12,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
+                child: AnimatedContainer(
+                  duration: const Duration(seconds: 5),
+                  height: size,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF213B6C), Color(0xFF0059A5)]),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.cyan,
+                        blurRadius: 12,
+                        offset: Offset(3, 5),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      widget.receitas.imagem != 'Sem Imagem'
+                          ? Positioned(
+                              top: 0.0,
+                              left: 0.0,
+                              right: 0.0,
+                              child: Hero(
+                                tag: 'image' + widget.receitas.descricao,
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(20),
+                                  ),
+                                  child: Image.network(
+                                    widget.receitas.imagem,
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Positioned(
+                              top: 0.0,
+                              left: 0.0,
+                              right: 0.0,
+                              child: Hero(
+                                tag: 'image' + widget.receitas.descricao,
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(20),
+                                  ),
+                                  child: Image.asset(
+                                    'images/receitas/receitas.png',
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                              ),
+                            ),
+                      Positioned(
+                        top: 78,
+                        left: 32,
+                        //width: _screenWidth,
+                        child: Container(
+                          height: 60,
+                          padding: const EdgeInsets.only(left: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.black38,
+                            border: Border.all(
+                              color: Colors.cyanAccent.shade400,
+                              width: 3.0,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          color: Colors.white,
-                          child: AnimatedContainer(
-                            duration: const Duration(seconds: 5),
-                            height: Global.tamListI.toDouble() > 1
-                                ? size + Global.tamListI.toDouble() * 50
-                                : size,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 8.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: const LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xFF213B6C),
-                                    Color(0xFF0059A5)
-                                  ]),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.cyan,
-                                  blurRadius: 12,
-                                  offset: Offset(3, 5),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Image.network(
-                                      Global.imagem,
-                                      height: 80,
-                                      width: 80,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          Text(
-                                            Global.descricao,
-                                            style: const TextStyle(
-                                              fontSize: 25,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.cyanAccent,
-                                            ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                'Tempo de Preparo: ',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                              Text(
-                                                Global.tempoPreparo,
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.pinkAccent,
-                                                ),
-                                              ),
-                                              const Text(
-                                                ' minutos',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                'Rendimento: ',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                              Text(
-                                                Global.rendimento,
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.pinkAccent,
-                                                ),
-                                              ),
-                                              const Text(
-                                                ' porções',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Divider(
-                                  height: 5,
-                                  color: Colors.purple,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                if (Global.tamListI > 1)
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: Colors.purple),
-                                      borderRadius: BorderRadius.circular(12),
-                                      gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.grey.shade700,
-                                            Colors.black26,
-                                          ]),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black,
-                                          blurRadius: 8,
-                                          offset: Offset(3, 3),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Text(
-                                      'Ingredientes',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.cyanAccent,
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.black,
-                                            blurRadius: 5,
-                                            offset: Offset(1, 1),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                if (Global.tamListI > 1)
-                                  Expanded(
-                                    child: AnimatedContainer(
-                                      duration: const Duration(seconds: 5),
-                                      height: size +
-                                          Global.tamListI.toDouble() * 50,
-                                      width: 350,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Colors.grey.shade100,
-                                              Colors.black45,
-                                            ]),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.cyan,
-                                            blurRadius: 8,
-                                            offset: Offset(3, 3),
-                                          ),
-                                        ],
-                                      ),
-                                      child: ListIngre(
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                width: _screenWidth,
+                                child: Hero(
+                                  tag: 'sub1' + widget.receitas.descricao,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Tempo de Preparo: ',
+                                        style: TextStyle(
                                           fontSize: 15,
-                                          list: Global.ingredientes),
-                                    ),
-                                  ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Divider(
-                                  height: 5,
-                                  color: Colors.purple,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                if (Global.tamListP > 1)
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: Colors.purple),
-                                      borderRadius: BorderRadius.circular(12),
-                                      gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.grey.shade700,
-                                            Colors.black26,
-                                          ]),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black,
-                                          blurRadius: 8,
-                                          offset: Offset(3, 3),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
                                         ),
-                                      ],
-                                    ),
-                                    child: const Text(
-                                      'Modo de Preparo',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.cyanAccent,
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.black,
-                                            blurRadius: 5,
-                                            offset: Offset(1, 1),
-                                          ),
-                                        ],
                                       ),
-                                    ),
+                                      Text(
+                                        widget.receitas.tempoPreparo,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.pinkAccent,
+                                        ),
+                                      ),
+                                      const Text(
+                                        ' minutos',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                const SizedBox(
-                                  height: 10,
                                 ),
-                                if (Global.tamListP > 1)
-                                  Expanded(
-                                    child: AnimatedContainer(
-                                      duration: const Duration(seconds: 5),
-                                      height: size +
-                                          Global.tamListP.toDouble() * 50,
-                                      width: 350,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Colors.grey.shade100,
-                                              Colors.black45,
-                                            ]),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.cyan,
-                                            blurRadius: 8,
-                                            offset: Offset(3, 3),
-                                          ),
-                                        ],
+                              ),
+                              Positioned(
+                                top: 30,
+                                left: 0,
+                                width: _screenWidth,
+                                child: Hero(
+                                  tag: 'sub2' + widget.receitas.descricao,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Rendimento: ',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                      child: ListPrepa(
-                                          fontSize: 15, list: Global.preparo),
-                                    ),
+                                      Text(
+                                        widget.receitas.rendimento,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.pinkAccent,
+                                        ),
+                                      ),
+                                      const Text(
+                                        ' porções',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                              ],
-                            ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ),
+        if (Global.tamListI > 1)
+          Column(
+            children: [
+              const SizedBox(
+                height: 5,
+              ),
+              const Divider(
+                height: 5,
+                color: Colors.purple,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Colors.purple),
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.grey.shade700,
+                        Colors.black26,
+                      ]),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 8,
+                      offset: Offset(3, 3),
+                    ),
+                  ],
+                ),
+                child: const Text(
+                  'Ingredientes',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.cyanAccent,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              const Divider(
+                height: 5,
+                color: Colors.purple,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              AnimatedContainer(
+                duration: const Duration(seconds: 5),
+                height: Global.tamListI.toDouble() * 8,
+                width: 350,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.grey.shade100,
+                        Colors.black45,
+                      ]),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.cyan,
+                      blurRadius: 8,
+                      offset: Offset(3, 3),
+                    ),
+                  ],
+                ),
+                child:
+                    ListIngre(fontSize: 15, list: widget.receitas.ingredientes),
+              ),
+            ],
+          ),
+        if (Global.tamListP > 1)
+          Column(
+            children: [
+              const SizedBox(
+                height: 5,
+              ),
+              const Divider(
+                height: 5,
+                color: Colors.purple,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Colors.purple),
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.grey.shade700,
+                        Colors.black26,
+                      ]),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 8,
+                      offset: Offset(3, 3),
+                    ),
+                  ],
+                ),
+                child: const Text(
+                  'Modo de Preparo',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.cyanAccent,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              const Divider(
+                height: 5,
+                color: Colors.purple,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              AnimatedContainer(
+                duration: const Duration(seconds: 5),
+                height: Global.tamListP.toDouble() * 8,
+                width: 350,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.grey.shade100,
+                        Colors.black45,
+                      ]),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.cyan,
+                      blurRadius: 8,
+                      offset: Offset(3, 3),
+                    ),
+                  ],
+                ),
+                child: ListPrepa(fontSize: 15, list: widget.receitas.preparo),
+              ),
+            ],
+          ),
       ],
-    );
-  }
-
-  Widget tipoRec() {
-    return Text(
-      Global.descricao,
-      style: const TextStyle(
-        fontSize: 30,
-        fontStyle: FontStyle.italic,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF01579B),
-      ),
     );
   }
 }
 
 class CustomAppBar extends StatefulWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
+  final String title;
+  const CustomAppBar({Key? key, required this.title}) : super(key: key);
 
   @override
   State<CustomAppBar> createState() => _CustomAppBarState();
@@ -464,9 +495,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 }),
-            const Text(
-              'Receitas da Sandra',
-              style: TextStyle(
+            Text(
+              widget.title,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
@@ -478,7 +509,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   Icons.edit,
                 ),
                 onPressed: () {
-                  print(Global.ingredientes);
                   Global.qual = 'E';
                   Navigator.of(context).push(
                     MaterialPageRoute(

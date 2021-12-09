@@ -3,24 +3,21 @@ import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 
 class ListIngre extends StatefulWidget {
-  final List list;
+  final List<Ingrediente>? list;
   double fontSize;
 
-  ListIngre({Key? key, required this.list, required this.fontSize})
-      : super(key: key);
+  ListIngre({Key? key, this.list, required this.fontSize}) : super(key: key);
 
   @override
   State<ListIngre> createState() => _ListIngreState();
 }
 
 class _ListIngreState extends State<ListIngre> {
-  
-  final cadIng = IncluirReceitaPage();
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: widget.list.length,
+      itemCount: widget.list!.length,
       itemBuilder: (_, index) {
         return SafeArea(
           child: Center(
@@ -33,7 +30,7 @@ class _ListIngreState extends State<ListIngre> {
                     Expanded(
                       flex: 1,
                       child: Text(
-                        widget.list.elementAt(index).quantidade.toString(),
+                        widget.list!.elementAt(index).quantidade.toString(),
                         style: TextStyle(
                           fontSize: widget.fontSize,
                           fontStyle: FontStyle.italic,
@@ -52,7 +49,7 @@ class _ListIngreState extends State<ListIngre> {
                     Expanded(
                       flex: 5,
                       child: Text(
-                        ' - ' + widget.list.elementAt(index).medida.toString(),
+                        ' - ' + widget.list!.elementAt(index).medida.toString(),
                         style: TextStyle(
                           fontSize: widget.fontSize,
                           fontStyle: FontStyle.italic,
@@ -72,7 +69,7 @@ class _ListIngreState extends State<ListIngre> {
                       flex: 5,
                       child: Text(
                         ' - ' +
-                            widget.list.elementAt(index).descricao.toString(),
+                            widget.list!.elementAt(index).descricao.toString(),
                         style: TextStyle(
                             fontSize: widget.fontSize,
                             fontStyle: FontStyle.italic,
@@ -90,7 +87,7 @@ class _ListIngreState extends State<ListIngre> {
                 ),
                 onTap: () {
                   cadastraIngre(
-                      widget.list.elementAt(index).descricao.toString());
+                      widget.list!.elementAt(index).descricao.toString());
                 },
               ),
             ),
@@ -121,5 +118,4 @@ class _ListIngreState extends State<ListIngre> {
       },
     );
   }
-
 }

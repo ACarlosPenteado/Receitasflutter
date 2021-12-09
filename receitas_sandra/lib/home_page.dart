@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage>
         body: Container(
           height: _height,
           width: _width,
-          padding: const EdgeInsets.only(top: 48, bottom: 20),
+          padding: const EdgeInsets.only(top: 63, bottom: 20),
           decoration: const BoxDecoration(
               gradient: LinearGradient(
             begin: Alignment.topRight,
@@ -138,6 +138,9 @@ class _HomePageState extends State<HomePage>
 
   Widget buildPortrait() => SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             clipShape(),
             animeLetter(),
@@ -151,6 +154,9 @@ class _HomePageState extends State<HomePage>
 
   Widget buildLandscape() => SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             clipShape(),
             animeLetter(),
@@ -169,11 +175,16 @@ class _HomePageState extends State<HomePage>
         InkWell(
           child: Column(
             children: [
-              Image.asset(
-                'images/receitas/doces.png',
-                width: 100,
-                height: 100,
-                fit: BoxFit.fill,
+              ClipRRect(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
+                ),
+                child: Image.asset(
+                  'images/receitas/doces.png',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.fill,
+                ),
               ),
               const Text(
                 'DOCES',
@@ -198,11 +209,16 @@ class _HomePageState extends State<HomePage>
         InkWell(
           child: Column(
             children: [
-              Image.asset(
-                'images/receitas/salgadas.png',
-                width: 100,
-                height: 100,
-                fit: BoxFit.fill,
+              ClipRRect(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
+                ),
+                child: Image.asset(
+                  'images/receitas/salgadas.png',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.fill,
+                ),
               ),
               const Text(
                 'SALGADAS',
@@ -478,23 +494,24 @@ class _HomePageState extends State<HomePage>
         ),
         Opacity(opacity: 0.88, child: CustomAppBar(mkey: _key)),
         const SizedBox(
-          height: 60,
+          height: 160,
         ),
-        Hero(
-          tag: 'image1',
+        Center(
           child: Container(
-            alignment: Alignment.bottomCenter,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
-            ),
-            margin: EdgeInsets.only(
-                top: _large
-                    ? _height / 50
-                    : (_medium ? _height / 55 : _height / 50)),
-            child: Image.network(
-              'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
-              height: _height / 3.5,
-              width: _width / 3.5,
+            padding: const EdgeInsets.only(top: 60),
+            child: Hero(
+              tag: 'imagerec',
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
+                ),
+                child: Image.asset(
+                  'images/receitas/receitas.jpg',
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.fill,
+                ),
+              ),
             ),
           ),
         ),

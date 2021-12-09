@@ -40,9 +40,7 @@ class _SplashScreenState extends State<SplashScreen>
         print(Global.nome);
         Navigator.pushAndRemoveUntil(
             context,
-            CustomPageRoute(
-              HomePage(uid: result!.uid),
-            ),
+            CustomPageRoute(HomePage(uid: result!.uid)),
             (Route<dynamic> route) => false);
       } else {
         Navigator.of(context).pushReplacementNamed('/EntrarPage');
@@ -70,7 +68,6 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         height: _height,
         width: _width,
-        padding: const EdgeInsets.only(top: 48, bottom: 20),
         decoration: BoxDecoration(
             gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -91,9 +88,26 @@ class _SplashScreenState extends State<SplashScreen>
 
   Widget buildPortrait() => SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             clipShape(),
+            Center(
+              child: Hero(
+                tag: 'imagerec',
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  child: Image.asset(
+                    'images/receitas/receitas.jpg',
+                    height: 200,
+                    width: 200,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+            ),
             animeLetter(),
             const SizedBox(
               height: 40,
@@ -136,7 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
                     Hero(
                       tag: 'image1',
                       child: Container(
-                        //alignment: Alignment.bottomLeft,
+                        //alignment: Alignment.topCenter,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(40),
                         ),
@@ -144,10 +158,10 @@ class _SplashScreenState extends State<SplashScreen>
                             top: _large
                                 ? _height / 60
                                 : (_medium ? _height / 65 : _height / 60)),
-                        child: Image.network(
-                          'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
-                          height: _height / 2.0,
-                          width: _width / 2.0,
+                        child: Image.asset(
+                          'images/receitas/receitas.jpg',
+                          height: 150,
+                          width: 150,
                         ),
                       ),
                     ),
@@ -219,24 +233,6 @@ class _SplashScreenState extends State<SplashScreen>
                   colors: [Colors.blue[200]!, Colors.cyanAccent],
                 ),
               ),
-            ),
-          ),
-        ),
-        Hero(
-          tag: 'image1',
-          child: Container(
-            alignment: Alignment.bottomCenter,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
-            ),
-            margin: EdgeInsets.only(
-                top: _large
-                    ? _height / 60
-                    : (_medium ? _height / 65 : _height / 60)),
-            child: Image.network(
-              'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
-              height: _height / 2.0,
-              width: _width / 2.0,
             ),
           ),
         ),
@@ -314,4 +310,3 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-

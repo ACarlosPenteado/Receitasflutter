@@ -243,7 +243,7 @@ class _ListDemoState extends State<ListDemo> {
                   ),
                   onTap: () {
                     setState(() {
-                      preencheListIngre(receFav[index].ingredientes);
+                      /* preencheListIngre(receFav[index].ingredientes);
                       preencheListPrepa(receFav[index].preparo);
                       Global.descricao = receFav[index].descricao;
                       Global.id = receFav[index].id!;
@@ -253,7 +253,7 @@ class _ListDemoState extends State<ListDemo> {
                       Global.tempoPreparo = receFav[index].tempoPreparo;
 
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const MostrarReceitaPage()));
+                          builder: (context) => const MostrarReceitaPage())); */
                     });
                   },
                 ),
@@ -265,4 +265,3 @@ class _ListDemoState extends State<ListDemo> {
     );
   }
 }
-

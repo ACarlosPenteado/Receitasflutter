@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 
 class ListPrepa extends StatelessWidget {
-  final List list;
+  final List<Preparo>? list;
   double fontSize;
 
-  ListPrepa({Key? key, required this.list, required this.fontSize})
-      : super(key: key);
+  ListPrepa({Key? key, this.list, required this.fontSize}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: list.length,
+      itemCount: list!.length,
       itemBuilder: (_, index) {
         return SafeArea(
           child: Center(
@@ -25,7 +24,7 @@ class ListPrepa extends StatelessWidget {
                       Expanded(
                         flex: 5,
                         child: Text(
-                          ' - ' + list.elementAt(index).descricao.toString(),
+                          ' - ' + list!.elementAt(index).descricao.toString(),
                           style: TextStyle(
                             fontSize: fontSize,
                             fontStyle: FontStyle.italic,
