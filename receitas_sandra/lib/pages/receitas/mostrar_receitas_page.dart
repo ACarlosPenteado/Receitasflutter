@@ -28,6 +28,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   @override
   void initState() {
     super.initState();
+    print(Global.tamListI);
     size = 220;
   }
 
@@ -40,8 +41,6 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   @override
   void dispose() {
     size = 150;
-    Global.tamListI = 1;
-    Global.tamListP = 1;
     super.dispose();
   }
 
@@ -90,7 +89,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
         title: Text(
           widget.receitas.descricao,
           style: const TextStyle(
-            fontSize: 30,
+            fontSize: 25,
             fontWeight: FontWeight.bold,
             color: Colors.purpleAccent,
           ),
@@ -148,15 +147,15 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                       ),
                     ],
                   ),
-                  child: Stack(
-                    children: [
-                      widget.receitas.imagem != 'Sem Imagem'
-                          ? Positioned(
-                              top: 0.0,
-                              left: 0.0,
-                              right: 0.0,
-                              child: Hero(
-                                tag: 'image' + widget.receitas.descricao,
+                  child: Hero(
+                    tag: 'card' + widget.receitas.descricao,
+                    child: Stack(
+                      children: [
+                        widget.receitas.imagem != 'Sem Imagem'
+                            ? Positioned(
+                                top: 0.0,
+                                left: 0.0,
+                                right: 0.0,
                                 child: ClipRRect(
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(20),
@@ -166,14 +165,11 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                     fit: BoxFit.fitWidth,
                                   ),
                                 ),
-                              ),
-                            )
-                          : Positioned(
-                              top: 0.0,
-                              left: 0.0,
-                              right: 0.0,
-                              child: Hero(
-                                tag: 'image' + widget.receitas.descricao,
+                              )
+                            : Positioned(
+                                top: 0.0,
+                                left: 0.0,
+                                right: 0.0,
                                 child: ClipRRect(
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(20),
@@ -184,30 +180,27 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                   ),
                                 ),
                               ),
+                        Positioned(
+                          top: 78,
+                          left: 32,
+                          width: _screenWidth - 100,
+                          child: Container(
+                            height: 60,
+                            padding: const EdgeInsets.only(left: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.black38,
+                              border: Border.all(
+                                color: Colors.cyanAccent.shade400,
+                                width: 3.0,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                      Positioned(
-                        top: 78,
-                        left: 32,
-                        //width: _screenWidth,
-                        child: Container(
-                          height: 60,
-                          padding: const EdgeInsets.only(left: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.black38,
-                            border: Border.all(
-                              color: Colors.cyanAccent.shade400,
-                              width: 3.0,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                top: 0,
-                                left: 0,
-                                width: _screenWidth,
-                                child: Hero(
-                                  tag: 'sub1' + widget.receitas.descricao,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  top: 0,
+                                  left: 0,
+                                  width: _screenWidth,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
@@ -238,13 +231,10 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                     ],
                                   ),
                                 ),
-                              ),
-                              Positioned(
-                                top: 30,
-                                left: 0,
-                                width: _screenWidth,
-                                child: Hero(
-                                  tag: 'sub2' + widget.receitas.descricao,
+                                Positioned(
+                                  top: 30,
+                                  left: 0,
+                                  width: _screenWidth,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
@@ -275,12 +265,12 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                     ],
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -348,7 +338,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
               ),
               AnimatedContainer(
                 duration: const Duration(seconds: 5),
-                height: Global.tamListI.toDouble() * 8,
+                height: Global.tamListI.toDouble() * 25,
                 width: 350,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -433,7 +423,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
               ),
               AnimatedContainer(
                 duration: const Duration(seconds: 5),
-                height: Global.tamListP.toDouble() * 8,
+                height: Global.tamListP.toDouble() * 25,
                 width: 350,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),

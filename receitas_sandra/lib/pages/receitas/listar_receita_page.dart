@@ -76,6 +76,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     fabKey.currentState?.close();
     listaReceitas();
     loadFavoritas();
+    print(Global.tamListI);
     super.initState();
   }
 
@@ -106,6 +107,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
   preencheListIngre(int ql, List list) async {
     _listIngre = [];
     Global.ingredientes = [];
+    Global.tamListI = 1;
     if (ql == 0) {
       for (var i = 0; i < list.length; i++) {
         _listIngre.add(
@@ -128,12 +130,12 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
 
     Global.ingredientes = _listIngre;
     Global.tamListI += _listIngre.length;
-    print(_listIngre);
   }
 
   preencheListPrepa(int ql, List list) async {
     _listPrepa = [];
     Global.preparo = [];
+    Global.tamListP = 1;
     if (ql == 0) {
       for (var i = 0; i < list.length; i++) {
         _listPrepa.add(
@@ -370,8 +372,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             Colors.cyanAccent,
           ],
         )),
-        padding: const EdgeInsets.only(top: 48),
-        //child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -382,7 +382,25 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             ),
           ],
         ),
-        //),
+      ),
+      appBar: AppBar(
+        elevation: 12,
+        centerTitle: true,
+        leading: IconButton(
+          iconSize: 30,
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (currentItem == 2) tipoRec2() else tipoRec(),
+          ],
+        ),
       ),
       floatingActionButton: Builder(
         builder: (context) => FabCircularMenu(
@@ -536,43 +554,9 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
   Widget clipShape() {
     return Stack(
       children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(opacity: 0.88, child: customAppBar()),
         Container(
           alignment: Alignment.bottomCenter,
-          margin: const EdgeInsets.only(top: 60),
-          //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
+          margin: const EdgeInsets.only(top: 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -623,7 +607,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     return Text(
       qual + ' Receitas ' + widget.tipo,
       style: const TextStyle(
-        fontSize: 20,
+        fontSize: 25,
         fontStyle: FontStyle.italic,
         fontWeight: FontWeight.bold,
         color: Color(0xFF01579B),
@@ -637,7 +621,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         Text(
           ' Receitas ' + widget.tipo,
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 25,
             fontStyle: FontStyle.italic,
             fontWeight: FontWeight.bold,
             color: Color(0xFF01579B),
@@ -646,7 +630,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         Text(
           qual,
           style: const TextStyle(
-            fontSize: 30,
+            fontSize: 25,
             fontStyle: FontStyle.italic,
             fontWeight: FontWeight.bold,
             color: Color(0xFF01579B),
@@ -671,44 +655,43 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                 margin: const EdgeInsets.only(
                     left: 16, top: 0, right: 16, bottom: 5),
                 child: InkWell(
-                    child: Stack(
-                      children: [
-                        Card(
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 12,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: AnimatedContainer(
-                            duration: const Duration(seconds: 5),
-                            height: size,
-                            decoration: BoxDecoration(
+                    child: Hero(
+                      tag: 'card' + _receitas[index].descricao,
+                      child: Stack(
+                        children: [
+                          Card(
+                            clipBehavior: Clip.antiAlias,
+                            elevation: 12,
+                            shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              gradient: const LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xFF213B6C),
-                                    Color(0xFF0059A5)
-                                  ]),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.cyan,
-                                  blurRadius: 12,
-                                  offset: Offset(3, 5),
-                                ),
-                              ],
                             ),
-                            child: Stack(
-                              children: [
-                                _receitas[index].imagem != 'Sem Imagem'
-                                    ? Positioned(
-                                        top: 0.0,
-                                        left: 0.0,
-                                        right: 0.0,                                        
-                                        child: Hero(
-                                          tag: 'image' +
-                                              _receitas[index].descricao,
+                            child: AnimatedContainer(
+                              duration: const Duration(seconds: 5),
+                              height: size,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                gradient: const LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(0xFF213B6C),
+                                      Color(0xFF0059A5)
+                                    ]),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.cyan,
+                                    blurRadius: 12,
+                                    offset: Offset(3, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Stack(
+                                children: [
+                                  _receitas[index].imagem != 'Sem Imagem'
+                                      ? Positioned(
+                                          top: 0.0,
+                                          left: 0.0,
+                                          right: 0.0,
                                           child: ClipRRect(
                                             borderRadius:
                                                 const BorderRadius.all(
@@ -719,15 +702,11 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                                               fit: BoxFit.fitWidth,
                                             ),
                                           ),
-                                        ),
-                                      )
-                                    : Positioned(
-                                        top: 0.0,
-                                        left: 0.0,
-                                        right: 0.0,
-                                        child: Hero(
-                                          tag: 'image' +
-                                              _receitas[index].descricao,
+                                        )
+                                      : Positioned(
+                                          top: 0.0,
+                                          left: 0.0,
+                                          right: 0.0,
                                           child: ClipRRect(
                                             borderRadius:
                                                 const BorderRadius.all(
@@ -739,30 +718,26 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                                             ),
                                           ),
                                         ),
+                                  Positioned(
+                                    top: 58,
+                                    left: 32,
+                                    width: _screenWidth,
+                                    child: Container(
+                                      height: 80,
+                                      padding: const EdgeInsets.only(left: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black38,
+                                        border: Border.all(
+                                          color: Colors.cyanAccent.shade400,
+                                          width: 3.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
-                                Positioned(
-                                  top: 58,
-                                  left: 32,
-                                  width: _screenWidth,
-                                  child: Container(
-                                    height: 80,
-                                    padding: const EdgeInsets.only(left: 10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black38,
-                                      border: Border.all(
-                                        color: Colors.cyanAccent.shade400,
-                                        width: 3.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          top: 0,
-                                          left: 0,
-                                          child: Hero(
-                                            tag: 'title' +
-                                                _receitas[index].descricao,
+                                      child: Stack(
+                                        children: [
+                                          Positioned(
+                                            top: 0,
+                                            left: 0,
                                             child: Text(
                                               _receitas[index].descricao,
                                               textAlign: TextAlign.left,
@@ -773,14 +748,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        Positioned(
-                                          top: 30,
-                                          left: 0,
-                                          width: _screenWidth,
-                                          child: Hero(
-                                            tag: 'sub1' +
-                                                _receitas[index].descricao,
+                                          Positioned(
+                                            top: 30,
+                                            left: 0,
+                                            width: _screenWidth,
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.start,
@@ -812,14 +783,10 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                                               ],
                                             ),
                                           ),
-                                        ),
-                                        Positioned(
-                                          top: 50,
-                                          left: 0,
-                                          width: _screenWidth,
-                                          child: Hero(
-                                            tag: 'sub2' +
-                                                _receitas[index].descricao,
+                                          Positioned(
+                                            top: 50,
+                                            left: 0,
+                                            width: _screenWidth,
                                             child: Row(
                                               children: [
                                                 const Text(
@@ -849,34 +816,24 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                                               ],
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        if (_favoritas.contains(_receitas[index].id) ||
-                            _selecionadas.contains(_receitas[index].id))
-                          favorita(),
-                      ],
+                          if (_favoritas.contains(_receitas[index].id) ||
+                              _selecionadas.contains(_receitas[index].id))
+                            favorita(),
+                        ],
+                      ),
                     ),
                     onTap: () {
                       setState(() {
                         preencheListIngre(1, _receitas[index].ingredientes);
                         preencheListPrepa(1, _receitas[index].preparo);
-                        // Global.id = _receitas[index].id;
-                        // Global.data = _receitas[index].data;
-                        // Global.descricao = _receitas[index].descricao;
-                        // Global.iduser = _receitas[index].iduser;
-                        // Global.imagem = _receitas[index].imagem;
-                        // Global.ingredientes = _listIngre;
-                        // Global.preparo = _listPrepa;
-                        // Global.rendimento = _receitas[index].rendimento;
-                        // Global.tempoPreparo = _receitas[index].tempoPreparo;
-                        // Global.tipo = _receitas[index].tipo;
 
                         Navigator.of(context).push(
                           PageRouteBuilder(
@@ -911,14 +868,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                               );
                             },
                           ),
-
-                          /* PageTransition(
-                            child: const MostrarReceitaPage(),
-                            type: PageTransitionType.rotate,
-                            alignment: Alignment.bottomCenter,
-                            duration: const Duration(milliseconds: 600),
-                            reverseDuration: const Duration(milliseconds: 600),
-                          ), */
                         );
                       });
                     },
@@ -1128,7 +1077,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                 onPressed: () {
                   Navigator.of(context).pop();
                 }),
-            if (currentItem == 2) tipoRec2() else tipoRec(),
             const SizedBox(
               width: 30,
             )

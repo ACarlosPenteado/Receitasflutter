@@ -59,8 +59,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
 
-  String imageUrl =
-      'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg';
+  String imageUrl = 'images/receitas/receitas.png';
 
   @override
   void initState() {
@@ -170,7 +169,6 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             Colors.cyanAccent,
           ],
         )),
-        padding: const EdgeInsets.only(top: 48),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -179,45 +177,54 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           ),
         ),
       ),
+      appBar: AppBar(
+        elevation: 12,
+        centerTitle: true,
+        leading: IconButton(
+          iconSize: 30,
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (Global.qual == 'I') tipoRec('Incluir') else tipoRec('Alterar'),
+          ],
+        ),
+        actions: [
+          IconButton(
+              iconSize: 30,
+              icon: const Icon(
+                Icons.save,
+              ),
+              onPressed: () {
+                setState(() {});
+              }),
+        ],
+      ),
+    );
+  }
+
+  Widget tipoRec(String qtipo) {
+    return Text(
+      qtipo + ' Receita',
+      style: const TextStyle(
+        fontSize: 25,
+        fontStyle: FontStyle.italic,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF01579B),
+      ),
     );
   }
 
   Widget clipShape() {
-    return Stack(
+    return Column(
       children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        if (Global.qual == 'I')
+        /* if (Global.qual == 'I')
           Opacity(
             opacity: 0.88,
             child: CustomAppBar(
@@ -249,185 +256,165 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               tipo: widget.tipo!,
             ),
           ),
-        const SizedBox(
-          height: 40,
-        ),
+         */
         Container(
-          padding: const EdgeInsets.all(5),
-          alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.only(
-              top: _large
-                  ? _height / 10
-                  : (_medium ? _height / 13 : _height / 11)),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          width: _width,
+          height: 200,
+          //padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
+          margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
+          color: Colors.white,
+          child: Stack(
+            clipBehavior: Clip.antiAlias,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(top: 5),
-                        width: 120,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.blue,
-                            width: 1.0,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                                spreadRadius: 0.0,
-                                color: Colors.black45,
-                                offset: Offset(1.0, 10.0),
-                                blurRadius: 20.0),
-                          ],
-                          color: Colors.indigo,
-                        ),
-                        child: SelectImage(
-                          onFileChanged: (_imageUrl) {
-                            setState(() {
-                              imageUrl = _imageUrl;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
+              Positioned(
+                top: 0.0,
+                left: 0.0,
+                right: 0.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    imageUrl,
+                    fit: BoxFit.fill,
                   ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Column(
+                ),
+              ),
+              Positioned(
+                left: 0.0,
+                bottom: 5.0,
+                child: SelectImage(
+                  onFileChanged: (_imageUrl) {
+                    setState(() {
+                      imageUrl = _imageUrl;
+                    });
+                  },
+                ),
+              ),
+              Positioned(
+                top: 5.0,
+                left: 120.0,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 40,
+                      width: 250,
+                      child: nomeTextFormField(),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                  top: 60,
+                  left: 120,
+                  child: Row(
                     children: [
-                      Row(
+                      Column(
                         children: [
                           SizedBox(
                             height: 40,
-                            width: 250,
-                            child: nomeTextFormField(),
+                            width: 115,
+                            child: tempoTextFormField(),
                           ),
                         ],
                       ),
                       const SizedBox(
-                        height: 10,
+                        width: 20,
                       ),
-                      Row(
+                      Column(
                         children: [
-                          Column(
-                            children: [
-                              SizedBox(
-                                height: 40,
-                                width: 115,
-                                child: tempoTextFormField(),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Column(
-                            children: [
-                              SizedBox(
-                                height: 40,
-                                width: 115,
-                                child: rendiTextFormField(),
-                              ),
-                            ],
+                          SizedBox(
+                            height: 40,
+                            width: 115,
+                            child: rendiTextFormField(),
                           ),
                         ],
-                      )
+                      ),
                     ],
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Divider(
-                height: 5,
-                color: Colors.purple,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              InkWell(
-                onTap: () {
-                  if (nomeController.text.isNotEmpty) {
-                    cadastraIngre();
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(width: 1, color: Colors.purple),
-                  ),
-                  child: const Text(
-                    'Ingredientes',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              if (Global.qual == 'I')
-                ListIngre(
-                  list: listIngre,
-                  fontSize: 15,
-                )
-              else
-                ListIngre(
-                  list: Global.ingredientes,
-                  fontSize: 15,
-                ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Divider(
-                height: 5,
-                color: Colors.purple,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              InkWell(
-                onTap: () {
-                  if (nomeController.text.isNotEmpty) {
-                    cadastraPrepa();
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(width: 1, color: Colors.purple),
-                  ),
-                  child: const Text(
-                    'Modo de Preparo',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              if (Global.qual == 'I')
-                ListPrepa(
-                  list: listPrepa,
-                  fontSize: 15,
-                )
-              else
-                ListPrepa(
-                  list: Global.preparo,
-                  fontSize: 15,
-                ),
+                  )),
             ],
           ),
         ),
+        const SizedBox(
+          height: 10,
+        ),
+        const Divider(
+          height: 5,
+          color: Colors.purple,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        InkWell(
+          onTap: () {
+            if (nomeController.text.isNotEmpty) {
+              cadastraIngre();
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(width: 1, color: Colors.purple),
+            ),
+            child: const Text(
+              'Ingredientes',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        if (Global.qual == 'I')
+          ListIngre(
+            list: listIngre,
+            fontSize: 15,
+          )
+        else
+          ListIngre(
+            list: Global.ingredientes,
+            fontSize: 15,
+          ),
+        const SizedBox(
+          height: 10,
+        ),
+        const Divider(
+          height: 5,
+          color: Colors.purple,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        InkWell(
+          onTap: () {
+            if (nomeController.text.isNotEmpty) {
+              cadastraPrepa();
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(width: 1, color: Colors.purple),
+            ),
+            child: const Text(
+              'Modo de Preparo',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        if (Global.qual == 'I')
+          ListPrepa(
+            list: listPrepa,
+            fontSize: 15,
+          )
+        else
+          ListPrepa(
+            list: Global.preparo,
+            fontSize: 15,
+          ),
       ],
     );
   }
