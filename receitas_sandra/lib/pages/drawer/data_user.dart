@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:receitas_sandra/backup/model/users.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
@@ -51,6 +52,7 @@ class _DataUserPageState extends State<DataUserPage> {
     emailController.text = Global.email;
     foneController.text = Global.fone;
     imageUrl = Global.foto;
+    print(Global.foto);
     super.initState();
   }
 
@@ -59,40 +61,79 @@ class _DataUserPageState extends State<DataUserPage> {
       isLogginIn = true;
     });
 
-    if (Global.email != emailController.text) {
-      Future<List<String>> providers = FirebaseAuth.instance
-          .fetchSignInMethodsForEmail(emailController.text);
-      providers.then((value) {
-        if (value.isEmpty) {
-          try {
-            _auth.currentUser!.updateEmail(emailController.text).then((__) {
-              user = _auth.currentUser!;
-              user.sendEmailVerification();
-              timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-                checkEmailVerified();
-                if (user.emailVerified) {
-                  colRef.doc(_auth.currentUser!.uid).set({
-                    'data': getDate,
-                    'email': emailController.text,
-                    'fone': foneController.text,
-                    'imagem': imageUrl,
-                    'nome': nomeController.text,
-                    'provedor': 'Email',
-                  }).then((value) {
-                    Global.email = emailController.text;
-                    Global.nome = nomeController.text;
-                    Global.foto = imageUrl;
-                  });
-                }
+    if (Global.provedor == 'Email') {
+      if (Global.email != emailController.text) {
+        Future<List<String>> providers = FirebaseAuth.instance
+            .fetchSignInMethodsForEmail(emailController.text);
+        providers.then((value) {
+          print(value);
+          if (value.isEmpty) {
+            try {
+              _auth.currentUser!.updateEmail(emailController.text).then((__) {
+                user = _auth.currentUser!;
+                user.sendEmailVerification();
+                timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+                  checkEmailVerified();
+                  if (user.emailVerified) {
+                    colRef.doc(_auth.currentUser!.uid).set({
+                      Users(
+                          data: getDate,
+                          email: emailController.text,
+                          favoritas: '',
+                          fone: foneController.text,
+                          imagem: imageUrl,
+                          nome: nomeController.text,
+                          provedor: 'Email'),
+                    }).then((value) {
+                      Global.email = emailController.text;
+                      Global.nome = nomeController.text;
+                      Global.foto = imageUrl;
+                    });
+                  }
+                });
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Verificação"),
+                        content: Text(
+                            'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
+                        actions: [
+                          TextButton(
+                            child: const Text("Ok"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      );
+                    });
               });
+            } on FirebaseAuthException catch (e) {
+              var mensagem = '';
+              switch (e.code) {
+                case 'invalid-email':
+                  mensagem = 'O email não é válido!';
+                  break;
+                case 'email-already-in-use':
+                  mensagem = 'Email já for usado por outro usuário!';
+                  break;
+                case 'requires-recent-login':
+                  mensagem =
+                      'Tempo para entrar não atende aos requisitos de segurança!';
+                  break;
+                case 'weak-password':
+                  mensagem = 'A senha não for forte o suficiente.';
+                  break;
+                default:
+              }
               showDialog(
-                  barrierDismissible: false,
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: const Text("Verificação"),
-                      content: Text(
-                          'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
+                      title: const Text("Falha ao alterar dados!"),
+                      content: Text(mensagem),
                       actions: [
                         TextButton(
                           child: const Text("Ok"),
@@ -103,66 +144,38 @@ class _DataUserPageState extends State<DataUserPage> {
                       ],
                     );
                   });
-            });
-          } on FirebaseAuthException catch (e) {
-            var mensagem = '';
-            switch (e.code) {
-              case 'invalid-email':
-                mensagem = 'O email não é válido!';
-                break;
-              case 'email-already-in-use':
-                mensagem = 'Email já for usado por outro usuário!';
-                break;
-              case 'requires-recent-login':
-                mensagem =
-                    'Tempo para entrar não atende aos requisitos de segurança!';
-                break;
-              case 'weak-password':
-                mensagem = 'A senha não for forte o suficiente.';
-                break;
-              default:
+            } finally {
+              setState(() {
+                isLogginIn = false;
+              });
             }
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text("Falha ao alterar dados!"),
-                    content: Text(mensagem),
-                    actions: [
-                      TextButton(
-                        child: const Text("Ok"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  );
-                });
-          } finally {
-            setState(() {
-              isLogginIn = false;
-            });
           }
-        }
-      });
-    } else {
-      colRef.doc(_auth.currentUser!.uid).set({
-        'data': getDate,
-        'email': emailController.text,
-        'fone': foneController.text,
-        'imagem': imageUrl,
-        'nome': nomeController.text,
-        'provedor': 'Email',
-      }).then((__) {
-        setState(() {
-          Global.email = emailController.text;
-          Global.nome = nomeController.text;
-          Global.foto = imageUrl;
         });
-      });
+      } else {
+        colRef.doc(_auth.currentUser!.uid).set({
+          Users(
+              data: getDate,
+              email: emailController.text,
+              favoritas: '',
+              fone: foneController.text,
+              imagem: imageUrl,
+              nome: nomeController.text,
+              provedor: 'Email'),
+        }).then((__) {
+          setState(() {
+            Global.email = emailController.text;
+            Global.nome = nomeController.text;
+            Global.foto = imageUrl;
+          });
+        });
+      }
+    } else {
+      Fluttertoast.showToast(msg: 'Altere pela sua conta!');
     }
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomePage()));
+    setState(() {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomePage()));
+    });
   }
 
   Future<void> checkEmailVerified() async {
@@ -322,7 +335,16 @@ class _DataUserPageState extends State<DataUserPage> {
             ),
             forgetPassTextRow(),
             const SizedBox(height: 25),
-            button(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                button1(),
+                const SizedBox(
+                  width: 30,
+                ),
+                button(),
+              ],
+            )
           ],
         ),
       );
@@ -339,7 +361,16 @@ class _DataUserPageState extends State<DataUserPage> {
             const SizedBox(
               height: 25,
             ),
-            button(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                button1(),
+                const SizedBox(
+                  width: 30,
+                ),
+                button(),
+              ],
+            ),
           ],
         ),
       );
@@ -670,6 +701,35 @@ class _DataUserPageState extends State<DataUserPage> {
     );
   }
 
+  Widget button1() {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        primary: Colors.white,
+        elevation: 10,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        alignment: Alignment.center,
+        width: _large ? _width / 4 : (_medium ? _width / 3.75 : _width / 3.5),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+          gradient: LinearGradient(
+            colors: <Color>[Colors.blue[200]!, Colors.cyanAccent],
+          ),
+        ),
+        padding: const EdgeInsets.all(10.0),
+        child: Text(
+          'Cancelar',
+          style: TextStyle(fontSize: _large ? 14 : (_medium ? 12 : 10)),
+        ),
+      ),
+    );
+  }
+
   Widget clipShape() {
     return Stack(
       children: <Widget>[
@@ -711,33 +771,59 @@ class _DataUserPageState extends State<DataUserPage> {
         Padding(
           padding: const EdgeInsets.only(top: 60),
           child: Container(
-              height: _height / 5.5,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                /* boxShadow: [
-                  BoxShadow(
-                      spreadRadius: 0.0,
-                      color: Colors.black45,
-                      offset: Offset(1.0, 10.0),
-                      blurRadius: 20.0),
-                ], */
-                color: Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SelectImage(
+            height: _height / 5.5,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                    spreadRadius: 0.0,
+                    color: Colors.black45,
+                    offset: Offset(1.0, 10.0),
+                    blurRadius: 20.0),
+              ],
+              color: Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: Stack(
+              children: [
+                imageUrl.isEmpty
+                    ? Positioned(
+                        top: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        child: CircleAvatar(
+                          child: Icon(Icons.person,
+                              size: 60, color: Theme.of(context).primaryColor),
+                        ),
+                      )
+                    : Positioned(
+                        top: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        child: ClipRRect(
+                          child: Image.network(Global.foto),
+                        ),
+                      ),
+                Positioned(
+                  top: 100.0,
+                  left: 0.0,
+                  right: 0.0,
+                  bottom: 0.0,
+                  child: SelectImage(
+                    tip: 0,
                     onFileChanged: (_imageUrl) {
                       setState(() {
                         imageUrl = _imageUrl;
-                        Global.foto = imageUrl;
+                        Global.foto = _imageUrl;
                       });
                     },
                   ),
-                ],
-              )),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

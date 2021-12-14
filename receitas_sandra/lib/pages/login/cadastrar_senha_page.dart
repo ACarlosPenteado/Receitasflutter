@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:receitas_sandra/backup/model/users.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
 import 'package:receitas_sandra/pages/login/termos_page.dart';
@@ -75,6 +76,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     Future<List<String>> providers =
         FirebaseAuth.instance.fetchSignInMethodsForEmail(emailController.text);
     providers.then((value) {
+      print(value);
       if (value.isEmpty) {
         try {
           _auth
@@ -87,13 +89,14 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
               checkEmailVerified();
               if (user.emailVerified) {
                 colRef.doc(_auth.currentUser!.uid).set({
-                  'data': getDate,
-                  'email': emailController.text,
-                  'favoritas': '',
-                  'fone': foneController.text,
-                  'imagem': imageUrl,
-                  'nome': nomeController.text,
-                  'provedor': 'Email',
+                  Users(
+                      data: getDate,
+                      email: emailController.text,
+                      favoritas: '',
+                      fone: foneController.text,
+                      imagem: imageUrl,
+                      nome: nomeController.text,
+                      provedor: 'Email'),
                 }).then((_) {
                   Global.email = emailController.text;
                   Global.nome = nomeController.text;
@@ -109,13 +112,14 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
                     title: const Text("Verificação"),
                     content: Text(
                         'Um mensagem foi enviada para ${emailController.text}, por favor verifique seu email!'),
-                    actions: [
-                      TextButton(
+                    actions: const [
+                      CircularProgressIndicator(),
+                      /* TextButton(
                         child: const Text("Ok"),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                      )
+                      ) */
                     ],
                   );
                 }).then((result) {});
@@ -299,6 +303,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SelectImage(
+                  tip: 0,
                   onFileChanged: (_imageUrl) {
                     setState(() {
                       imageUrl = _imageUrl;

@@ -70,6 +70,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       id = Global.id;
     } else {
       id = getId;
+      Global.imagem = imageUrl;
     }
     super.initState();
   }
@@ -267,10 +268,9 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             clipBehavior: Clip.antiAlias,
             children: [
               Positioned(
-                top: 0.0,
                 left: 0.0,
-                right: 0.0,
-                child: ClipRRect(
+                bottom: 5.0,
+                child: /* ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
                     imageUrl,
@@ -281,12 +281,13 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               Positioned(
                 left: 0.0,
                 bottom: 5.0,
-                child: SelectImage(
+                child:  */
+                    SelectImage(tip: 1,
                   onFileChanged: (_imageUrl) {
                     setState(() {
                       imageUrl = _imageUrl;
                     });
-                  },
+                  }, 
                 ),
               ),
               Positioned(

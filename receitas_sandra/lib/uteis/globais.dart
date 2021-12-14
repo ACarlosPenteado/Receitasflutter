@@ -6,6 +6,7 @@ class Global {
   static String email = '';
   static String fone = '';
   static String foto = '';
+  static String provedor = '';
 
   static String nomeRec = '';
 

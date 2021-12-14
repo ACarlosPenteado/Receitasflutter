@@ -226,12 +226,12 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     final userRepo = UsersRepository(auth: _auth.currentUser!.uid);
     if (!fav) {
       if (quale == 0) {
-        if (!_selecionadas.contains(_receitas[index]['id'])) {
-          _selecionadas.add(_receitas[index]['id']);
+        if (!_selecionadas.contains(_receitas[index].id)) {
+          _selecionadas.add(_receitas[index].id);
         }
-        if (!_favoritas.contains(_receitas[index]['id'])) {
-          userRepo.favoritar(_auth, _receitas[index]['id']);
-          _favoritas.add(_receitas[index]['id']);
+        if (!_favoritas.contains(_receitas[index].id)) {
+          userRepo.favoritar(_auth, _receitas[index].id);
+          _favoritas.add(_receitas[index].id);
         }
       } else {
         if (!_selecionadas.contains(_minhasreceitas[index].id)) {
@@ -244,12 +244,12 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
       }
     } else {
       if (quale == 0) {
-        if (_selecionadas.contains(_receitas[index]['id'])) {
-          _selecionadas.remove(_receitas[index]['id']);
+        if (_selecionadas.contains(_receitas[index].id)) {
+          _selecionadas.remove(_receitas[index].id);
         }
-        if (_favoritas.contains(_receitas[index]['id'])) {
-          userRepo.desfavoritar(_auth, _receitas[index]['id']);
-          _favoritas.remove(_receitas[index]['id']);
+        if (_favoritas.contains(_receitas[index].id)) {
+          userRepo.desfavoritar(_auth, _receitas[index].id);
+          _favoritas.remove(_receitas[index].id);
         }
       } else {
         if (_selecionadas.contains(_minhasreceitas[index].id)) {

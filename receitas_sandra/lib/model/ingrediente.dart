@@ -1,5 +1,3 @@
-import 'package:receitas_sandra/uteis/globais.dart';
-
 class Ingrediente {
   late final String? quantidade;
   late final String? medida;

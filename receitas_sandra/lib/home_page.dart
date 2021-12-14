@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage>
     )..repeat();
 
     getData();
+    print(Global.foto);
     super.initState();
   }
 
@@ -64,12 +65,8 @@ class _HomePageState extends State<HomePage>
       Global.nome = event.data()!['nome'];
       Global.email = event.data()!['email'];
       Global.fone = event.data()!['fone'];
-      if (event.data()!['imagem'] != null) {
-        Global.foto = event.data()!['imagem'];
-      } else {
-        Global.foto =
-            'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
-      }
+      Global.provedor = event.data()!['provedor'];
+      Global.foto = event.data()!['imagem'];
     });
   }
 
@@ -386,9 +383,10 @@ class _HomePageState extends State<HomePage>
                   });
               break;
             case 'Dados do Usuário':
-              Navigator.push(
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const DataUserPage()),
+                (Route<dynamic> route) => false,
               );
               break;
             case 'Configuração':

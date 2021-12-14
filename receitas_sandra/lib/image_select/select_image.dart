@@ -11,13 +11,16 @@ import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
 class SelectImage extends StatefulWidget {
-  //const SelectImage({Key? key, required this.onFileChanged}) : super(key: key);
+  final int tip;
+  const SelectImage({Key? key, required this.tip, required this.onFileChanged})
+      : super(key: key);
 
   final Function(String imageUrl) onFileChanged;
 
-  const SelectImage({
+  /* const SelectImage({
+    required this.tip,
     required this.onFileChanged,
-  });
+  }); */
 
   @override
   _SelectImageState createState() => _SelectImageState();
@@ -31,43 +34,46 @@ class _SelectImageState extends State<SelectImage> {
 
   @override
   void initState() {
-    if (Global.qual == 'E') {
-      imageUrl = Global.imagem;
-    } else if (Global.qual == 'I') {
-      imageUrl = '';
-    } else {
+    if (widget.tip == 0) {
       imageUrl = Global.foto;
+    } else {
+      if (Global.qual == 'E') {
+        imageUrl = Global.imagem;
+      } else if (Global.qual == 'I') {
+        imageUrl = '';
+      }
     }
     super.initState();
   }
 
   Future _selectPhoto() async {
     await showModalBottomSheet(
-        context: context,
-        builder: (context) => BottomSheet(
-              builder: (context) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.camera),
-                    title: const Text('Camera'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      _pickImage(ImageSource.camera);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.filter),
-                    title: const Text('Galeria'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      _pickImage(ImageSource.gallery);
-                    },
-                  ),
-                ],
-              ),
-              onClosing: () {},
-            ));
+      context: context,
+      builder: (context) => BottomSheet(
+        builder: (context) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera),
+              title: const Text('Camera'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.filter),
+              title: const Text('Galeria'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+        onClosing: () {},
+      ),
+    );
   }
 
   Future _pickImage(ImageSource source) async {
@@ -118,16 +124,16 @@ class _SelectImageState extends State<SelectImage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (imageUrl.isEmpty)
-          Icon(Icons.person, size: 60, color: Theme.of(context).primaryColor),
-        if (imageUrl.isNotEmpty)
-          InkWell(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onTap: () => _selectPhoto(),
-            child: Container(
+    return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () => _selectPhoto(),
+      child: Column(
+        children: [
+          /* if (imageUrl.isEmpty)
+            Icon(Icons.person, size: 60, color: Theme.of(context).primaryColor),
+          if (imageUrl.isNotEmpty)
+            Container(
               width: 110,
               height: 150,
               alignment: Alignment.center,
@@ -172,29 +178,29 @@ class _SelectImageState extends State<SelectImage> {
                   ],
                 ),
               ),
+            ), */
+          InkWell(
+            onTap: () => _selectPhoto(),
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Column(
+                children: [
+                  if (imageUrl.isNotEmpty)
+                    const Text(
+                      'Mudar Imagem',
+                      style: TextStyle(color: Colors.cyan),
+                    )
+                  else
+                    const Text(
+                      'Selecionar Imagem',
+                      style: TextStyle(color: Colors.cyan),
+                    ),
+                ],
+              ),
             ),
           ),
-        InkWell(
-          onTap: () => _selectPhoto(),
-          child: Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Column(
-              children: [
-                if (imageUrl.isNotEmpty)
-                  const Text(
-                    'Mudar Imagem',
-                    style: TextStyle(color: Colors.cyan),
-                  )
-                else
-                  const Text(
-                    'Selecionar Imagem',
-                    style: TextStyle(color: Colors.cyan),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
