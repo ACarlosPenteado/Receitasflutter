@@ -76,7 +76,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     fabKey.currentState?.close();
     listaReceitas();
     loadFavoritas();
-    print(Global.tamListI);
+    print(widget.tipo);
     super.initState();
   }
 
@@ -164,25 +164,28 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
       for (var i = 0; i < e.docs.length; i++) {
         preencheListIngre(0, e.docs[i].get('ingredientes'));
         preencheListPrepa(0, e.docs[i].get('preparo'));
-        _listareceitas.add(
-          Receitas(
-            id: e.docs.elementAt(i).get('id'),
-            data: e.docs[i].get('data'),
-            descricao: e.docs[i].get('descricao'),
-            iduser: e.docs[i].get('iduser'),
-            imagem: e.docs[i].get('imagem'),
-            ingredientes: _listIngre,
-            preparo: _listPrepa,
-            rendimento: e.docs[i].get('rendimento'),
-            tempoPreparo: e.docs[i].get('tempoPreparo'),
-            tipo: e.docs[i].get('tipo'),
-          ),
-        );
+        if (e.docs[i].get('tipo') == widget.tipo) {
+          _listareceitas.add(
+            Receitas(
+              id: e.docs.elementAt(i).get('id'),
+              data: e.docs[i].get('data'),
+              descricao: e.docs[i].get('descricao'),
+              iduser: e.docs[i].get('iduser'),
+              imagem: e.docs[i].get('imagem'),
+              ingredientes: _listIngre,
+              preparo: _listPrepa,
+              rendimento: e.docs[i].get('rendimento'),
+              tempoPreparo: e.docs[i].get('tempoPreparo'),
+              tipo: e.docs[i].get('tipo'),
+            ),
+          );
+        }
       }
       setState(() {
         _receitas = _listareceitas;
       });
     });
+    print(_receitas);
   }
 
   todasReceitas() {

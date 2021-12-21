@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:receitas_sandra/backup/model/users.dart';
+import 'package:receitas_sandra/model/users.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
@@ -13,6 +13,7 @@ import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 
 class DataUserPage extends StatefulWidget {
+  static const routeName = '/DataUserPage';
   const DataUserPage({Key? key}) : super(key: key);
 
   @override
@@ -35,7 +36,6 @@ class _DataUserPageState extends State<DataUserPage> {
   final GlobalKey<FormFieldState> _nomekey = GlobalKey<FormFieldState>();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  late User user;
   late Timer timer;
   CollectionReference colRef = FirebaseFirestore.instance.collection('Users');
 
@@ -60,7 +60,7 @@ class _DataUserPageState extends State<DataUserPage> {
     setState(() {
       isLogginIn = true;
     });
-
+    User user = _auth.currentUser!;
     if (Global.provedor == 'Email') {
       if (Global.email != emailController.text) {
         Future<List<String>> providers = FirebaseAuth.instance
@@ -69,25 +69,23 @@ class _DataUserPageState extends State<DataUserPage> {
           print(value);
           if (value.isEmpty) {
             try {
-              _auth.currentUser!.updateEmail(emailController.text).then((__) {
-                user = _auth.currentUser!;
+              user.updateEmail(emailController.text).then((__) {
                 user.sendEmailVerification();
                 timer = Timer.periodic(const Duration(seconds: 5), (timer) {
                   checkEmailVerified();
                   if (user.emailVerified) {
-                    colRef.doc(_auth.currentUser!.uid).set({
-                      Users(
-                          data: getDate,
-                          email: emailController.text,
-                          favoritas: '',
-                          fone: foneController.text,
-                          imagem: imageUrl,
-                          nome: nomeController.text,
-                          provedor: 'Email'),
+                    colRef.doc(_auth.currentUser!.uid).update({
+                      'email': emailController.text,
+                      'fone': foneController.text,
+                      'imagem': imageUrl,
+                      'nome': nomeController.text,
+                      'provedor': 'Email',
                     }).then((value) {
-                      Global.email = emailController.text;
-                      Global.nome = nomeController.text;
-                      Global.foto = imageUrl;
+                      setState(() {
+                        Global.email = emailController.text;
+                        Global.nome = nomeController.text;
+                        Global.foto = imageUrl;
+                      });
                     });
                   }
                 });
@@ -99,12 +97,9 @@ class _DataUserPageState extends State<DataUserPage> {
                         title: const Text("Verificação"),
                         content: Text(
                             'Um mensagem foi enviada para ${emailController.text}, por favor verifique!'),
-                        actions: [
-                          TextButton(
-                            child: const Text("Ok"),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
+                        actions: const [
+                          Center(
+                            child: CircularProgressIndicator(),
                           )
                         ],
                       );
@@ -152,15 +147,12 @@ class _DataUserPageState extends State<DataUserPage> {
           }
         });
       } else {
-        colRef.doc(_auth.currentUser!.uid).set({
-          Users(
-              data: getDate,
-              email: emailController.text,
-              favoritas: '',
-              fone: foneController.text,
-              imagem: imageUrl,
-              nome: nomeController.text,
-              provedor: 'Email'),
+        colRef.doc(_auth.currentUser!.uid).update({
+          'email': emailController.text,
+          'fone': foneController.text,
+          'imagem': imageUrl,
+          'nome': nomeController.text,
+          'provedor': 'Email',
         }).then((__) {
           setState(() {
             Global.email = emailController.text;
@@ -179,10 +171,10 @@ class _DataUserPageState extends State<DataUserPage> {
   }
 
   Future<void> checkEmailVerified() async {
-    user = _auth.currentUser!;
+    User user = _auth.currentUser!;
     await user.reload();
     if (user.emailVerified) {
-      timer.cancel();
+      timer.cancel();      
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomePage()));
     }
@@ -261,7 +253,7 @@ class _DataUserPageState extends State<DataUserPage> {
   }
 
   void alterei() async {
-    user = _auth.currentUser!;
+    User user = _auth.currentUser!;
     user.updatePassword(senhaController.text).then((__) {
       Fluttertoast.showToast(msg: 'Senha alterada');
     }).catchError((onError) {
@@ -710,7 +702,8 @@ class _DataUserPageState extends State<DataUserPage> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
       ),
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomePage()));
       },
       child: Container(
         alignment: Alignment.center,
@@ -803,6 +796,7 @@ class _DataUserPageState extends State<DataUserPage> {
                         right: 0.0,
                         bottom: 0.0,
                         child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
                           child: Image.network(Global.foto),
                         ),
                       ),

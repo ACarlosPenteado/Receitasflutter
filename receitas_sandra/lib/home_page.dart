@@ -50,24 +50,39 @@ class _HomePageState extends State<HomePage>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
-
-    getData();
-    print(Global.foto);
+    setState(() {
+      getData();
+    });
     super.initState();
   }
 
-  getData() async {
-    var doc = FirebaseFirestore.instance
+  Future<List> getData() async {
+    List dados = [];
+    FirebaseFirestore.instance
         .collection('Users')
         .doc(widget.uid)
         .get()
         .then((event) {
-      Global.nome = event.data()!['nome'];
-      Global.email = event.data()!['email'];
-      Global.fone = event.data()!['fone'];
-      Global.provedor = event.data()!['provedor'];
-      Global.foto = event.data()!['imagem'];
+      setState(() {
+        Global.nome = event.data()!['nome'];
+        Global.email = event.data()!['email'];
+        Global.fone = event.data()!['fone'];
+        Global.provedor = event.data()!['provedor'];
+        Global.foto = event.data()!['imagem'];
+      });
+      dados.add(event);
     });
+    /* doc.then((value) {
+      if (value == null) {
+        Fluttertoast.showToast(msg: 'Complete seus dados!');
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const DataUserPage()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    }); */
+    return dados;
   }
 
   DateTime time = DateTime.now();
@@ -269,8 +284,7 @@ class _HomePageState extends State<HomePage>
             /// ---------------------------
             /// Building scrolling  content for drawer .
             /// ---------------------------
-
-            child: SingleChildScrollView(
+            child:             SingleChildScrollView(
               child: Column(
                 children: <Widget>[
                   Container(

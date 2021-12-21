@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
     Timer(const Duration(seconds: 5), () {
       if (result != null) {
         Global.nome = result!.displayName.toString();
-        print(Global.nome);
+        print(result);
         Navigator.pushAndRemoveUntil(
             context,
             CustomPageRoute(HomePage(uid: result!.uid)),

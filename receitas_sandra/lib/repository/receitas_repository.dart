@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 class ReceitasRepository extends ChangeNotifier {
   late FirebaseFirestore fireDb;
   late String auth;
-  late String? tipo;
 
-  ReceitasRepository({required this.auth, this.tipo}) {
+  ReceitasRepository({required this.auth}) {
     _startRepository();
   }
 
@@ -21,7 +20,7 @@ class ReceitasRepository extends ChangeNotifier {
   Stream<QuerySnapshot> listReceita(String tipo) {
     FirebaseFirestore fireDb = FirebaseFirestore.instance;
     CollectionReference colRef = fireDb.collection('Receitas');
-    colRef.where('tipo', isEqualTo: tipo).orderBy('descricao');
+    colRef.where('tipo', isEqualTo: tipo).get();
 
     return colRef.snapshots();
   }

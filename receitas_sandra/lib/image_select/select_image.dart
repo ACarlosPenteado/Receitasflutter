@@ -89,9 +89,13 @@ class _SelectImageState extends State<SelectImage> {
     if (file == null) {
       return;
     }
-    file = await compressImage(file.path, 35);
+    file = await compressImage(file.path, 50);
 
-    await uploadFile(file.path);
+    if (widget.tip == 0) {
+      await uploadFileUser(file.path);
+    } else {
+      await uploadFileRec(file.path);
+    }
   }
 
   Future<File> compressImage(String path, int quality) async {
@@ -106,10 +110,26 @@ class _SelectImageState extends State<SelectImage> {
     return result!;
   }
 
-  Future uploadFile(String path) async {
+  Future uploadFileUser(String path) async {
     final ref = storage.FirebaseStorage.instance
         .ref()
         .child('users')
+        .child(p.basename(path));
+
+    final result = await ref.putFile(File(path));
+    final fileUrl = await result.ref.getDownloadURL();
+
+    setState(() {
+      imageUrl = fileUrl;
+    });
+
+    widget.onFileChanged(fileUrl);
+  }
+
+  Future uploadFileRec(String path) async {
+    final ref = storage.FirebaseStorage.instance
+        .ref()
+        .child('Imagens_Receitas')
         .child(p.basename(path));
 
     final result = await ref.putFile(File(path));

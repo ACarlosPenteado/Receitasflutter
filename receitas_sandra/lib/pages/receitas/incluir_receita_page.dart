@@ -267,27 +267,26 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           child: Stack(
             clipBehavior: Clip.antiAlias,
             children: [
-              Positioned(
-                left: 0.0,
-                bottom: 5.0,
-                child: /* ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    imageUrl,
-                    fit: BoxFit.fill,
-                  ),
+              Positioned.fill(
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.fitWidth,
                 ),
               ),
               Positioned(
                 left: 0.0,
                 bottom: 5.0,
-                child:  */
-                    SelectImage(tip: 1,
+                child: SelectImage(
+                  tip: 1,
                   onFileChanged: (_imageUrl) {
                     setState(() {
                       imageUrl = _imageUrl;
                     });
-                  }, 
+                  },
                 ),
               ),
               Positioned(
@@ -477,7 +476,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           Row(
             children: [
               SizedBox(
-                width: 100,
+                width: 85,
                 height: 40,
                 child: quanTextFormField(),
               ),
@@ -501,7 +500,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           Row(
             children: [
               SizedBox(
-                width: 290,
+                width: 285,
                 height: 80,
                 child: descITextFormField(),
               ),
@@ -609,7 +608,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           Row(
             children: [
               SizedBox(
-                width: 290,
+                width: 285,
                 height: 80,
                 child: descPTextFormField(),
               ),

@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receitas_sandra/home_page.dart';
+import 'package:receitas_sandra/pages/drawer/data_user.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/repository/users_repository.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/splash': (context) => const SplashScreen(),
         '/home': (context) => const HomePage(),
+        '/dados': (context) => const DataUserPage(),
         '/EntrarPage': (context) => const EntrarPage(),
       },
     );

@@ -1,7 +1,7 @@
 import 'package:receitas_sandra/model/favoritas.dart';
 
 class Users {
-  String? id;
+  String id;
   String data;
   String email;
   List<Favoritas>? favoritas;
@@ -11,7 +11,7 @@ class Users {
   String provedor;
 
   Users({
-    this.id,
+    required this.id,
     required this.data,
     required this.email,
     this.favoritas,
@@ -22,6 +22,7 @@ class Users {
   });
 
   factory Users.fromJson(Map<dynamic, dynamic> json) => Users(
+        id: json['id'],
         data: json['data'],
         email: json['email'],
         favoritas: (json['favoritas'] as List)
@@ -44,8 +45,8 @@ class Users {
         'provedor': provedor,
       };
 
-  @override
+  /* @override
   String toString() {
     return '{ id: ${id}, data: ${data}, email: ${email}, favoritas: ${favoritas}, fone: ${fone}, imagem: ${imagem}, nome: ${nome} , provedor: ${provedor}, }';
-  }
+  } */
 }

@@ -5,9 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:receitas_sandra/backup/model/users.dart';
+import 'package:receitas_sandra/model/users.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
+import 'package:receitas_sandra/model/favoritas.dart';
 import 'package:receitas_sandra/pages/login/termos_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
@@ -54,8 +55,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
 
   bool isLogginIn = false;
 
-  String imageUrl =
-      'https://www.auctus.com.br/wp-content/uploads/2017/09/sem-imagem-avatar.png';
+  String imageUrl = '';
 
   @override
   initState() {
@@ -64,66 +64,46 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     _focusFone = FocusNode();
     _focusSenha = FocusNode();
     _focusConfirma = FocusNode();
+    nomeController.text = 'Miguel';
+    emailController.text = 'acarlos.penteado@gmail.com';
+    foneController.text = '1199999999';
+    senhaController.text = 'Ac@1234';
+    confirmaController.text = 'Ac@1234';
     super.initState();
     nomeController.text = Global.nome;
   }
 
   cadastrar() async {
-    setState(() {
-      isLogginIn = true;
-    });
-
     Future<List<String>> providers =
         FirebaseAuth.instance.fetchSignInMethodsForEmail(emailController.text);
-    providers.then((value) {
-      print(value);
+    providers.then((value) async {
+      print('provider: $value');
       if (value.isEmpty) {
         try {
-          _auth
-              .createUserWithEmailAndPassword(
-                  email: emailController.text, password: senhaController.text)
-              .then((__) {
-            user = _auth.currentUser!;
-            user.sendEmailVerification();
-            timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-              checkEmailVerified();
-              if (user.emailVerified) {
-                colRef.doc(_auth.currentUser!.uid).set({
-                  Users(
-                      data: getDate,
-                      email: emailController.text,
-                      favoritas: '',
-                      fone: foneController.text,
-                      imagem: imageUrl,
-                      nome: nomeController.text,
-                      provedor: 'Email'),
-                }).then((_) {
-                  Global.email = emailController.text;
-                  Global.nome = nomeController.text;
-                  Global.foto = imageUrl;
-                });
-              }
-            });
-            showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text("Verificação"),
-                    content: Text(
-                        'Um mensagem foi enviada para ${emailController.text}, por favor verifique seu email!'),
-                    actions: const [
-                      CircularProgressIndicator(),
-                      /* TextButton(
-                        child: const Text("Ok"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ) */
-                    ],
-                  );
-                }).then((result) {});
+          await _auth.createUserWithEmailAndPassword(
+              email: emailController.text, password: senhaController.text);
+          user = _auth.currentUser!;
+          print('user: $user');
+          user.sendEmailVerification();
+          timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+            isLogginIn = true;
+            checkEmailVerified();
           });
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Verificação"),
+                  content: Text(
+                      'Um mensagem foi enviada para ${emailController.text}, por favor verifique seu email!'),
+                  actions: const [
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                );
+              });
         } on FirebaseAuthException catch (e) {
           var mensagem = '';
           switch (e.code) {
@@ -166,23 +146,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
           });
         }
       } else {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("Falha ao cadastrar!"),
-                content: const Text('Email já utilizado por outro usuário!'),
-                actions: [
-                  TextButton(
-                    child: const Text("Ok"),
-                    onPressed: () {
-                      emailController.clear();
-                      Navigator.of(context).pop();
-                    },
-                  )
-                ],
-              );
-            });
+        Fluttertoast.showToast(msg: 'Email já cadastrado!');
       }
     });
   }
@@ -191,6 +155,22 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     user = _auth.currentUser!;
     await user.reload();
     if (user.emailVerified) {
+      user.updateDisplayName(nomeController.text);
+      user.updatePhotoURL(imageUrl);
+      var result = await colRef.doc(_auth.currentUser!.uid).set({
+        'data': user.metadata.creationTime,
+        'email': user.email,
+        'favoritas': [],
+        'fone': foneController.text,
+        'imagem': user.photoURL,
+        'nome': user.displayName,
+        'provedor': 'Email',
+      }).then((value) {
+        Global.email = user.email!;
+        Global.nome = user.displayName!;
+        Global.foto = user.photoURL!;
+        Global.provedor = 'Email';
+      });
       timer.cancel();
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomePage()));
@@ -298,17 +278,42 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
               color: Colors.white,
               shape: BoxShape.circle,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Stack(
               children: [
-                SelectImage(
-                  tip: 0,
-                  onFileChanged: (_imageUrl) {
-                    setState(() {
-                      imageUrl = _imageUrl;
-                    });
-                  },
+                imageUrl.isEmpty
+                    ? Positioned(
+                        top: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        child: CircleAvatar(
+                          child: Icon(Icons.person,
+                              size: 60, color: Theme.of(context).primaryColor),
+                        ),
+                      )
+                    : Positioned(
+                        top: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        bottom: 0.0,
+                        child: ClipRRect(
+                          child: Image.network(Global.foto),
+                        ),
+                      ),
+                Positioned(
+                  top: 100.0,
+                  left: 0.0,
+                  right: 0.0,
+                  bottom: 0.0,
+                  child: SelectImage(
+                    tip: 0,
+                    onFileChanged: (_imageUrl) {
+                      setState(() {
+                        imageUrl = _imageUrl;
+                        Global.foto = _imageUrl;
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
@@ -349,7 +354,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       mask: MaskTextInputFormatter(mask: ''),
       inputAction: TextInputAction.next,
       keyboardType: TextInputType.text,
-      focus: true,
+      focus: false,
       icon: Icons.person,
       hint: "Nome",
       validator: (value) {
@@ -367,7 +372,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       textEditingController: emailController,
       inputAction: TextInputAction.next,
       mask: MaskTextInputFormatter(mask: ''),
-      focus: false,
+      focus: true,
       icon: Icons.email,
       hint: "Email",
       validator: (value) {
