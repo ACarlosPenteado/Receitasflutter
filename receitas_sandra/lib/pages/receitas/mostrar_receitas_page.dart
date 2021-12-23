@@ -102,6 +102,10 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
             ),
             onPressed: () {
               Global.qual = 'E';
+              Global.imagem = widget.receitas.imagem;
+              Global.descricao = widget.receitas.descricao;
+              Global.tempoPreparo = widget.receitas.tempoPreparo;
+              Global.rendimento = widget.receitas.rendimento;
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => IncluirReceitaPage(tipo: Global.tipo),
@@ -357,8 +361,11 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                     ),
                   ],
                 ),
-                child:
-                    ListIngre(fontSize: 15, list: widget.receitas.ingredientes),
+                child: ListIngre(
+                  fontSize: 15,
+                  list: widget.receitas.ingredientes,
+                  qq: 'm',
+                ),
               ),
             ],
           ),
@@ -442,7 +449,10 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                     ),
                   ],
                 ),
-                child: ListPrepa(fontSize: 15, list: widget.receitas.preparo),
+                child: ListPrepa(
+                  fontSize: 15,
+                  list: widget.receitas.preparo,
+                ),
               ),
             ],
           ),

@@ -17,8 +17,8 @@ import 'package:receitas_sandra/widgets/text_field.dart';
 
 class IncluirReceitaPage extends StatefulWidget {
   static const routeName = '/IncluirReceitaPage';
-  final String? tipo;
-  const IncluirReceitaPage({Key? key, this.tipo}) : super(key: key);
+  final String tipo;
+  const IncluirReceitaPage({Key? key, required this.tipo}) : super(key: key);
 
   @override
   _IncluirReceitaPageState createState() => _IncluirReceitaPageState();
@@ -59,7 +59,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
 
-  String imageUrl = 'images/receitas/receitas.png';
+  String imageUrl = '';
 
   @override
   void initState() {
@@ -67,15 +67,15 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       nomeController.text = Global.descricao;
       tempoController.text = Global.tempoPreparo;
       rendiController.text = Global.rendimento;
+      imageUrl = Global.imagem;
       id = Global.id;
     } else {
       id = getId;
-      Global.imagem = imageUrl;
     }
     super.initState();
   }
 
-  cadastraIngre() async {
+  cadastraIngre() {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -267,16 +267,17 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           child: Stack(
             clipBehavior: Clip.antiAlias,
             children: [
-              Positioned.fill(
-                left: 0,
-                top: 0,
-                right: 0,
-                bottom: 0,
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.fitWidth,
+              if (imageUrl.isNotEmpty)
+                Positioned.fill(
+                  left: 0,
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
-              ),
               Positioned(
                 left: 0.0,
                 bottom: 5.0,
@@ -368,11 +369,13 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           ListIngre(
             list: listIngre,
             fontSize: 15,
+            qq: 'i',
           )
         else
           ListIngre(
             list: Global.ingredientes,
             fontSize: 15,
+            qq: 'i',
           ),
         const SizedBox(
           height: 10,

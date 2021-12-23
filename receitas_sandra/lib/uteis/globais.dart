@@ -31,4 +31,10 @@ class Global {
   static int tamListP = 1;
 
   static String qual = '';
+
+  static String ing_qua = '';
+  static String ing_med = '';
+  static String ing_des = '';
+
+  static String pre_des = '';
 }

@@ -284,7 +284,7 @@ class _HomePageState extends State<HomePage>
             /// ---------------------------
             /// Building scrolling  content for drawer .
             /// ---------------------------
-            child:             SingleChildScrollView(
+            child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
                   Container(
@@ -305,18 +305,19 @@ class _HomePageState extends State<HomePage>
                       },
                     ),
                   ),
-                  Container(
-                    height: 90,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                            colors: [Colors.orange, Colors.deepOrange])),
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundImage: NetworkImage(Global.foto),
+                  if (Global.foto != null)
+                    Container(
+                      height: 90,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                              colors: [Colors.orange, Colors.deepOrange])),
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundImage: NetworkImage(Global.foto),
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 15.0),
                   Text(
                     Global.nome,
