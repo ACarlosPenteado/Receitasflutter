@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/autocomplete.dart';
 import 'package:receitas_sandra/widgets/search.dart';
 import 'package:receitas_sandra/widgets/text_field.dart';
 
 class ListIngre extends StatefulWidget {
-  final List<Ingrediente>? list;
+  final List? list;
   final String qq;
   double fontSize;
 
@@ -23,7 +24,7 @@ class _ListIngreState extends State<ListIngre> {
 
   final GlobalKey<FormState> _formkeyI = GlobalKey();
 
-  List<Ingrediente> listIngre = [];
+  List listIngre = [];
 
   String selecionado = '';
 
@@ -35,7 +36,7 @@ class _ListIngreState extends State<ListIngre> {
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: widget.list!.length,
+      itemCount: Global.ingredientes.length,
       itemBuilder: (_, index) {
         return SafeArea(
           child: Center(
@@ -48,26 +49,10 @@ class _ListIngreState extends State<ListIngre> {
                     Expanded(
                       flex: 1,
                       child: Text(
-                        widget.list!.elementAt(index).quantidade.toString(),
-                        style: TextStyle(
-                          fontSize: widget.fontSize,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.amber.shade800,
-                          shadows: const [
-                            Shadow(
-                              color: Colors.black,
-                              blurRadius: 5,
-                              offset: Offset(1, 1),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: Text(
-                        ' - ' + widget.list!.elementAt(index).medida.toString(),
+                        Global.ingredientes
+                            .elementAt(index)
+                            .quantidade
+                            .toString(),
                         style: TextStyle(
                           fontSize: widget.fontSize,
                           fontStyle: FontStyle.italic,
@@ -87,7 +72,33 @@ class _ListIngreState extends State<ListIngre> {
                       flex: 5,
                       child: Text(
                         ' - ' +
-                            widget.list!.elementAt(index).descricao.toString(),
+                            Global.ingredientes
+                                .elementAt(index)
+                                .medida
+                                .toString(),
+                        style: TextStyle(
+                          fontSize: widget.fontSize,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.amber.shade800,
+                          shadows: const [
+                            Shadow(
+                              color: Colors.black,
+                              blurRadius: 5,
+                              offset: Offset(1, 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Text(
+                        ' - ' +
+                            Global.ingredientes
+                                .elementAt(index)
+                                .descricao
+                                .toString(),
                         style: TextStyle(
                             fontSize: widget.fontSize,
                             fontStyle: FontStyle.italic,
@@ -106,14 +117,22 @@ class _ListIngreState extends State<ListIngre> {
                 onTap: () {
                   if (widget.qq == 'i') {
                     setState(() {
-                      quanController.text =
-                          widget.list!.elementAt(index).quantidade.toString();
-                      selecionado =
-                          widget.list!.elementAt(index).medida.toString();
-                      descController.text =
-                          widget.list!.elementAt(index).descricao.toString();
+                      print(Global.ingredientes);
+                      print(Global.ingredientes.elementAt(index));
+                      quanController.text = Global.ingredientes
+                          .elementAt(index)
+                          .quantidade
+                          .toString();
+                      selecionado = Global.ingredientes
+                          .elementAt(index)
+                          .medida
+                          .toString();
+                      descController.text = Global.ingredientes
+                          .elementAt(index)
+                          .descricao
+                          .toString();
                     });
-                    cadastraIngre();
+                    cadastraIngre(index);
                   }
                 },
               ),
@@ -124,7 +143,7 @@ class _ListIngreState extends State<ListIngre> {
     );
   }
 
-  cadastraIngre() {
+  cadastraIngre(int index) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -138,7 +157,7 @@ class _ListIngreState extends State<ListIngre> {
             width: 320,
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: formIngre(),
+              child: formIngre(index),
             ),
           ),
         );
@@ -146,13 +165,11 @@ class _ListIngreState extends State<ListIngre> {
     );
   }
 
-  salvarIngre(String quantidade, String medida, String descricao) {
-    listIngre.add(
-      Ingrediente(quantidade: quantidade, medida: medida, descricao: descricao),
-    );
-    Global.ingredientes.add(
-      Ingrediente(quantidade: quantidade, medida: medida, descricao: descricao),
-    );
+  alteraIngre(int index, String quantidade, String medida, String descricao) {
+    Global.ingredientes.elementAt(index).quantidade = quantidade;
+    Global.ingredientes.elementAt(index).medida = medida;
+    Global.ingredientes.elementAt(index).descricao = descricao;
+
     limparIngre();
   }
 
@@ -162,13 +179,13 @@ class _ListIngreState extends State<ListIngre> {
     descController.text = '';
   }
 
-  Widget formIngre() {
+  Widget formIngre(int index) {
     return Form(
       key: _formkeyI,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Cadastrar Ingredientes'),
+          const Text('Alterar Ingrediente'),
           const SizedBox(
             height: 20,
           ),
@@ -182,13 +199,16 @@ class _ListIngreState extends State<ListIngre> {
               const SizedBox(
                 width: 10,
               ),
-              Material(
-                borderRadius: BorderRadius.circular(20.0),
-                elevation: 10,
-                child: SizedBox(
-                  width: 180,
-                  height: 40,
-                  child: medidasDropDown(),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Material(
+                  borderRadius: BorderRadius.circular(20.0),
+                  elevation: 10,
+                  child: SizedBox(
+                    width: 160,
+                    height: 40,
+                    child: AutoCompleteText(text: selecionado),
+                  ),
                 ),
               ),
             ],
@@ -216,9 +236,10 @@ class _ListIngreState extends State<ListIngre> {
                 onPressed: () {
                   setState(() {
                     if (_formkeyI.currentState!.validate()) {
-                      salvarIngre(quanController.text, selecionado,
+                      alteraIngre(index, quanController.text, Global.ing_med,
                           descController.text);
                       limparIngre();
+                      Navigator.pop(context);
                     }
                   });
                 },
@@ -255,20 +276,6 @@ class _ListIngreState extends State<ListIngre> {
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com a quantidade';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget medidasDropDown() {
-    return DropdownSearchable(
-      focusNode: focusDropDow,
-      validator: (value) {
-        if (value.isEmpty) {
-          selecionado = '-';
-        } else {
-          selecionado = value;
         }
         return null;
       },

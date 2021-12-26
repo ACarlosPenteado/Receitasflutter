@@ -2,6 +2,7 @@ import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 
 class Receitas {
+  bool ativo;
   String? id;
   String data;
   String descricao;
@@ -14,6 +15,7 @@ class Receitas {
   String tipo;
 
   Receitas({
+    required this.ativo,
     this.id,
     required this.data,
     required this.descricao,
@@ -27,6 +29,7 @@ class Receitas {
   });
 
   factory Receitas.fromJson(Map<dynamic, dynamic> json) => Receitas(
+        ativo: json['ativo'],
         data: json['data'],
         descricao: json['descricao'],
         iduser: json['iduser'],
@@ -42,6 +45,7 @@ class Receitas {
       );
 
   Map<String, dynamic> toJson() => {
+        'ativo': ativo,
         'id': id,
         'data': data,
         'descricao': descricao,
@@ -56,6 +60,6 @@ class Receitas {
 
   @override
   String toString() {
-    return '{ id: ${id}, data: ${data}, descricao: ${descricao}, iduser: ${iduser}, imagem: ${imagem}, ingredientes: ${ingredientes}, preparo: ${preparo}, rendimento: ${rendimento}, tempoPreparo: ${tempoPreparo}, tipo: ${tipo}, }';
+    return '{ ativo: ${ativo}, id: ${id}, data: ${data}, descricao: ${descricao}, iduser: ${iduser}, imagem: ${imagem}, ingredientes: ${ingredientes}, preparo: ${preparo}, rendimento: ${rendimento}, tempoPreparo: ${tempoPreparo}, tipo: ${tipo}, }';
   }
 }

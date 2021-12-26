@@ -9,6 +9,7 @@ import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
+import 'package:receitas_sandra/widgets/autocomplete.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 import 'package:receitas_sandra/widgets/listingre.dart';
 import 'package:receitas_sandra/widgets/listprepa.dart';
@@ -43,6 +44,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
 
   TextEditingController prepaController = TextEditingController();
 
+  final GlobalKey<FormState> _formkey = GlobalKey();
   final GlobalKey<FormState> _formkeyI = GlobalKey();
   final GlobalKey<FormState> _formkeyP = GlobalKey();
 
@@ -59,7 +61,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
 
-  String imageUrl = '';
+  String imageUrl = 'Sem Imagem';
 
   @override
   void initState() {
@@ -71,6 +73,8 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       id = Global.id;
     } else {
       id = getId;
+      Global.ingredientes = [];
+      Global.preparo = [];
     }
     super.initState();
   }
@@ -203,7 +207,9 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                 Icons.save,
               ),
               onPressed: () {
-                setState(() {});
+                if (_formkey.currentState!.validate()) {
+                  salvarReceitas();
+                }
               }),
         ],
       ),
@@ -225,113 +231,83 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   Widget clipShape() {
     return Column(
       children: <Widget>[
-        /* if (Global.qual == 'I')
-          Opacity(
-            opacity: 0.88,
-            child: CustomAppBar(
-              data: data,
-              descricao: nomeController.text,
-              id: id,
-              iduser: auth.currentUser!.uid,
-              imagem: imageUrl,
-              ingredientes: listIngre,
-              preparo: listPrepa,
-              rendimento: rendiController.text,
-              tempoPreparo: tempoController.text,
-              tipo: widget.tipo!,
-            ),
-          )
-        else
-          Opacity(
-            opacity: 0.88,
-            child: CustomAppBar(
-              data: data,
-              descricao: nomeController.text,
-              id: id,
-              iduser: auth.currentUser!.uid,
-              imagem: imageUrl,
-              ingredientes: Global.ingredientes,
-              preparo: Global.preparo,
-              rendimento: rendiController.text,
-              tempoPreparo: tempoController.text,
-              tipo: widget.tipo!,
-            ),
-          ),
-         */
         Container(
           width: _width,
           height: 200,
           //padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
           margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
           color: Colors.white,
-          child: Stack(
-            clipBehavior: Clip.antiAlias,
-            children: [
-              if (imageUrl.isNotEmpty)
-                Positioned.fill(
-                  left: 0,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.fitWidth,
+          child: Form(
+            key: _formkey,
+            child: Stack(
+              clipBehavior: Clip.antiAlias,
+              children: [
+                if (imageUrl != 'Sem Imagem')
+                  Positioned.fill(
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                Positioned(
+                  left: 0.0,
+                  bottom: 5.0,
+                  child: SelectImage(
+                    tip: 1,
+                    onFileChanged: (_imageUrl) {
+                      setState(() {
+                        imageUrl = _imageUrl;
+                      });
+                    },
                   ),
                 ),
-              Positioned(
-                left: 0.0,
-                bottom: 5.0,
-                child: SelectImage(
-                  tip: 1,
-                  onFileChanged: (_imageUrl) {
-                    setState(() {
-                      imageUrl = _imageUrl;
-                    });
-                  },
-                ),
-              ),
-              Positioned(
-                top: 5.0,
-                left: 120.0,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      width: 250,
-                      child: nomeTextFormField(),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                  top: 60,
-                  left: 120,
+                Positioned(
+                  top: 5.0,
+                  left: 120.0,
                   child: Row(
                     children: [
-                      Column(
-                        children: [
-                          SizedBox(
-                            height: 40,
-                            width: 115,
-                            child: tempoTextFormField(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Column(
-                        children: [
-                          SizedBox(
-                            height: 40,
-                            width: 115,
-                            child: rendiTextFormField(),
-                          ),
-                        ],
+                      SizedBox(
+                        height: 40,
+                        width: 250,
+                        child: nomeTextFormField(),
                       ),
                     ],
-                  )),
-            ],
+                  ),
+                ),
+                Positioned(
+                    top: 60,
+                    left: 120,
+                    child: Row(
+                      children: [
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: 40,
+                              width: 115,
+                              child: tempoTextFormField(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: 40,
+                              width: 115,
+                              child: rendiTextFormField(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )),
+              ],
+            ),
           ),
         ),
         const SizedBox(
@@ -486,13 +462,16 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               const SizedBox(
                 width: 10,
               ),
-              Material(
-                borderRadius: BorderRadius.circular(20.0),
-                elevation: 10,
-                child: SizedBox(
-                  width: 180,
-                  height: 40,
-                  child: medidasDropDown(),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Material(
+                  borderRadius: BorderRadius.circular(20.0),
+                  elevation: 10,
+                  child: const SizedBox(
+                    width: 160,
+                    height: 40,
+                    child: AutoCompleteText(text: ''),
+                  ),
                 ),
               ),
             ],
@@ -520,7 +499,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                 onPressed: () {
                   setState(() {
                     if (_formkeyI.currentState!.validate()) {
-                      salvarIngre(quanController.text, selecionado,
+                      salvarIngre(quanController.text, Global.ing_med,
                           descController.text);
                       limparIngre();
                     }
@@ -681,158 +660,65 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       ),
     );
   }
-}
 
-class CustomAppBar extends StatefulWidget {
-  String data;
-  String descricao;
-  String id;
-  String iduser;
-  String imagem;
-  List<Ingrediente> ingredientes;
-  List<Preparo> preparo;
-  String rendimento;
-  String tempoPreparo;
-  String tipo;
-
-  CustomAppBar(
-      {Key? key,
-      required this.data,
-      required this.descricao,
-      required this.id,
-      required this.iduser,
-      required this.imagem,
-      required this.ingredientes,
-      required this.preparo,
-      required this.rendimento,
-      required this.tempoPreparo,
-      required this.tipo})
-      : super(key: key);
-
-  @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
-}
-
-class _CustomAppBarState extends State<CustomAppBar> {
   FirebaseFirestore fireDb = FirebaseFirestore.instance;
 
-  late Ingrediente ingMap;
-  late Preparo preMap;
+  List ingMap = [];
+  List preMap = [];
 
-  salvarReceitas(
-      String data,
-      String descricao,
-      String id,
-      String iduser,
-      String imagem,
-      List<Ingrediente> ingredientes,
-      List<Preparo> preparo,
-      String rendimento,
-      String tempo,
-      String tipo) {
-    // ignore: prefer_is_empty
-    if (ingredientes.length < 0) {
-      for (var i = 0; i < ingredientes.length; i++) {
-        ingMap = Ingrediente(
-            quantidade: ingredientes[i].quantidade,
-            medida: ingredientes[i].medida,
-            descricao: ingredientes[i].descricao);
+  salvarReceitas() {
+    print(Global.ingredientes);
+    print(Global.preparo);
+    if (Global.ingredientes.isNotEmpty) {
+      for (var i = 0; i < Global.ingredientes.length; i++) {
+        ingMap.add({
+          'quantidade': Global.ingredientes.elementAt(i).quantidade,
+          'medida': Global.ingredientes.elementAt(i).medida,
+          'descricao': Global.ingredientes.elementAt(i).descricao,
+        });
       }
-    } else {
-      ingMap = Ingrediente(quantidade: '', medida: '', descricao: '');
     }
-    // ignore: prefer_is_empty
-    if (preparo.length < 0) {
-      for (var i = 0; i < preparo.length; i++) {
-        preMap = Preparo(descricao: preparo[i].descricao);
+    if (Global.preparo.isNotEmpty) {
+      for (var i = 0; i < Global.preparo.length; i++) {
+        preMap.add({
+          'descricao': Global.preparo.elementAt(i).descricao,
+        });
       }
-    } else {
-      preMap = Preparo(descricao: '');
     }
+    if (Global.qual == 'I') {
+      fireDb.collection('Receitas').doc(id).set({
+        'ativo': true,
+        'data': getDate,
+        'descricao': nomeController.text,
+        'id': id,
+        'iduser': auth.currentUser!.uid,
+        'imagem': imageUrl,
+        'ingredientes': ingMap,
+        'preparo': preMap,
+        'rendimento': rendiController.text,
+        'tempoPreparo': tempoController.text,
+        'tipo': widget.tipo,
+      }, SetOptions(merge: true)).then((_) {});
 
-    fireDb.collection('Receitas').doc(id).set({
-      'data': data,
-      'descricao': descricao,
-      'id': id,
-      'iduser': iduser,
-      'imagem': imagem,
-      'ingredientes': FieldValue.arrayUnion([ingMap]),
-      'preparo': FieldValue.arrayUnion([preMap]),
-      'rendimento': rendimento,
-      'tempoPreparo': tempo,
-      'tipo': tipo
-    }, SetOptions(merge: true)).then((_) {
-      Global.descricao = descricao;
-      Global.imagem = imagem;
-      Global.ingredientes = ingredientes;
-      Global.preparo = preparo;
-      Global.tempoPreparo = tempo;
-      Global.rendimento = rendimento;
       Fluttertoast.showToast(msg: 'Receita Salva');
-      Navigator.of(context).push(
+    } else {
+      fireDb.collection('Receitas').doc(id).update({
+        'ativo': true,
+        'descricao': nomeController.text,
+        'imagem': imageUrl,
+        'ingredientes': ingMap,
+        'preparo': preMap,
+        'rendimento': rendiController.text,
+        'tempoPreparo': tempoController.text,
+      });
+      Fluttertoast.showToast(msg: 'Receita Alterada');
+    }
+    setState(() {
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => ListarReceitaPage(tipo: widget.tipo),
         ),
       );
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-    return Material(
-      child: Container(
-        height: 40,
-        width: width,
-        padding: const EdgeInsets.only(left: 0, top: 5, right: 5),
-        decoration: BoxDecoration(
-          gradient:
-              LinearGradient(colors: [Colors.blue[200]!, Colors.cyanAccent]),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-                iconSize: 30,
-                icon: const Icon(
-                  Icons.arrow_back,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            const Text(
-              'Receitas da Sandra',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-            IconButton(
-                iconSize: 30,
-                icon: const Icon(
-                  Icons.save,
-                ),
-                onPressed: () {
-                  setState(() {
-                    salvarReceitas(
-                        widget.data,
-                        widget.descricao,
-                        widget.id,
-                        widget.iduser,
-                        widget.imagem,
-                        widget.ingredientes,
-                        widget.preparo,
-                        widget.rendimento,
-                        widget.tempoPreparo,
-                        widget.tipo);
-                  });
-                }),
-          ],
-        ),
-      ),
-    );
   }
 }

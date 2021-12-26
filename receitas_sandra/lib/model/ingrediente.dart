@@ -1,7 +1,7 @@
 class Ingrediente {
-  late final String? quantidade;
-  late final String? medida;
-  late final String? descricao;
+  String? quantidade;
+  String? medida;
+  String? descricao;
 
   Ingrediente({
     this.quantidade,

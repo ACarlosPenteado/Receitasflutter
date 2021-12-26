@@ -4,7 +4,7 @@ import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/text_field.dart';
 
 class ListPrepa extends StatefulWidget {
-  final List<Preparo>? list;
+  final List? list;
   double fontSize;
 
   ListPrepa({Key? key, this.list, required this.fontSize}) : super(key: key);
@@ -18,7 +18,7 @@ class _ListPrepaState extends State<ListPrepa> {
 
   final GlobalKey<FormState> _formkeyP = GlobalKey();
 
-  List<Preparo> listPrepa = [];
+  List listPrepa = [];
 
   FocusNode focusDescP = FocusNode();
 
@@ -26,7 +26,7 @@ class _ListPrepaState extends State<ListPrepa> {
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: widget.list!.length,
+      itemCount: Global.preparo.length,
       itemBuilder: (_, index) {
         return SafeArea(
           child: Center(
@@ -41,7 +41,7 @@ class _ListPrepaState extends State<ListPrepa> {
                           flex: 5,
                           child: Text(
                             ' - ' +
-                                widget.list!
+                                Global.preparo
                                     .elementAt(index)
                                     .descricao
                                     .toString(),
@@ -66,8 +66,8 @@ class _ListPrepaState extends State<ListPrepa> {
                 ),
                 onTap: () {
                   prepaController.text =
-                      widget.list!.elementAt(index).descricao.toString();
-                  cadastraPrepa();
+                      Global.preparo.elementAt(index).descricao.toString();
+                  cadastraPrepa(index);
                 },
               ),
             ),
@@ -77,7 +77,7 @@ class _ListPrepaState extends State<ListPrepa> {
     );
   }
 
-  cadastraPrepa() {
+  cadastraPrepa(int index) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -91,7 +91,7 @@ class _ListPrepaState extends State<ListPrepa> {
             width: 320,
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: formPrepa(),
+              child: formPrepa(index),
             ),
           ),
         );
@@ -99,13 +99,9 @@ class _ListPrepaState extends State<ListPrepa> {
     );
   }
 
-  salvarPrepa(String descricao) {
-    listPrepa.add(
-      Preparo(descricao: descricao),
-    );
-    Global.preparo.add(
-      Preparo(descricao: descricao),
-    );
+  alteraPrepa(int index, String descricao) {
+    Global.preparo.elementAt(index).descricao = descricao;
+
     limparPrepa();
   }
 
@@ -113,13 +109,13 @@ class _ListPrepaState extends State<ListPrepa> {
     prepaController.text = '';
   }
 
-  Widget formPrepa() {
+  Widget formPrepa(int index) {
     return Form(
       key: _formkeyP,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Cadastrar Modo de Preparo'),
+          const Text('Alterar Modo de Preparo'),
           const SizedBox(
             height: 20,
           ),
@@ -143,8 +139,9 @@ class _ListPrepaState extends State<ListPrepa> {
                 onPressed: () {
                   setState(() {
                     if (_formkeyP.currentState!.validate()) {
-                      salvarPrepa(prepaController.text);
+                      alteraPrepa(index, prepaController.text);
                       limparPrepa();
+                      Navigator.pop(context);
                     }
                   });
                 },

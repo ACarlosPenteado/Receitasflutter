@@ -1,7 +1,7 @@
 import 'package:receitas_sandra/uteis/globais.dart';
 
 class Preparo {
-  late final String? descricao;
+  String? descricao;
 
   Preparo({
     this.descricao,

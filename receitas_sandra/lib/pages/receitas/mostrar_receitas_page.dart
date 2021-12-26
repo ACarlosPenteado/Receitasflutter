@@ -1,6 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
+import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
+import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 import 'package:receitas_sandra/widgets/listingre.dart';
@@ -25,17 +30,96 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   double _screenWidth = 0.0;
   late double size;
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore fireDb = FirebaseFirestore.instance;
+
   @override
   void initState() {
     super.initState();
-    print(Global.tamListI);
     size = 220;
   }
 
   @override
-  void didChangeDependencies() {
+  didChangeDependencies() {
     super.didChangeDependencies();
     _screenWidth = MediaQuery.of(context).size.width;
+  }
+
+  void confirma(String id) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.black45,
+          content: Container(
+            width: _screenWidth,
+            height: 50,
+            child: const Padding(
+              padding: EdgeInsets.all(12),
+              child: Center(
+                child: Text(
+                  'Confirma Exclusão',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.purpleAccent,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text(
+                'Ok',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.purpleAccent,
+                ),
+              ),
+              onPressed: () {
+                if (widget.receitas.iduser == _auth.currentUser!.uid) {
+                  exclui(widget.receitas.id);
+                  Fluttertoast.showToast(msg: 'Receita Excluída');
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ListarReceitaPage(tipo: widget.receitas.tipo),
+                    ),
+                  );
+                } else {
+                  Fluttertoast.showToast(msg: 'Receita de outro usuário');
+                }
+              },
+            ),
+            TextButton(
+              child: const Text(
+                'Cancela',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.purpleAccent,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void exclui(String? id) {
+    ReceitasRepository recRepo =
+        ReceitasRepository(auth: _auth.currentUser!.uid);
+    recRepo.excluiReceita(id!);
   }
 
   @override
@@ -102,6 +186,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
             ),
             onPressed: () {
               Global.qual = 'E';
+              Global.id = widget.receitas.id!;
               Global.imagem = widget.receitas.imagem;
               Global.descricao = widget.receitas.descricao;
               Global.tempoPreparo = widget.receitas.tempoPreparo;
@@ -111,6 +196,15 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                   builder: (context) => IncluirReceitaPage(tipo: Global.tipo),
                 ),
               );
+            },
+          ),
+          IconButton(
+            iconSize: 30,
+            icon: const Icon(
+              Icons.delete,
+            ),
+            onPressed: () {
+              confirma(widget.receitas.id!);
             },
           ),
         ],
@@ -457,68 +551,6 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
             ],
           ),
       ],
-    );
-  }
-}
-
-class CustomAppBar extends StatefulWidget {
-  final String title;
-  const CustomAppBar({Key? key, required this.title}) : super(key: key);
-
-  @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
-}
-
-class _CustomAppBarState extends State<CustomAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-    return Material(
-      child: Container(
-        height: 40,
-        width: width,
-        padding: const EdgeInsets.only(left: 0, top: 5, right: 5),
-        decoration: BoxDecoration(
-          gradient:
-              LinearGradient(colors: [Colors.blue[200]!, Colors.cyanAccent]),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-                iconSize: 30,
-                icon: const Icon(
-                  Icons.arrow_back,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            Text(
-              widget.title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-            IconButton(
-                iconSize: 30,
-                icon: const Icon(
-                  Icons.edit,
-                ),
-                onPressed: () {
-                  Global.qual = 'E';
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            IncluirReceitaPage(tipo: Global.tipo)),
-                  );
-                }),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -1,5 +1,8 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:receitas_sandra/model/receitas.dart';
 
 class ReceitasRepository extends ChangeNotifier {
   late FirebaseFirestore fireDb;
@@ -18,10 +21,15 @@ class ReceitasRepository extends ChangeNotifier {
   }
 
   Stream<QuerySnapshot> listReceita(String tipo) {
-    FirebaseFirestore fireDb = FirebaseFirestore.instance;
     CollectionReference colRef = fireDb.collection('Receitas');
-    colRef.where('tipo', isEqualTo: tipo).get();
-
+    colRef.where('tipo', isEqualTo: tipo).where('ativo', isEqualTo: true).get();
     return colRef.snapshots();
+  }
+
+  excluiReceita(String id) {
+    FirebaseFirestore.instance
+        .collection('Receitas')
+        .doc(id)
+        .update({'ativo': false});
   }
 }
