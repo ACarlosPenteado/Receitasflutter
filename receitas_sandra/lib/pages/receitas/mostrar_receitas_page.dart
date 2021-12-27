@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
+import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 import 'package:receitas_sandra/widgets/listingre.dart';
@@ -33,10 +35,16 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore fireDb = FirebaseFirestore.instance;
 
+  String nomeUser = '';
+
   @override
   void initState() {
     super.initState();
     size = 220;
+    getNome(widget.receitas.iduser).then((value) {
+      nomeUser = value.toString();
+      print(nomeUser);
+    });
   }
 
   @override
@@ -88,8 +96,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                   Fluttertoast.showToast(msg: 'Receita Excluída');
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ListarReceitaPage(tipo: widget.receitas.tipo),
+                      builder: (context) => const HomePage(),
                     ),
                   );
                 } else {
@@ -204,7 +211,12 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
               Icons.delete,
             ),
             onPressed: () {
-              confirma(widget.receitas.id!);
+              widget.receitas.iduser == _auth.currentUser!.uid
+                  ? confirma(widget.receitas.id!)
+                  : Fluttertoast.showToast(
+                      msg: 'Somente ' +
+                          nomeUser +
+                          ' pode excluir esta receita!');
             },
           ),
         ],

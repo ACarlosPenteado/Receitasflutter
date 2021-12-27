@@ -7,6 +7,7 @@ import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/mostrar_receitas_page.dart';
+import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/autocomplete.dart';

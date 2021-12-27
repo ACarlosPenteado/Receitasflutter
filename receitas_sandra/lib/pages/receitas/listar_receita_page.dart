@@ -74,10 +74,8 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     )..repeat();
     _grouSelectValue = 'Nome';
     fabKey.currentState?.close();
-    setState(() {
-      listaReceitas();
-      loadFavoritas();
-    });
+    listaReceitas();
+    loadFavoritas();
     super.initState();
   }
 
@@ -216,6 +214,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         );
       }
     }
+
     _receitas = _minhasreceitas;
   }
 

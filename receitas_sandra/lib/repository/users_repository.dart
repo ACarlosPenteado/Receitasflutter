@@ -39,9 +39,16 @@ class UsersRepository extends ChangeNotifier {
   Future<List> listFavoritas(String uid) async {
     List favoritaList = [];
     FirebaseFirestore fireDb = FirebaseFirestore.instance;
-
     DocumentSnapshot colRef = await fireDb.collection('Users').doc(uid).get();
     favoritaList = colRef.get('favoritas');
     return favoritaList;
+  }
+
+  Future<String> nomeUser(String idUser) async {
+    String userNome;
+    var doc =
+        await FirebaseFirestore.instance.collection('Users').doc(idUser).get();
+    userNome = doc.get('nome');
+    return userNome;
   }
 }

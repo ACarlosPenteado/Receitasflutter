@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:uuid/uuid.dart';
+
+FirebaseAuth auth = FirebaseAuth.instance;
 
 String get getDate {
   String data = DateTime.now().toString();
@@ -21,4 +25,10 @@ String get getUser {
   var v4 = uid.v1();
   String novo = v4.toString();
   return novo;
+}
+
+Future<String> getNome(String idUser) {
+  var userRepo = UsersRepository(auth: auth.currentUser!.uid);
+  Future<String> userNome = userRepo.nomeUser(idUser);
+  return userNome;
 }
