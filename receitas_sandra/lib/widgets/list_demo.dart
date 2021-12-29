@@ -28,39 +28,27 @@ class _ListDemoState extends State<ListDemo> {
   late bool _large;
   late bool _medium;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  double _screenWidth = 0.0;
   double size = 150;
 
-  List listRec = [];
-  List receFav = [];
+  List favoritas = [];
   List<Ingrediente> listIngre = [];
   List<Preparo> listPrepa = [];
 
   @override
   void initState() {
-    for (var i = 0; i < widget.receitas.length; i++) {
-      listRec.add(widget.receitas[i]['id']);
-    }
-    /* for (var i = 0; i < listRec.length; i++) {
-      for (var j = 0; j < widget.list.length; j++) {
-        if (listRec.elementAt(i).toString() == widget.list[j].toString()) {
-          preencheListIngre(widget.receitas[i]['ingredientes']);
-          preencheListPrepa(widget.receitas[i]['preparo']);
-          receFav.add(Receitas(
-              id: widget.receitas[i]['id'],
-              data: widget.receitas[i]['data'],
-              descricao: widget.receitas[i]['descricao'],
-              tipo: widget.receitas[i]['tipo'],
-              iduser: widget.receitas[i]['iduser'],
-              tempoPreparo: widget.receitas[i]['tempoPreparo'],
-              rendimento: widget.receitas[i]['rendimento'],
-              imagem: widget.receitas[i]['imagem'],
-              preparo: listPrepa,
-              ingredientes: Global.ingredientes));
-        }
-      }
-    } */
-
+    //print(widget.receitas);
+    listFavoritas();
     super.initState();
+  }
+
+  listFavoritas() {
+    for (var i = 0; i < widget.receitas.length; i++) {
+      if (widget.list.contains(widget.receitas[i].id)) {
+        favoritas.add(widget.receitas[i]);
+      }
+    }
+    print(favoritas);
   }
 
   preencheListIngre(List<dynamic> list) async {
@@ -99,7 +87,7 @@ class _ListDemoState extends State<ListDemo> {
 
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: receFav.length,
+      itemCount: favoritas.length,
       itemBuilder: (_, index) {
         return SingleChildScrollView(
           child: SafeArea(
@@ -111,22 +99,25 @@ class _ListDemoState extends State<ListDemo> {
                     left: 16, top: 0, right: 16, bottom: 5),
                 child: InkWell(
                   child: Stack(
-                    children: <Widget>[
+                    children: [
                       Card(
+                        clipBehavior: Clip.antiAlias,
                         elevation: 12,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        color: Colors.white,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24.0, vertical: 36),
+                        child: AnimatedContainer(
+                          duration: const Duration(seconds: 5),
+                          height: size,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             gradient: const LinearGradient(
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
-                                colors: [Color(0xFF213B6C), Color(0xFF0059A5)]),
+                                colors: [
+                                  Color(0xFF213B6C),
+                                  Color(0xFF0059A5),
+                                ]),
                             boxShadow: const [
                               BoxShadow(
                                 color: Colors.cyan,
@@ -135,127 +126,154 @@ class _ListDemoState extends State<ListDemo> {
                               ),
                             ],
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              receFav[index].imagem != 'Sem Imagem'
-                                  ? Image.network(
-                                      receFav[index].imagem,
-                                      height: 80,
-                                      width: 80,
-                                      fit: BoxFit.fill,
-                                    )
-                                  : Image.asset(
-                                      'images/receitas/receitas.prn',
-                                      height: 80,
-                                      width: 80,
-                                      fit: BoxFit.fill,
-                                    ),
-                              const SizedBox(
-                                width: 16,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Text(
-                                      receFav[index].descricao,
-                                      style: const TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.cyanAccent,
+                          child: Stack(
+                            children: [
+                              /* favoritas[index].imagem != 'Sem Imagem'
+                                  ? Positioned(
+                                      top: 0.0,
+                                      left: 0.0,
+                                      right: 0.0,
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(20),
+                                        ),
+                                        child: Image.network(
+                                          favoritas[index].imagem,
+                                          fit: BoxFit.fitWidth,
+                                        ),
                                       ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        const Text(
-                                          'Tempo de Preparo: ',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
+                                    )
+                                  : Positioned(
+                                      top: 0.0,
+                                      left: 0.0,
+                                      right: 0.0,
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(20),
                                         ),
-                                        Text(
-                                          receFav[index].tempoPreparo,
+                                        child: Image.asset(
+                                          'images/receitas/receitas.prn',
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                      ),
+                                    ), */
+                              Positioned(
+                                top: 78,
+                                left: 32,
+                                width: _screenWidth - 100,
+                                child: Container(
+                                  height: 60,
+                                  padding: const EdgeInsets.only(left: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black38,
+                                    border: Border.all(
+                                      color: Colors.cyanAccent.shade400,
+                                      width: 3.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        top: 0,
+                                        left: 0,
+                                        child: Text(
+                                          favoritas[index].descricao,
+                                          textAlign: TextAlign.left,
                                           style: const TextStyle(
-                                            fontSize: 15,
+                                            fontSize: 25,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.pinkAccent,
+                                            color: Colors.cyanAccent,
                                           ),
                                         ),
-                                        const Text(
-                                          ' minutos',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
+                                      ),
+                                      Positioned(
+                                        top: 30,
+                                        left: 0,
+                                        width: _screenWidth,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              'Tempo de Preparo: ',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            Text(
+                                              favoritas[index].tempoPreparo,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.cyanAccent,
+                                              ),
+                                            ),
+                                            const Text(
+                                              ' minutos',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        const Text(
-                                          'Rendimento: ',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
+                                      ),
+                                      Positioned(
+                                        top: 50,
+                                        left: 0,
+                                        width: _screenWidth,
+                                        child: Row(
+                                          children: [
+                                            const Text(
+                                              'Rendimento: ',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            Text(
+                                              favoritas[index].rendimento,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.cyanAccent,
+                                              ),
+                                            ),
+                                            const Text(
+                                              ' porções',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        Text(
-                                          receFav[index].rendimento,
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.pinkAccent,
-                                          ),
-                                        ),
-                                        const Text(
-                                          ' porções',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const Positioned(
+                                left: 8,
+                                top: 8,
+                                child: Icon(
+                                  Icons.star,
+                                  size: 32,
+                                  color: Colors.deepOrangeAccent,
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const Positioned(
-                        left: 8,
-                        top: 8,
-                        child: Icon(
-                          Icons.star,
-                          size: 32,
-                          color: Colors.deepOrangeAccent,
-                        ),
-                      ),
                     ],
                   ),
-                  onTap: () {
-                    setState(() {
-                      /* preencheListIngre(receFav[index].ingredientes);
-                      preencheListPrepa(receFav[index].preparo);
-                      Global.descricao = receFav[index].descricao;
-                      Global.id = receFav[index].id!;
-                      Global.iduser = receFav[index].iduser;
-                      Global.imagem = receFav[index].imagem;
-                      Global.rendimento = receFav[index].rendimento;
-                      Global.tempoPreparo = receFav[index].tempoPreparo;
-
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const MostrarReceitaPage())); */
-                    });
-                  },
                 ),
               ),
             ),

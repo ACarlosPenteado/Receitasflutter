@@ -150,70 +150,23 @@ class _SelectImageState extends State<SelectImage> {
       onTap: () => _selectPhoto(),
       child: Column(
         children: [
-          /* if (imageUrl.isEmpty)
-            Icon(Icons.person, size: 60, color: Theme.of(context).primaryColor),
-          if (imageUrl.isNotEmpty)
-            Container(
-              width: 110,
-              height: 150,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                      spreadRadius: 0.0,
-                      color: Colors.black45,
-                      offset: Offset(1.0, 10.0),
-                      blurRadius: 20.0),
-                ],
-                color: Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Column(
-                  children: [
-                    Image(
-                      image: NetworkImage(imageUrl),
-                      width: 115,
-                      height: 120,
-                      fit: BoxFit.fill,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Column(
-                        children: [
-                          if (imageUrl.isNotEmpty)
-                            const Text(
-                              'Mudar Imagem',
-                              style: TextStyle(color: Colors.cyan),
-                            )
-                          else
-                            const Text(
-                              'Selecionar Imagem',
-                              style: TextStyle(color: Colors.cyan),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ), */
           InkWell(
             onTap: () => _selectPhoto(),
             child: Padding(
-              padding: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(5.0),
               child: Column(
                 children: [
                   if (imageUrl.isNotEmpty)
                     const Text(
                       'Mudar Imagem',
-                      style: TextStyle(color: Colors.cyan),
+                      style: TextStyle(color: Colors.amberAccent,
+                      shadows: []),
                     )
                   else
                     const Text(
                       'Selecionar Imagem',
-                      style: TextStyle(color: Colors.cyan),
+                      style: TextStyle(color: Colors.amberAccent,
+                      shadows: []),
                     ),
                 ],
               ),

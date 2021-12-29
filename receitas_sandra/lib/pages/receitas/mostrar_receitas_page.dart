@@ -35,98 +35,16 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore fireDb = FirebaseFirestore.instance;
 
-  String nomeUser = '';
-
   @override
   void initState() {
     super.initState();
     size = 220;
-    getNome(widget.receitas.iduser).then((value) {
-      nomeUser = value.toString();
-      print(nomeUser);
-    });
   }
 
   @override
   didChangeDependencies() {
     super.didChangeDependencies();
     _screenWidth = MediaQuery.of(context).size.width;
-  }
-
-  void confirma(String id) {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.black45,
-          content: Container(
-            width: _screenWidth,
-            height: 50,
-            child: const Padding(
-              padding: EdgeInsets.all(12),
-              child: Center(
-                child: Text(
-                  'Confirma Exclusão',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purpleAccent,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: const Text(
-                'Ok',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purpleAccent,
-                ),
-              ),
-              onPressed: () {
-                if (widget.receitas.iduser == _auth.currentUser!.uid) {
-                  exclui(widget.receitas.id);
-                  Fluttertoast.showToast(msg: 'Receita Excluída');
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
-                    ),
-                  );
-                } else {
-                  Fluttertoast.showToast(msg: 'Receita de outro usuário');
-                }
-              },
-            ),
-            TextButton(
-              child: const Text(
-                'Cancela',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purpleAccent,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void exclui(String? id) {
-    ReceitasRepository recRepo =
-        ReceitasRepository(auth: _auth.currentUser!.uid);
-    recRepo.excluiReceita(id!);
   }
 
   @override
@@ -203,20 +121,6 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                   builder: (context) => IncluirReceitaPage(tipo: Global.tipo),
                 ),
               );
-            },
-          ),
-          IconButton(
-            iconSize: 30,
-            icon: const Icon(
-              Icons.delete,
-            ),
-            onPressed: () {
-              widget.receitas.iduser == _auth.currentUser!.uid
-                  ? confirma(widget.receitas.id!)
-                  : Fluttertoast.showToast(
-                      msg: 'Somente ' +
-                          nomeUser +
-                          ' pode excluir esta receita!');
             },
           ),
         ],
@@ -426,13 +330,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.cyanAccent,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black,
-                        blurRadius: 5,
-                        offset: Offset(1, 1),
-                      ),
-                    ],
+                    shadows: [],
                   ),
                 ),
               ),

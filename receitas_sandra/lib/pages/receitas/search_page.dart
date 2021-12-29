@@ -103,7 +103,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ),
-        const Opacity(opacity: 0.88, child: CustomAppBar()),
+        //const Opacity(opacity: 0.88, child: customAppBar()),
         Container(
           alignment: Alignment.bottomCenter,
           margin: const EdgeInsets.only(top: 60),

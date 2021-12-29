@@ -5,6 +5,7 @@ import 'package:receitas_sandra/model/users.dart';
 
 class UsersRepository extends ChangeNotifier {
   final String auth;
+  FirebaseFirestore fireDb = FirebaseFirestore.instance;
   List<Users> _lista = [];
 
   UsersRepository({required this.auth}) {
@@ -21,7 +22,6 @@ class UsersRepository extends ChangeNotifier {
   }
 
   favoritar(FirebaseAuth uid, String idrec) async {
-    FirebaseFirestore fireDb = FirebaseFirestore.instance;
     await fireDb.collection('Users').doc(uid.currentUser!.uid).update({
       'favoritas': FieldValue.arrayUnion([idrec])
     });
@@ -29,7 +29,6 @@ class UsersRepository extends ChangeNotifier {
   }
 
   desfavoritar(FirebaseAuth uid, String idrec) async {
-    FirebaseFirestore fireDb = FirebaseFirestore.instance;
     await fireDb.collection('Users').doc(uid.currentUser!.uid).update({
       'favoritas': FieldValue.arrayRemove([idrec])
     });
@@ -37,8 +36,7 @@ class UsersRepository extends ChangeNotifier {
   }
 
   Future<List> listFavoritas(String uid) async {
-    List favoritaList = [];
-    FirebaseFirestore fireDb = FirebaseFirestore.instance;
+    List favoritaList = [];    
     DocumentSnapshot colRef = await fireDb.collection('Users').doc(uid).get();
     favoritaList = colRef.get('favoritas');
     return favoritaList;

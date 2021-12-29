@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/model/preparo.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
@@ -235,9 +236,22 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
         Container(
           width: _width,
           height: 200,
-          //padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
           margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
-          color: Colors.white,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF213B6C), Color(0xFF0059A5)]),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.cyan,
+                blurRadius: 12,
+                offset: Offset(3, 5),
+              ),
+            ],
+          ),
           child: Form(
             key: _formkey,
             child: Stack(
@@ -249,9 +263,12 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                     top: 0,
                     right: 0,
                     bottom: 0,
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.fitWidth,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.fitWidth,
+                      ),
                     ),
                   ),
                 Positioned(
@@ -280,33 +297,34 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                   ),
                 ),
                 Positioned(
-                    top: 60,
-                    left: 120,
-                    child: Row(
-                      children: [
-                        Column(
-                          children: [
-                            SizedBox(
-                              height: 40,
-                              width: 115,
-                              child: tempoTextFormField(),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Column(
-                          children: [
-                            SizedBox(
-                              height: 40,
-                              width: 115,
-                              child: rendiTextFormField(),
-                            ),
-                          ],
-                        ),
-                      ],
-                    )),
+                  top: 60,
+                  left: 120,
+                  child: Row(
+                    children: [
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 40,
+                            width: 115,
+                            child: tempoTextFormField(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 40,
+                            width: 115,
+                            child: rendiTextFormField(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -717,7 +735,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     setState(() {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => ListarReceitaPage(tipo: widget.tipo),
+          builder: (context) => const HomePage(),
         ),
       );
     });
