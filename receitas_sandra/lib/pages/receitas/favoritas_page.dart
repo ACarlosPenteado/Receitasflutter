@@ -1,10 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
-import 'package:receitas_sandra/repository/receitas_repository.dart';
-import 'package:receitas_sandra/repository/users_repository.dart';
-import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 import 'package:receitas_sandra/widgets/list_demo.dart';
 
 class FavoritasPage extends StatefulWidget {
@@ -40,9 +34,6 @@ class _FavoritasPageState extends State<FavoritasPage> {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     _pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
-    _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
-    final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
       body: Container(
@@ -62,7 +53,7 @@ class _FavoritasPageState extends State<FavoritasPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            clipShape(),
+            ListDemo(list: widget.favoritas, receitas: widget.receitas),
           ],
         ),
       ),
@@ -91,7 +82,6 @@ class _FavoritasPageState extends State<FavoritasPage> {
                   color: Color(0xFF01579B),
                 ),
               ),
-            //ListDemo(list: widget.favoritas, receitas: widget.receitas),
             if (widget.favoritas.isEmpty)
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -108,24 +98,6 @@ class _FavoritasPageState extends State<FavoritasPage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget clipShape() {
-    return Stack(
-      children: <Widget>[
-        Container(
-          alignment: Alignment.bottomCenter,
-          margin: const EdgeInsets.only(top: 60),
-          //_large ? _height / 40 : (_medium ? _height / 33 : _height / 31),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ListDemo(list: widget.favoritas, receitas: widget.receitas),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

@@ -128,11 +128,26 @@ class _ListDemoState extends State<ListDemo> {
                           ),
                           child: Stack(
                             children: [
-                              /* favoritas[index].imagem != 'Sem Imagem'
+                              favoritas[index].imagem == 'Sem Imagem'
                                   ? Positioned(
                                       top: 0.0,
                                       left: 0.0,
                                       right: 0.0,
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(20),
+                                        ),
+                                        child: Image.asset(
+                                          'images/receitas/receitas.png',
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                      ),
+                                    )
+                                  : Positioned(
+                                      top: 0.0,
+                                      left: 0.0,
+                                      right: 0.0,
+                                      bottom: 0.0,
                                       child: ClipRRect(
                                         borderRadius: const BorderRadius.all(
                                           Radius.circular(20),
@@ -142,30 +157,16 @@ class _ListDemoState extends State<ListDemo> {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    )
-                                  : Positioned(
-                                      top: 0.0,
-                                      left: 0.0,
-                                      right: 0.0,
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(20),
-                                        ),
-                                        child: Image.asset(
-                                          'images/receitas/receitas.prn',
-                                          fit: BoxFit.fitWidth,
-                                        ),
-                                      ),
-                                    ), */
+                                    ),
                               Positioned(
-                                top: 78,
+                                top: 70,
                                 left: 32,
-                                width: _screenWidth - 100,
+                                width: 290,
                                 child: Container(
-                                  height: 60,
+                                  height: 70,
                                   padding: const EdgeInsets.only(left: 10),
                                   decoration: BoxDecoration(
-                                    color: Colors.black38,
+                                    color: Colors.black45,
                                     border: Border.all(
                                       color: Colors.cyanAccent.shade400,
                                       width: 3.0,
@@ -190,7 +191,6 @@ class _ListDemoState extends State<ListDemo> {
                                       Positioned(
                                         top: 30,
                                         left: 0,
-                                        width: _screenWidth,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
@@ -223,9 +223,8 @@ class _ListDemoState extends State<ListDemo> {
                                         ),
                                       ),
                                       Positioned(
-                                        top: 50,
+                                        top: 45,
                                         left: 0,
-                                        width: _screenWidth,
                                         child: Row(
                                           children: [
                                             const Text(

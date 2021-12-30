@@ -363,75 +363,47 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     for (var i = 0; i < _lista.length; i++) {
       switch (gr) {
         case 'Nome':
-          if (_lista[i].descricao == pq) {
-            preencheListIngre(qs, _lista[i].ingredientes);
-            preencheListPrepa(qs, _lista[i].preparo);
-            _searchreceitas.add(
-              Receitas(
-                ativo: _lista[i].ativo,
-                id: _lista[i].id,
-                data: _lista[i].data,
-                descricao: _lista[i].descricao,
-                iduser: _lista[i].iduser,
-                imagem: _lista[i].imagem,
-                ingredientes: _listIngre,
-                preparo: _listPrepa,
-                rendimento: _lista[i].rendimento,
-                tempoPreparo: _lista[i].tempoPreparo,
-                tipo: _lista[i].tipo,
-              ),
-            );
+          if (pq.isNotEmpty) {
+            _searchreceitas = _lista
+                .where((rec) => rec.descricao
+                    .toString()
+                    .toLowerCase()
+                    .contains(pq.toLowerCase()))
+                .toList();
           }
           break;
         case 'Ingrediente':
-          print(_listIngre);
           for (var j = 0; j < _listIngre.length; j++) {
-            if (_listIngre[j].descricao!.contains(pq)) {
-              preencheListIngre(qs, _lista[i].ingredientes);
-              preencheListPrepa(qs, _lista[i].preparo);
-              _searchreceitas.add(
-                Receitas(
-                  ativo: _lista[j].ativo,
-                  id: _lista[j].id,
-                  data: _lista[j].data,
-                  descricao: _lista[j].descricao,
-                  iduser: _lista[j].iduser,
-                  ingredientes: _listIngre,
-                  preparo: _listPrepa,
-                  imagem: _lista[j].imagem,
-                  rendimento: _lista[j].rendimento,
-                  tempoPreparo: _lista[j].tempoPreparo,
-                  tipo: _lista[j].tipo,
-                ),
-              );
+            if (_listIngre.isNotEmpty) {
+              _searchreceitas = _lista
+                  .where((rec) => rec.ingredientes
+                      .toString()
+                      .toLowerCase()
+                      .contains(pq.toLowerCase()))
+                  .toList();
             }
           }
 
           break;
         case 'Preparo':
           for (var j = 0; j < _listPrepa.length; j++) {
-            if (_listPrepa[j].descricao!.contains(pq)) {
-              preencheListIngre(qs, _lista[i].ingredientes);
-              preencheListPrepa(qs, _lista[i].preparo);
-              _searchreceitas.add(
-                Receitas(
-                  ativo: _lista[j].ativo,
-                  id: _lista[j].id,
-                  data: _lista[j].data,
-                  descricao: _lista[j].descricao,
-                  iduser: _lista[j].iduser,
-                  imagem: _lista[j].imagem,
-                  ingredientes: _listIngre,
-                  preparo: _listPrepa,
-                  rendimento: _lista[j].rendimento,
-                  tempoPreparo: _lista[j].tempoPreparo,
-                  tipo: _lista[j].tipo,
-                ),
-              );
+            if (_listPrepa.isNotEmpty) {
+              _searchreceitas = _lista
+                  .where((rec) => rec.preparo
+                      .toString()
+                      .toLowerCase()
+                      .contains(pq.toLowerCase()))
+                  .toList();
             }
           }
       }
-      _receitas = _searchreceitas;
+      if (_searchreceitas.isNotEmpty) {
+        currentItem = 3;
+      }
+      setState(() {
+        _receitas = _searchreceitas;
+      });
+      print(_receitas);
     }
   }
 
@@ -489,7 +461,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (currentItem == 2) tipoRec2() else tipoRec(),
+            if (currentItem == 3) tipoRec1() else tipoRec(),
           ],
         ),
       ),
@@ -706,28 +678,15 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
     );
   }
 
-  Widget tipoRec2() {
-    return Column(
-      children: [
-        Text(
-          ' Receitas ' + widget.tipo,
-          style: const TextStyle(
-            fontSize: 25,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF01579B),
-          ),
-        ),
-        Text(
-          qual,
-          style: const TextStyle(
-            fontSize: 25,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF01579B),
-          ),
-        ),
-      ],
+  Widget tipoRec1() {
+    return Text(
+      _receitas.length.toString() + ' Receita(s) encontrada(s)',
+      style: const TextStyle(
+        fontSize: 25,
+        fontStyle: FontStyle.italic,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF01579B),
+      ),
     );
   }
 
