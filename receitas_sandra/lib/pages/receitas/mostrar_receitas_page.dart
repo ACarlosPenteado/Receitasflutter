@@ -1,13 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/model/receitas.dart';
 import 'package:receitas_sandra/pages/receitas/incluir_receita_page.dart';
-import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
-import 'package:receitas_sandra/repository/receitas_repository.dart';
-import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 import 'package:receitas_sandra/widgets/listingre.dart';
@@ -118,7 +113,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
               Global.rendimento = widget.receitas.rendimento;
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => IncluirReceitaPage(tipo: Global.tipo),
+                  builder: (context) => IncluirReceitaPage(tipo: Global.tipo, receita: widget.receitas,),
                 ),
               );
             },
@@ -308,7 +303,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                 padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   border: Border.all(width: 1, color: Colors.purple),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(20),
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -368,7 +363,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                 child: ListIngre(
                   fontSize: 15,
                   list: widget.receitas.ingredientes,
-                  qq: 'm',
+
                 ),
               ),
             ],

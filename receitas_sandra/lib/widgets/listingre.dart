@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:receitas_sandra/model/ingrediente.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/autocomplete.dart';
-import 'package:receitas_sandra/widgets/search.dart';
 import 'package:receitas_sandra/widgets/text_field.dart';
 
 class ListIngre extends StatefulWidget {
   final List? list;
-  final String qq;
   double fontSize;
 
-  ListIngre({Key? key, this.list, required this.fontSize, required this.qq})
+  ListIngre({Key? key, this.list, required this.fontSize})
       : super(key: key);
 
   @override
@@ -36,7 +33,7 @@ class _ListIngreState extends State<ListIngre> {
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: Global.ingredientes.length,
+      itemCount: widget.list!.length,
       itemBuilder: (_, index) {
         return SafeArea(
           child: Center(
@@ -49,7 +46,7 @@ class _ListIngreState extends State<ListIngre> {
                     Expanded(
                       flex: 1,
                       child: Text(
-                        Global.ingredientes
+                        widget.list!
                             .elementAt(index)
                             .quantidade
                             .toString(),
@@ -72,7 +69,7 @@ class _ListIngreState extends State<ListIngre> {
                       flex: 5,
                       child: Text(
                         ' - ' +
-                            Global.ingredientes
+                            widget.list!
                                 .elementAt(index)
                                 .medida
                                 .toString(),
@@ -95,7 +92,7 @@ class _ListIngreState extends State<ListIngre> {
                       flex: 5,
                       child: Text(
                         ' - ' +
-                            Global.ingredientes
+                            widget.list!
                                 .elementAt(index)
                                 .descricao
                                 .toString(),
@@ -115,25 +112,23 @@ class _ListIngreState extends State<ListIngre> {
                   ],
                 ),
                 onTap: () {
-                  if (widget.qq == 'i') {
+
                     setState(() {
-                      print(Global.ingredientes);
-                      print(Global.ingredientes.elementAt(index));
-                      quanController.text = Global.ingredientes
+                      quanController.text = widget.list!
                           .elementAt(index)
                           .quantidade
                           .toString();
-                      selecionado = Global.ingredientes
+                      selecionado = widget.list!
                           .elementAt(index)
                           .medida
                           .toString();
-                      descController.text = Global.ingredientes
+                      descController.text = widget.list!
                           .elementAt(index)
                           .descricao
                           .toString();
                     });
                     cadastraIngre(index);
-                  }
+
                 },
               ),
             ),
@@ -166,9 +161,9 @@ class _ListIngreState extends State<ListIngre> {
   }
 
   alteraIngre(int index, String quantidade, String medida, String descricao) {
-    Global.ingredientes.elementAt(index).quantidade = quantidade;
-    Global.ingredientes.elementAt(index).medida = medida;
-    Global.ingredientes.elementAt(index).descricao = descricao;
+    widget.list!.elementAt(index).quantidade = quantidade;
+    widget.list!.elementAt(index).medida = medida;
+    widget.list!.elementAt(index).descricao = descricao;
 
     limparIngre();
   }

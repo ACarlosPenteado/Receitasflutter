@@ -26,7 +26,7 @@ class _ListPrepaState extends State<ListPrepa> {
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: Global.preparo.length,
+      itemCount: widget.list!.length,
       itemBuilder: (_, index) {
         return SafeArea(
           child: Center(
@@ -41,7 +41,7 @@ class _ListPrepaState extends State<ListPrepa> {
                           flex: 5,
                           child: Text(
                             ' - ' +
-                                Global.preparo
+                                widget.list!
                                     .elementAt(index)
                                     .descricao
                                     .toString(),
@@ -66,7 +66,7 @@ class _ListPrepaState extends State<ListPrepa> {
                 ),
                 onTap: () {
                   prepaController.text =
-                      Global.preparo.elementAt(index).descricao.toString();
+                      widget.list!.elementAt(index).descricao.toString();
                   cadastraPrepa(index);
                 },
               ),
@@ -100,7 +100,7 @@ class _ListPrepaState extends State<ListPrepa> {
   }
 
   alteraPrepa(int index, String descricao) {
-    Global.preparo.elementAt(index).descricao = descricao;
+    widget.list!.elementAt(index).descricao = descricao;
 
     limparPrepa();
   }

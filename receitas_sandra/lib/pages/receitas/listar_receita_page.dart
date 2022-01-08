@@ -190,7 +190,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
 
   preencheListIngre(int ql, List list) async {
     _listIngre = [];
-    Global.ingredientes = [];
     Global.tamListI = 1;
     if (ql == 0) {
       for (var i = 0; i < list.length; i++) {
@@ -211,13 +210,11 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         );
       }
     }
-    Global.ingredientes = _listIngre;
     Global.tamListI += _listIngre.length;
   }
 
   preencheListPrepa(int ql, List list) async {
     _listPrepa = [];
-    Global.preparo = [];
     Global.tamListP = 1;
     if (ql == 0) {
       for (var i = 0; i < list.length; i++) {
@@ -232,7 +229,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         );
       }
     }
-    Global.preparo = _listPrepa;
     Global.tamListP += _listPrepa.length;
   }
 
@@ -705,23 +701,24 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: const <Widget>[
-                  SizedBox(
-                    width: 20,
-                  ),
                   Icon(
-                    Icons.edit,
-                    color: Colors.white,
+                    Icons.delete,
+                    color: Colors.red,
                   ),
                   Text(
-                    " Edit",
+                    'Exclui Receita',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.red,
                       fontWeight: FontWeight.w700,
                     ),
                     textAlign: TextAlign.left,
                   ),
+                  SizedBox(
+                    width: 20,
+                  ),
                 ],
               ),
+              alignment: Alignment.centerLeft,
             ),
           ),
           secondaryBackground: Container(
@@ -733,12 +730,12 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                 children: const <Widget>[
                   Icon(
                     Icons.delete,
-                    color: Colors.white,
+                    color: Colors.red,
                   ),
                   Text(
                     'Exclui Receita',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.red,
                       fontWeight: FontWeight.w700,
                     ),
                     textAlign: TextAlign.right,
@@ -752,7 +749,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             ),
           ),
           confirmDismiss: (direction) async {
-            if (direction == DismissDirection.endToStart) {
+            if (direction == DismissDirection.endToStart || direction == DismissDirection.startToEnd) {
               if (_receitas[index].iduser == _auth.currentUser!.uid) {
                 confirma(_receitas[index].id!, _receitas[index].iduser);
               } else {
@@ -760,18 +757,6 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                     msg: 'Somente ' + nomeUser + ' pode excluir esta receita!');
                 _receitas.removeAt(index);
               }
-            } else if (direction == DismissDirection.startToEnd) {
-              Global.qual = 'E';
-              Global.id = _receitas[index].id!;
-              Global.imagem = _receitas[index].imagem;
-              Global.descricao = _receitas[index].descricao;
-              Global.tempoPreparo = _receitas[index].tempoPreparo;
-              Global.rendimento = _receitas[index].rendimento;
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => IncluirReceitaPage(tipo: Global.tipo),
-                ),
-              );
             }
           },
           child: SafeArea(

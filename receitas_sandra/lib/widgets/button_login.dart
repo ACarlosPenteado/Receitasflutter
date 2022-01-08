@@ -15,7 +15,7 @@ class Button_Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+      padding: const EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0),
       child: InkWell(
         onTap: () {
           onPressed();
@@ -59,7 +59,7 @@ class Button_Login extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(
-                    width: 35,
+                    width: 25,
                   ),
                 ],
               ))

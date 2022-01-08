@@ -381,7 +381,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return Material(
       child: Container(
         height: 40,
-        width: width,
+        width: width - 40,
         padding: const EdgeInsets.only(left: 0, top: 5, right: 5),
         decoration: BoxDecoration(
           gradient:

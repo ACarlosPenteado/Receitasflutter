@@ -1,8 +1,5 @@
-//import 'dart:io';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class BuscaPage extends StatefulWidget {

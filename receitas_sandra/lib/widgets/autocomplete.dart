@@ -5,7 +5,12 @@ class AutoCompleteText extends StatefulWidget {
   final String text;
   const AutoCompleteText({Key? key, required this.text}) : super(key: key);
 
-  static const List<String> _kOptions = <String>[
+  @override
+  State<AutoCompleteText> createState() => _AutoCompleteTextState();
+}
+
+class _AutoCompleteTextState extends State<AutoCompleteText> {
+  static const _kOptions = <String>[
     'colher de café',
     'colher de chá',
     'colher de sopa',
@@ -15,27 +20,40 @@ class AutoCompleteText extends StatefulWidget {
     'mls',
   ];
 
-  @override
-  State<AutoCompleteText> createState() => _AutoCompleteTextState();
-}
+  late String selecionado;
 
-class _AutoCompleteTextState extends State<AutoCompleteText> {
+  final List<DropdownMenuItem<String>> _dropItems = _kOptions
+      .map(
+        (String value) => DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        ),
+      )
+      .toList();
+
+  @override
+  void initState() {
+    Global.ing_med = widget.text;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Autocomplete<String>(
-      initialValue: TextEditingValue(text: widget.text),
-      optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text == '') {
-          return const Iterable<String>.empty();
-        }
-        return AutoCompleteText._kOptions.where((String option) {
-          return option.contains(textEditingValue.text.toLowerCase());
+    return DropdownButton<String>(
+      value: Global.ing_med,
+      hint: const Text('Medidas'),
+      items: _dropItems,
+      dropdownColor: Colors.black26,
+      borderRadius: const BorderRadius.all(Radius.circular(20),),
+      style: const TextStyle(
+        color: Colors.pinkAccent,
+        fontWeight: FontWeight.bold,
+      ),
+      onChanged: ((value) {
+        setState(() {
+          Global.ing_med = value!;
         });
-      },
-      onSelected: (String selection) {
-        Global.ing_med = selection;
-        debugPrint('Você selecionou $selection');
-      },
+      }),
     );
   }
 }
