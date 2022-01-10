@@ -93,10 +93,17 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
         title: Text(
           widget.receitas.descricao,
           style: const TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-            color: Colors.purpleAccent,
-          ),
+              fontSize: 25,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+              color: Colors.lightBlueAccent,
+              shadows: [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5.0,
+                  offset: Offset(1, 1),
+                ),
+              ]),
         ),
         actions: [
           IconButton(
@@ -113,7 +120,10 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
               Global.rendimento = widget.receitas.rendimento;
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => IncluirReceitaPage(tipo: Global.tipo, receita: widget.receitas,),
+                  builder: (context) => IncluirReceitaPage(
+                    tipo: Global.tipo,
+                    receita: widget.receitas,
+                  ),
                 ),
               );
             },
@@ -167,7 +177,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                 right: 0.0,
                                 child: ClipRRect(
                                   borderRadius: const BorderRadius.all(
-                                    Radius.circular(20),
+                                    Radius.circular(12),
                                   ),
                                   child: Image.network(
                                     widget.receitas.imagem,
@@ -181,7 +191,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                 right: 0.0,
                                 child: ClipRRect(
                                   borderRadius: const BorderRadius.all(
-                                    Radius.circular(20),
+                                    Radius.circular(12),
                                   ),
                                   child: Image.asset(
                                     'images/receitas/receitas.png',
@@ -190,14 +200,14 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                 ),
                               ),
                         Positioned(
-                          top: 78,
+                          top: 70,
                           left: 32,
-                          width: _screenWidth - 100,
+                          width: 290,
                           child: Container(
-                            height: 60,
+                            height: 70,
                             padding: const EdgeInsets.only(left: 10),
                             decoration: BoxDecoration(
-                              color: Colors.black38,
+                              color: Colors.black45,
                               border: Border.all(
                                 color: Colors.cyanAccent.shade400,
                                 width: 3.0,
@@ -207,19 +217,24 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                             child: Stack(
                               children: [
                                 Positioned(
-                                  top: 0,
+                                  top: 30,
                                   left: 0,
-                                  width: _screenWidth,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const Text(
                                         'Tempo de Preparo: ',
                                         style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.cyanAccent,
+                                                blurRadius: 5,
+                                                offset: Offset(1, 1),
+                                              ),
+                                            ]),
                                       ),
                                       Text(
                                         widget.receitas.tempoPreparo,
@@ -232,16 +247,22 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                       const Text(
                                         ' minutos',
                                         style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.cyanAccent,
+                                                blurRadius: 5,
+                                                offset: Offset(1, 1),
+                                              ),
+                                            ]),
                                       ),
                                     ],
                                   ),
                                 ),
                                 Positioned(
-                                  top: 30,
+                                  top: 45,
                                   left: 0,
                                   width: _screenWidth,
                                   child: Row(
@@ -250,10 +271,16 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                       const Text(
                                         'Rendimento: ',
                                         style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.cyanAccent,
+                                                blurRadius: 5,
+                                                offset: Offset(1, 1),
+                                              ),
+                                            ]),
                                       ),
                                       Text(
                                         widget.receitas.rendimento,
@@ -266,10 +293,16 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                                       const Text(
                                         ' porções',
                                         style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.cyanAccent,
+                                                blurRadius: 5,
+                                                offset: Offset(1, 1),
+                                              ),
+                                            ]),
                                       ),
                                     ],
                                   ),
@@ -286,7 +319,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
             ),
           ),
         ),
-        if (Global.tamListI > 1)
+        if (Global.tamListI > 0)
           Column(
             children: [
               const SizedBox(
@@ -363,12 +396,12 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
                 child: ListIngre(
                   fontSize: 15,
                   list: widget.receitas.ingredientes,
-
+                  qq: 1,
                 ),
               ),
             ],
           ),
-        if (Global.tamListP > 1)
+        if (Global.tamListP > 0)
           Column(
             children: [
               const SizedBox(

@@ -42,12 +42,24 @@ class _AutoCompleteTextState extends State<AutoCompleteText> {
     return DropdownButton<String>(
       value: Global.ing_med,
       hint: const Text('Medidas'),
+      icon: const Icon(Icons.arrow_downward),
+      iconEnabledColor: Colors.cyanAccent,
       items: _dropItems,
       dropdownColor: Colors.black26,
-      borderRadius: const BorderRadius.all(Radius.circular(20),),
+      borderRadius: const BorderRadius.all(
+        Radius.circular(12),
+      ),
       style: const TextStyle(
-        color: Colors.pinkAccent,
+        color: Colors.cyanAccent,
+        fontSize: 17,
         fontWeight: FontWeight.bold,
+        shadows: [
+          Shadow(
+            color: Colors.black,
+            blurRadius: 5,
+            offset: Offset(1, 1),
+          ),
+        ],
       ),
       onChanged: ((value) {
         setState(() {

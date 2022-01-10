@@ -5,9 +5,10 @@ import 'package:receitas_sandra/widgets/text_field.dart';
 
 class ListIngre extends StatefulWidget {
   final List? list;
+  final int? qq;
   double fontSize;
 
-  ListIngre({Key? key, this.list, required this.fontSize})
+  ListIngre({Key? key, this.list, this.qq, required this.fontSize})
       : super(key: key);
 
   @override
@@ -46,10 +47,26 @@ class _ListIngreState extends State<ListIngre> {
                     Expanded(
                       flex: 1,
                       child: Text(
-                        widget.list!
-                            .elementAt(index)
-                            .quantidade
-                            .toString(),
+                        widget.list!.elementAt(index).quantidade.toString(),
+                        style: TextStyle(
+                          fontSize: widget.fontSize,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.amber.shade800,
+                          shadows: const [
+                            Shadow(
+                              color: Colors.black,
+                              blurRadius: 5,
+                              offset: Offset(1, 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Text(
+                        ' - ' + widget.list!.elementAt(index).medida.toString(),
                         style: TextStyle(
                           fontSize: widget.fontSize,
                           fontStyle: FontStyle.italic,
@@ -69,33 +86,7 @@ class _ListIngreState extends State<ListIngre> {
                       flex: 5,
                       child: Text(
                         ' - ' +
-                            widget.list!
-                                .elementAt(index)
-                                .medida
-                                .toString(),
-                        style: TextStyle(
-                          fontSize: widget.fontSize,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.amber.shade800,
-                          shadows: const [
-                            Shadow(
-                              color: Colors.black,
-                              blurRadius: 5,
-                              offset: Offset(1, 1),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: Text(
-                        ' - ' +
-                            widget.list!
-                                .elementAt(index)
-                                .descricao
-                                .toString(),
+                            widget.list!.elementAt(index).descricao.toString(),
                         style: TextStyle(
                             fontSize: widget.fontSize,
                             fontStyle: FontStyle.italic,
@@ -112,23 +103,17 @@ class _ListIngreState extends State<ListIngre> {
                   ],
                 ),
                 onTap: () {
-
+                  if (widget.qq != 1) {
                     setState(() {
-                      quanController.text = widget.list!
-                          .elementAt(index)
-                          .quantidade
-                          .toString();
-                      selecionado = widget.list!
-                          .elementAt(index)
-                          .medida
-                          .toString();
-                      descController.text = widget.list!
-                          .elementAt(index)
-                          .descricao
-                          .toString();
+                      quanController.text =
+                          widget.list!.elementAt(index).quantidade.toString();
+                      selecionado =
+                          widget.list!.elementAt(index).medida.toString();
+                      descController.text =
+                          widget.list!.elementAt(index).descricao.toString();
                     });
                     cadastraIngre(index);
-
+                  }
                 },
               ),
             ),
@@ -148,10 +133,25 @@ class _ListIngreState extends State<ListIngre> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
-            color: Colors.grey[100],
             width: 320,
+            padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF259cda), Color(0xFF6bbce6)]),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.cyan,
+                  blurRadius: 12,
+                  offset: Offset(3, 5),
+                ),
+              ],
+            ),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(5),
               child: formIngre(index),
             ),
           ),
@@ -180,7 +180,21 @@ class _ListIngreState extends State<ListIngre> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Alterar Ingrediente'),
+          const Text(
+            'Alterar Ingrediente',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -192,18 +206,22 @@ class _ListIngreState extends State<ListIngre> {
                 child: quanTextFormField(),
               ),
               const SizedBox(
-                width: 10,
+                width: 35,
               ),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Material(
-                  borderRadius: BorderRadius.circular(20.0),
-                  elevation: 10,
-                  child: SizedBox(
-                    width: 160,
-                    height: 40,
-                    child: AutoCompleteText(text: selecionado),
-                  ),
+              Material(
+                borderRadius: BorderRadius.circular(20.0),
+                shadowColor: Colors.black26,
+                elevation: 12,
+                color: Colors.black26,
+                child: Container(
+                  padding: const EdgeInsets.only(left: 10),
+                  width: 160,
+                  height: 40,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border:
+                          Border.all(color: Colors.blue.shade900, width: 2.0)),
+                  child: AutoCompleteText(text: selecionado),
                 ),
               ),
             ],
@@ -227,7 +245,21 @@ class _ListIngreState extends State<ListIngre> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
-                child: const Text("Salva"),
+                child: const Text(
+                  "Salva",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
                 onPressed: () {
                   setState(() {
                     if (_formkeyI.currentState!.validate()) {
@@ -240,7 +272,21 @@ class _ListIngreState extends State<ListIngre> {
                 },
               ),
               ElevatedButton(
-                child: const Text("Cancela"),
+                child: const Text(
+                  "Cancela",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
                 onPressed: () {
                   limparIngre();
                   Navigator.pop(context);

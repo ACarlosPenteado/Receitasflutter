@@ -34,11 +34,12 @@ class _HomePageState extends State<HomePage>
   late bool _large;
   late bool _medium;
 
+  GlobalKey<ScaffoldState> mkey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
-  final Color primary = Colors.white;
-  final Color active = Colors.cyan;
-  final Color divider = Colors.grey.shade600;
+  final Color primary = Colors.blueGrey.shade300;
+  final Color active = Colors.cyanAccent;
+  final Color divider = Colors.black;
 
   String nome = '';
   String email = '';
@@ -53,6 +54,8 @@ class _HomePageState extends State<HomePage>
     setState(() {
       getData();
     });
+    mkey = _key;
+
     super.initState();
   }
 
@@ -124,6 +127,19 @@ class _HomePageState extends State<HomePage>
       child: Scaffold(
         key: _key,
         drawer: _buildDrawer(),
+        appBar: AppBar(
+          elevation: 12,
+          centerTitle: true,
+          leading: IconButton(
+            iconSize: 30,
+            icon: const Icon(
+              Icons.menu,
+            ),
+            onPressed: () {
+              mkey.currentState!.openDrawer();
+            },
+          ),
+        ),
         body: Container(
           height: _height,
           width: _width,
@@ -258,32 +274,21 @@ class _HomePageState extends State<HomePage>
 
   _buildDrawer() {
     return ClipPath(
-      /// ---------------------------
-      /// Building Shape for drawer .
-      /// ---------------------------
-
       clipper: OvalRightBorderClipper(),
-
-      /// ---------------------------
-      /// Building drawer widget .
-      /// ---------------------------
-
       child: Drawer(
+        backgroundColor: Colors.blue,
         child: Container(
           padding: const EdgeInsets.only(left: 16.0, right: 40),
           decoration: BoxDecoration(
             color: primary,
-            boxShadow: const [
+            /* boxShadow: const [
               BoxShadow(
                 color: Colors.black45,
               ),
-            ],
+            ], */
           ),
-          width: 300,
+          width: 400,
           child: SafeArea(
-            /// ---------------------------
-            /// Building scrolling  content for drawer .
-            /// ---------------------------
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -379,29 +384,26 @@ class _HomePageState extends State<HomePage>
             const Spacer(),
           ],
         ),
-        onTap: () {
+        onTap: () async {
           switch (title) {
             case 'Busca na Internet':
               showDialog(
                   barrierDismissible: false,
                   context: context,
                   builder: (BuildContext context) {
-                    return DialogCustom(
+                    return const DialogCustom(
                       qchama: 1,
                       txt: 'Que receita procura?',
                       label: 'Receita',
                       txtBtnCancel: 'Cancelar',
                       txtBtnOk: 'Buscar',
-                      route: MaterialPageRoute(
-                          builder: (context) => const BuscaPage()),
                     );
                   });
               break;
             case 'Dados do Usuário':
-              Navigator.pushAndRemoveUntil(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const DataUserPage()),
-                (Route<dynamic> route) => false,
               );
               break;
             case 'Configuração':
@@ -412,7 +414,7 @@ class _HomePageState extends State<HomePage>
                   barrierDismissible: false,
                   context: context,
                   builder: (BuildContext context) {
-                    return DialogCustom(
+                    return const DialogCustom(
                       qchama: 2,
                       txt: 'Quer falar sobre oquê?',
                       labelrec: 'para: Receitas da Sandra',
@@ -420,8 +422,6 @@ class _HomePageState extends State<HomePage>
                       labelbod: 'Escrever mensagem',
                       txtBtnCancel: 'Cancelar',
                       txtBtnOk: 'Enviar',
-                      route: MaterialPageRoute(
-                          builder: (context) => const HomePage()),
                     );
                   });
               break;
@@ -473,42 +473,6 @@ class _HomePageState extends State<HomePage>
   Widget clipShape() {
     return Stack(
       children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(opacity: 0.88, child: CustomAppBar(mkey: _key)),
-        const SizedBox(
-          height: 160,
-        ),
         Center(
           child: Container(
             padding: const EdgeInsets.only(top: 60),

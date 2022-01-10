@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:receitas_sandra/widgets/list_demo.dart';
+import 'package:receitas_sandra/widgets/list_favoritas.dart';
 
 class FavoritasPage extends StatefulWidget {
   final List receitas;
@@ -36,6 +36,34 @@ class _FavoritasPageState extends State<FavoritasPage> {
     _pixelRatio = MediaQuery.of(context).devicePixelRatio;
 
     return Scaffold(
+      appBar: AppBar(
+        elevation: 12,
+        centerTitle: true,
+        leading: IconButton(
+          iconSize: 30,
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text(
+          'Favoritas',
+          style: TextStyle(
+              fontSize: 25,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+              color: Colors.lightBlueAccent,
+              shadows: [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5.0,
+                  offset: Offset(1, 1),
+                ),
+              ]),
+        ),
+      ),
       body: Container(
         height: _height,
         width: _width,
@@ -53,48 +81,22 @@ class _FavoritasPageState extends State<FavoritasPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            ListDemo(list: widget.favoritas, receitas: widget.receitas),
-          ],
-        ),
-      ),
-      appBar: AppBar(
-        elevation: 12,
-        centerTitle: true,
-        leading: IconButton(
-          iconSize: 30,
-          icon: const Icon(
-            Icons.arrow_back,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (widget.favoritas.isNotEmpty)
+            if (widget.favoritas.isEmpty)
               const Text(
-                'Receitas Favoritas',
+                'Não há receitas favoritas!',
                 style: TextStyle(
-                  fontSize: 30,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF01579B),
+                  color: Colors.pink,
+                  fontSize: 25,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black,
+                      blurRadius: 5.0,
+                      offset: Offset(1, 1),
+                    ),
+                  ],
                 ),
               ),
-            if (widget.favoritas.isEmpty)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    'Não há receitas favoritas!',
-                    style: TextStyle(
-                      color: Colors.pink,
-                      fontSize: 30,
-                    ),
-                  ),
-                ],
-              ),
+            ListFavoritas(list: widget.favoritas, receitas: widget.receitas),
           ],
         ),
       ),

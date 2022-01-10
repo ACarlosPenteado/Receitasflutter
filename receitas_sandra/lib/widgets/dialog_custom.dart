@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:receitas_sandra/pages/drawer/busca.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
 class DialogCustom extends StatefulWidget {
@@ -13,9 +14,7 @@ class DialogCustom extends StatefulWidget {
   final String? labelbod;
   final String txtBtnCancel;
   final String txtBtnOk;
-  final Route? route;
 
-  // ignore: use_key_in_widget_constructors
   const DialogCustom({
     required this.qchama,
     required this.txt,
@@ -25,7 +24,6 @@ class DialogCustom extends StatefulWidget {
     this.labelbod,
     required this.txtBtnCancel,
     required this.txtBtnOk,
-    this.route,
   });
 
   @override
@@ -47,10 +45,10 @@ class _DialogCustomState extends State<DialogCustom>
 
   List<String> _list = [];
 
-  bool? _isNomeReceita = false;  
+  bool? _isNomeReceita = false;
   bool? _isIngrediente = false;
   bool? _isPreparo = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -107,6 +105,11 @@ class _DialogCustomState extends State<DialogCustom>
     setState(() {
       attach.removeAt(index);
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -302,7 +305,6 @@ class _DialogCustomState extends State<DialogCustom>
                       ],
                     ),
                   ),
-                
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -369,16 +371,22 @@ class _DialogCustomState extends State<DialogCustom>
                                     _nomeController.text.isEmpty
                                         ? Global.nomeRec = 'receitas'
                                         : Global.nomeRec = _nomeController.text;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const BuscaPage()),
+                                    );
                                     break;
                                   case 2:
                                     envia();
                                     break;
                                   case 3:
                                     if (_nomeController.text.isEmpty) {
-                                        Fluttertoast.showToast(
-                                            gravity: ToastGravity.CENTER,
-                                            msg: 'Digite o que procurar'); }
-                                    else {
+                                      Fluttertoast.showToast(
+                                          gravity: ToastGravity.CENTER,
+                                          msg: 'Digite o que procurar');
+                                    } else {
                                       Global.nomeRec = _nomeController.text;
                                     }
                                     break;

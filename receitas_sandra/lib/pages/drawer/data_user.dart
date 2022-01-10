@@ -5,10 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:receitas_sandra/model/users.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
-import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 
@@ -174,7 +172,7 @@ class _DataUserPageState extends State<DataUserPage> {
     User user = _auth.currentUser!;
     await user.reload();
     if (user.emailVerified) {
-      timer.cancel();      
+      timer.cancel();
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomePage()));
     }
@@ -319,53 +317,73 @@ class _DataUserPageState extends State<DataUserPage> {
 
   Widget buildPortrait() => SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             clipShape(),
-            form(),
-            const SizedBox(
-              height: 25,
-            ),
-            forgetPassTextRow(),
-            const SizedBox(height: 25),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                button1(),
-                const SizedBox(
-                  width: 30,
-                ),
-                button(),
-              ],
-            )
           ],
         ),
       );
 
   Widget buildLandscape() => SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             clipShape(),
-            form(),
-            const SizedBox(
-              height: 25,
-            ),
-            forgetPassTextRow(),
-            const SizedBox(
-              height: 25,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                button1(),
-                const SizedBox(
-                  width: 30,
-                ),
-                button(),
-              ],
-            ),
           ],
         ),
       );
+
+  Widget clipShape() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 50),
+      child: Column(
+        children: [
+          imageUrl.isEmpty
+              ? CircleAvatar(
+                  child: Icon(Icons.person,
+                      size: 60, color: Theme.of(context).primaryColor),
+                )
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                    Global.foto,
+                    width: 100,
+                    height: 100,
+                  ),
+                ),
+          SelectImage(
+            tip: 0,
+            onFileChanged: (_imageUrl) {
+              setState(() {
+                imageUrl = _imageUrl;
+                Global.foto = _imageUrl;
+              });
+            },
+          ),
+          form(),
+          const SizedBox(
+            height: 25,
+          ),
+          forgetPassTextRow(),
+          const SizedBox(
+            height: 25,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              button1(),
+              const SizedBox(
+                width: 30,
+              ),
+              button(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget form() {
     return Container(
@@ -433,7 +451,8 @@ class _DataUserPageState extends State<DataUserPage> {
       mask: MaskTextInputFormatter(
           mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')}),
       icon: Icons.phone,
-      hint: "(99) 99999-9999",
+      hint: '(99) 9999-9999',
+      labelText: 'Telefone',
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu celular!';
@@ -722,110 +741,11 @@ class _DataUserPageState extends State<DataUserPage> {
       ),
     );
   }
-
-  Widget clipShape() {
-    return Stack(
-      children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 40,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 60),
-          child: Container(
-            height: _height / 5.5,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                    spreadRadius: 0.0,
-                    color: Colors.black45,
-                    offset: Offset(1.0, 10.0),
-                    blurRadius: 20.0),
-              ],
-              color: Colors.transparent,
-              shape: BoxShape.circle,
-            ),
-            child: Stack(
-              children: [
-                imageUrl.isEmpty
-                    ? Positioned(
-                        top: 0.0,
-                        left: 0.0,
-                        right: 0.0,
-                        bottom: 0.0,
-                        child: CircleAvatar(
-                          child: Icon(Icons.person,
-                              size: 60, color: Theme.of(context).primaryColor),
-                        ),
-                      )
-                    : Positioned(
-                        top: 0.0,
-                        left: 0.0,
-                        right: 0.0,
-                        bottom: 0.0,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(Global.foto),
-                        ),
-                      ),
-                Positioned(
-                  top: 100.0,
-                  left: 0.0,
-                  right: 0.0,
-                  bottom: 0.0,
-                  child: SelectImage(
-                    tip: 0,
-                    onFileChanged: (_imageUrl) {
-                      setState(() {
-                        imageUrl = _imageUrl;
-                        Global.foto = _imageUrl;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class CustomTextField extends StatefulWidget {
   final String hint;
+  final String? labelText;
   final TextEditingController textEditingController;
   final TextInputType keyboardType;
   final TextInputFormatter mask;
@@ -838,6 +758,7 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField({
     Key? key,
     required this.hint,
+    this.labelText,
     required this.textEditingController,
     required this.keyboardType,
     required this.inputAction,
@@ -868,9 +789,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
     large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
     return Material(
-      borderRadius: BorderRadius.circular(30.0),
-      elevation: large ? 12 : (medium ? 10 : 8),
+      borderRadius: BorderRadius.circular(12.0),
+      elevation: 12,
+      color: Colors.black26,
       child: TextFormField(
+        style: const TextStyle(
+          color: Colors.cyanAccent,
+          fontWeight: FontWeight.bold,
+          shadows: [
+            Shadow(
+              color: Colors.black,
+              blurRadius: 5,
+              offset: Offset(1, 1),
+            ),
+          ],
+        ),
         key: widget.key,
         focusNode: widget.focusNode,
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -882,11 +815,38 @@ class _CustomTextFieldState extends State<CustomTextField> {
         validator: widget.validator,
         decoration: InputDecoration(
           prefixIcon:
-              Icon(widget.icon, color: Colors.indigoAccent[200]!, size: 20),
+              Icon(widget.icon, color: Colors.indigoAccent[100]!, size: 20),
           hintText: widget.hint,
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
+              borderRadius: BorderRadius.circular(12.0),
               borderSide: BorderSide.none),
+          labelStyle: TextStyle(
+            color: Colors.blue.shade200,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            shadows: const [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 5,
+                offset: Offset(1, 1),
+              ),
+            ],
+          ),
+          labelText: widget.labelText,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(
+              color: Colors.blue.shade900,
+              width: 2.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: const BorderSide(
+              color: Colors.indigoAccent,
+              width: 2.0,
+            ),
+          ),
         ),
       ),
     );

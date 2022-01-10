@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/dados': (context) => const DataUserPage(),
         '/EntrarPage': (context) => const EntrarPage(),
+        '/DataUserPage': (context) => const DataUserPage(),
       },
     );
   }

@@ -18,6 +18,7 @@ class _BuscaPageState extends State<BuscaPage> {
   @override
   void initState() {
     nomeRec = Global.nomeRec;
+    print(nomeRec);
     busca =
         'https://www.google.com.br/search?q=$nomeRec&btnK=Pesquisa+Google&rlz=1C2FCXM_pt-PTBR974BR974&sxsrf=AOaemvICZ4GO1Lfnr4JWpZyzwLfRgTX0hg%3A1635097864401&source=hp&ei=CJ11YcWzFOza1sQPnoK9mAc&iflsig=ALs-wAMAAAAAYXWrGO-KZmhseblZMs6NFtl_ttG0wGJi&ved=0ahUKEwjF14GbzuPzAhVsrZUCHR5BD3MQ4dUDCAc&uact=5&oq=medidor+internet&gs_lcp=Cgdnd3Mtd2l6EAMyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEOgQIIxAnOg4ILhCABBCxAxDHARDRAzoICAAQgAQQsQM6DgguEIAEELEDEMcBEKMCOggILhCxAxCDAToLCC4QgAQQxwEQ0QM6CAguEIAEELEDOgUIABCxAzoHCAAQgAQQCkoFCDwSATFQoFpYwrIBYKm0AWgBcAB4AIAB3QGIAaMQkgEGNC4xMi4xmAEAoAEB&sclient=gws-wiz';
     super.initState();

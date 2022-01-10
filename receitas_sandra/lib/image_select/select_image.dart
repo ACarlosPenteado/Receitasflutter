@@ -17,11 +17,6 @@ class SelectImage extends StatefulWidget {
 
   final Function(String imageUrl) onFileChanged;
 
-  /* const SelectImage({
-    required this.tip,
-    required this.onFileChanged,
-  }); */
-
   @override
   _SelectImageState createState() => _SelectImageState();
 }
@@ -157,16 +152,64 @@ class _SelectImageState extends State<SelectImage> {
               child: Column(
                 children: [
                   if (imageUrl.isNotEmpty)
-                    const Text(
-                      'Mudar Imagem',
-                      style: TextStyle(color: Colors.amberAccent,
-                      shadows: []),
+                    Material(
+                      borderRadius: BorderRadius.circular(12.0),
+                      shadowColor: Colors.black26,
+                      elevation: 12,
+                      color: Colors.black26,
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.blue.shade900,
+                            width: 2.0,
+                          ),
+                        ),
+                        child: const Text(
+                          'Mudar Imagem',
+                          style: TextStyle(
+                              color: Colors.cyanAccent,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black,
+                                  blurRadius: 5.0,
+                                  offset: Offset(1, 1),
+                                ),
+                              ]),
+                        ),
+                      ),
                     )
                   else
-                    const Text(
-                      'Selecionar Imagem',
-                      style: TextStyle(color: Colors.amberAccent,
-                      shadows: []),
+                    Material(
+                      borderRadius: BorderRadius.circular(12.0),
+                      shadowColor: Colors.black26,
+                      elevation: 12,
+                      color: Colors.black26,
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.blue.shade900,
+                            width: 2.0,
+                          ),
+                        ),
+                        child: const Text(
+                          'Selecionar Imagem',
+                          style: TextStyle(
+                              color: Colors.cyanAccent,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black,
+                                  blurRadius: 5.0,
+                                  offset: Offset(1, 1),
+                                ),
+                              ]),
+                        ),
+                      ),
                     ),
                 ],
               ),

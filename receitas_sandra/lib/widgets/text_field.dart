@@ -37,14 +37,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      shadowColor: Colors.white,
+      borderRadius: BorderRadius.circular(12.0),
+      shadowColor: Colors.black26,
       elevation: 12,
       color: Colors.black26,
       child: TextFormField(
         style: const TextStyle(
-          color: Colors.purpleAccent,
+          color: Colors.cyanAccent,
           fontWeight: FontWeight.bold,
+          shadows: [
+            Shadow(
+              color: Colors.black,
+              blurRadius: 5,
+              offset: Offset(1, 1),
+            ),
+          ],
         ),
         controller: widget.textEditingController,
         keyboardType: widget.keyboardType,
@@ -60,9 +67,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ],
         decoration: InputDecoration(
           labelStyle: TextStyle(
-            color: Colors.indigoAccent,
+            color: Colors.blue.shade200,
             fontSize: widget.ftm,
             fontWeight: FontWeight.bold,
+            shadows: const [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 5,
+                offset: Offset(1, 1),
+              ),
+            ],
           ),
           labelText: widget.hint,
           suffixText: widget.sufix,
@@ -70,16 +84,23 @@ class _CustomTextFieldState extends State<CustomTextField> {
             fontSize: 15,
             color: Colors.pinkAccent,
             fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 5,
+                offset: Offset(1, 1),
+              ),
+            ],
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(12.0),
             borderSide: BorderSide(
               color: Colors.blue.shade900,
               width: 2.0,
             ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(12.0),
             borderSide: const BorderSide(
               color: Colors.indigoAccent,
               width: 2.0,

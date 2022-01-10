@@ -20,7 +20,8 @@ class IncluirReceitaPage extends StatefulWidget {
   final String tipo;
   final Receitas? receita;
 
-  const IncluirReceitaPage({Key? key, required this.tipo, this.receita}) : super(key: key);
+  const IncluirReceitaPage({Key? key, required this.tipo, this.receita})
+      : super(key: key);
 
   @override
   _IncluirReceitaPageState createState() => _IncluirReceitaPageState();
@@ -78,8 +79,8 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
       id = getId;
       Global.ingredientes = [];
       Global.preparo = [];
-      Global.tamListI = 1;
-      Global.tamListP = 1;
+      Global.tamListI = 0;
+      Global.tamListP = 0;
     }
     super.initState();
   }
@@ -251,11 +252,17 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     return Text(
       qtipo + ' Receita',
       style: const TextStyle(
-        fontSize: 25,
-        fontStyle: FontStyle.italic,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF01579B),
-      ),
+          fontSize: 25,
+          fontStyle: FontStyle.italic,
+          fontWeight: FontWeight.bold,
+          color: Colors.lightBlueAccent,
+          shadows: [
+            Shadow(
+              color: Colors.black,
+              blurRadius: 5.0,
+              offset: Offset(1, 1),
+            ),
+          ]),
     );
   }
 
@@ -293,7 +300,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                     right: 0,
                     bottom: 0,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12),
                       child: Image.network(
                         imageUrl,
                         fit: BoxFit.fitWidth,
@@ -301,7 +308,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                     ),
                   ),
                 Positioned(
-                  left: 0.0,
+                  left: 20,
                   bottom: 5.0,
                   child: SelectImage(
                     tip: 1,
@@ -433,44 +440,43 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
         const SizedBox(
           height: 10,
         ),
-        if (Global.tamListI > 1)
+        if (Global.tamListI > 0)
           AnimatedContainer(
-                duration: const Duration(seconds: 5),
-                height: Global.tamListI.toDouble() * 25,
-                width: 350,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.grey.shade100,
-                        Colors.black45,
-                      ]),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.cyan,
-                      blurRadius: 8,
-                      offset: Offset(3, 3),
-                    ),
-                  ],
+            duration: const Duration(seconds: 5),
+            height: Global.tamListI.toDouble() * 25,
+            width: 350,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.grey.shade100,
+                    Colors.black45,
+                  ]),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.cyan,
+                  blurRadius: 8,
+                  offset: Offset(3, 3),
                 ),
-                child: ListIngre(
-                  list: listIngre,
-                  fontSize: 15,
-
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Divider(
-                height: 10,
-                color: Colors.purple,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
+              ],
+            ),
+            child: ListIngre(
+              list: listIngre,
+              fontSize: 15,
+            ),
+          ),
+        const SizedBox(
+          height: 10,
+        ),
+        const Divider(
+          height: 10,
+          color: Colors.purple,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
         InkWell(
           onTap: () {
             if (nomeController.text.isNotEmpty) {
@@ -535,7 +541,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
         const SizedBox(
           height: 10,
         ),
-        if (Global.tamListP > 1)
+        if (Global.tamListP > 0)
           AnimatedContainer(
             duration: const Duration(seconds: 5),
             height: Global.tamListP.toDouble() * 25,
@@ -619,7 +625,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
           const Text(
             'Cadastrar Ingredientes',
             style: TextStyle(
-              color: Colors.white54,
+              color: Colors.white70,
               fontSize: 18,
               fontWeight: FontWeight.bold,
               shadows: [
@@ -642,24 +648,26 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                 child: quanTextFormField(),
               ),
               const SizedBox(
-                width: 10,
+                width: 35,
               ),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Material(
-                  borderRadius: BorderRadius.circular(20.0),
-                  elevation: 10,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 15),
-                    width: 160,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.indigoAccent,
-                      borderRadius: BorderRadius.circular(20),
+              Material(
+                borderRadius: BorderRadius.circular(12.0),
+                shadowColor: Colors.black26,
+                elevation: 12,
+                color: Colors.black26,
+                child: Container(
+                  padding: const EdgeInsets.only(left: 10),
+                  width: 160,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.blue.shade900,
+                      width: 2.0,
                     ),
-                    child: const AutoCompleteText(
-                      text: 'gramas',
-                    ),
+                  ),
+                  child: const AutoCompleteText(
+                    text: 'gramas',
                   ),
                 ),
               ),
@@ -684,7 +692,21 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
-                child: const Text("Salva"),
+                child: const Text(
+                  "Salva",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
                 onPressed: () {
                   setState(() {
                     if (_formkeyI.currentState!.validate()) {
@@ -696,7 +718,21 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
                 },
               ),
               ElevatedButton(
-                child: const Text("Cancela"),
+                child: const Text(
+                  "Cancela",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
                 onPressed: () {
                   limparIngre();
                   Navigator.pop(context);

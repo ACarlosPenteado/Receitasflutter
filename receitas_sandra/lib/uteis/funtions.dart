@@ -27,8 +27,4 @@ String get getUser {
   return novo;
 }
 
-Future<String> getNome(String idUser) {
-  var userRepo = UsersRepository(auth: auth.currentUser!.uid);
-  Future<String> userNome = userRepo.nomeUser(idUser);
-  return userNome;
-}
+
