@@ -120,13 +120,24 @@ class _DialogCustomState extends State<DialogCustom>
         child: ScaleTransition(
           scale: scaleAnimation,
           child: Container(
-            margin: const EdgeInsets.all(20.0),
-            padding: const EdgeInsets.all(15.0),
-            height: widget.qchama == 1 ? 280.0 : 480.0,
-            decoration: ShapeDecoration(
-                color: Colors.lightBlue,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0))),
+            width: 320,
+            height: widget.qchama == 1 ? 200 : 600,
+            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF259cda), Color(0xFF6bbce6)]),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.cyan,
+                  blurRadius: 12,
+                  offset: Offset(3, 5),
+                ),
+              ],
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -134,51 +145,77 @@ class _DialogCustomState extends State<DialogCustom>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10.0, left: 20.0, right: 20.0),
-                        child: Text(
-                          widget.txt,
-                          style: const TextStyle(
-                              color: Colors.deepPurple,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      Text(
+                        widget.txt,
+                        style: const TextStyle(
+                            fontSize: 20.0,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white70,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black,
+                                blurRadius: 5.0,
+                                offset: Offset(1, 1),
+                              ),
+                            ]),
                       ),
                     ],
                   ),
                 ),
                 if (widget.qchama == 1)
-                  Container(
-                    height: 50,
-                    width: 300,
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                    child: TextField(
+                  Material(
+                    borderRadius: BorderRadius.circular(12.0),
+                    shadowColor: Colors.black26,
+                    elevation: 12,
+                    color: Colors.black26,
+                    child: TextFormField(
+                      style: const TextStyle(
+                        color: Colors.cyanAccent,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black,
+                            blurRadius: 5,
+                            offset: Offset(1, 1),
+                          ),
+                        ],
+                      ),
                       controller: _nomeController,
                       autofocus: true,
                       keyboardType: TextInputType.text,
-                      cursorColor: Colors.purpleAccent,
+                      textCapitalization: TextCapitalization.sentences,
+                      cursorColor: Colors.orange[200],
                       decoration: InputDecoration(
                         label: const Text('Nome da Receita'),
                         hintText: 'Deixe em branco para todas!',
-                        hintStyle: const TextStyle(fontSize: 12),
-                        labelStyle:
-                            TextStyle(color: Colors.deepPurple.shade900),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide.none),
-                        focusedBorder: OutlineInputBorder(
+                        hintStyle: const TextStyle(
+                            color: Colors.white70, fontSize: 12),
+                        labelStyle: TextStyle(
+                          color: Colors.blue.shade200,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          shadows: const [
+                            Shadow(
+                              color: Colors.black,
+                              blurRadius: 5,
+                              offset: Offset(1, 1),
+                            ),
+                          ],
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
                           borderSide: BorderSide(
-                              color: Colors.purple.shade200, width: 2.0),
-                          borderRadius: BorderRadius.circular(10.0),
+                            color: Colors.blue.shade900,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: const BorderSide(
+                            color: Colors.indigoAccent,
+                            width: 2.0,
+                          ),
                         ),
                       ),
                     ),
@@ -187,53 +224,79 @@ class _DialogCustomState extends State<DialogCustom>
                   Form(
                     key: _formKey,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          height: 40,
-                          width: 300,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.white,
+                        Material(
+                          borderRadius: BorderRadius.circular(12.0),
+                          shadowColor: Colors.black26,
+                          elevation: 12,
+                          color: Colors.black26,
+                          child: Center(
+                            child: TextFormField(
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.cyanAccent,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black,
+                                    blurRadius: 5,
+                                    offset: Offset(1, 1),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: TextFormField(
-                            controller: _recipientController,
-                            autofocus: true,
-                            enabled: false,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.purpleAccent,
-                            decoration: InputDecoration(
-                              labelText: widget.labelrec,
-                              labelStyle:
-                                  TextStyle(color: Colors.deepPurple.shade900),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide.none),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.purple.shade200, width: 2.0),
-                                borderRadius: BorderRadius.circular(10.0),
+                              controller: _recipientController,
+                              autofocus: true,
+                              enabled: false,
+                              keyboardType: TextInputType.text,
+                              cursorColor: Colors.orange[200],
+                              decoration: InputDecoration(
+                                prefixText: 'para: ',
+                                prefixStyle: const TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black,
+                                      blurRadius: 5,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ],
+                                ),
+                                labelText: widget.labelrec,
+                                labelStyle:
+                                    const TextStyle(color: Colors.cyanAccent),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    borderSide: BorderSide.none),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.purple.shade200,
+                                      width: 2.0),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Container(
-                          height: 40,
-                          width: 300,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
+                        Material(
+                          borderRadius: BorderRadius.circular(12.0),
+                          shadowColor: Colors.black26,
+                          elevation: 12,
+                          color: Colors.black26,
                           child: TextFormField(
+                            style: const TextStyle(
+                              color: Colors.cyanAccent,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black,
+                                  blurRadius: 5,
+                                  offset: Offset(1, 1),
+                                ),
+                              ],
+                            ),
                             controller: _subjectController,
                             autofocus: true,
                             keyboardType: TextInputType.text,
@@ -242,52 +305,102 @@ class _DialogCustomState extends State<DialogCustom>
                             cursorColor: Colors.purpleAccent,
                             decoration: InputDecoration(
                               labelText: widget.labelsub,
-                              labelStyle:
-                                  TextStyle(color: Colors.deepPurple.shade900),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide.none),
-                              focusedBorder: OutlineInputBorder(
+                              hintStyle: const TextStyle(
+                                  color: Colors.white70, fontSize: 12),
+                              labelStyle: TextStyle(
+                                color: Colors.blue.shade200,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black,
+                                    blurRadius: 5,
+                                    offset: Offset(1, 1),
+                                  ),
+                                ],
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
                                 borderSide: BorderSide(
-                                    color: Colors.purple.shade200, width: 2.0),
-                                borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.blue.shade900,
+                                  width: 2.0,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: const BorderSide(
+                                  color: Colors.indigoAccent,
+                                  width: 2.0,
+                                ),
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Container(
-                          height: 150,
-                          width: 300,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
+                        Material(
+                          borderRadius: BorderRadius.circular(12.0),
+                          shadowColor: Colors.black26,
+                          elevation: 12,
+                          color: Colors.black26,
                           child: TextFormField(
+                            style: const TextStyle(
+                              color: Colors.cyanAccent,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black,
+                                  blurRadius: 5,
+                                  offset: Offset(1, 1),
+                                ),
+                              ],
+                            ),
                             controller: _bodyController,
                             autofocus: true,
                             keyboardType: TextInputType.text,
                             textCapitalization: TextCapitalization.sentences,
-                            cursorColor: Colors.purpleAccent,
-                            maxLines: 3,
+                            cursorColor: Colors.orange[200],
+                            maxLines: 10,
                             maxLength: 300,
                             textAlignVertical: TextAlignVertical.top,
                             decoration: InputDecoration(
                               labelText: widget.labelbod,
-                              labelStyle:
-                                  TextStyle(color: Colors.deepPurple.shade900),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide.none),
-                              focusedBorder: OutlineInputBorder(
+                              labelStyle: TextStyle(
+                                color: Colors.blue.shade200,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black,
+                                    blurRadius: 5,
+                                    offset: Offset(1, 1),
+                                  ),
+                                ],
+                              ),
+                              counterStyle: TextStyle(
+                                color: Colors.blue.shade200,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black,
+                                    blurRadius: 5,
+                                    offset: Offset(1, 1),
+                                  ),
+                                ],
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
                                 borderSide: BorderSide(
-                                    color: Colors.purple.shade200, width: 2.0),
-                                borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.blue.shade900,
+                                  width: 2.0,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: const BorderSide(
+                                  color: Colors.indigoAccent,
+                                  width: 2.0,
+                                ),
                               ),
                             ),
                           ),
@@ -310,7 +423,7 @@ class _DialogCustomState extends State<DialogCustom>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                         child: Container(
                           height: 35.0,
                           width: 110.0,
@@ -328,9 +441,17 @@ class _DialogCustomState extends State<DialogCustom>
                               widget.txtBtnCancel,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                  color: Colors.purple,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15.0),
+                                color: Colors.white70,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black,
+                                    blurRadius: 5,
+                                    offset: Offset(1, 1),
+                                  ),
+                                ],
+                              ),
                             ),
                             onPressed: () {
                               setState(() {
@@ -360,9 +481,17 @@ class _DialogCustomState extends State<DialogCustom>
                               widget.txtBtnOk,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                  color: Colors.purple,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15.0),
+                                color: Colors.white70,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black,
+                                    blurRadius: 5,
+                                    offset: Offset(1, 1),
+                                  ),
+                                ],
+                              ),
                             ),
                             onPressed: () {
                               setState(() {

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:receitas_sandra/pages/drawer/busca.dart';
+import 'package:receitas_sandra/pages/drawer/config.dart';
 import 'package:receitas_sandra/pages/drawer/data_user.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/pages/receitas/escolhe_receita_page.dart';
@@ -407,7 +408,10 @@ class _HomePageState extends State<HomePage>
               );
               break;
             case 'Configuração':
-              print("Configuração");
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ConfigPage()),
+              );
               break;
             case 'Contate-nos':
               showDialog(
@@ -417,7 +421,7 @@ class _HomePageState extends State<HomePage>
                     return const DialogCustom(
                       qchama: 2,
                       txt: 'Quer falar sobre oquê?',
-                      labelrec: 'para: Receitas da Sandra',
+                      labelrec: 'Minhas Receitas',
                       labelsub: 'Assunto',
                       labelbod: 'Escrever mensagem',
                       txtBtnCancel: 'Cancelar',

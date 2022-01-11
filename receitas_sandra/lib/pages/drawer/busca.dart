@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -10,8 +11,11 @@ class BuscaPage extends StatefulWidget {
 }
 
 class _BuscaPageState extends State<BuscaPage> {
+  late WebViewController _controller;
   String nomeRec = '';
   String busca = '';
+  double _width = 0.0;
+  double _height = 1;
 
   bool isLoading = true;
 
@@ -31,7 +35,46 @@ class _BuscaPageState extends State<BuscaPage> {
 
   @override
   Widget build(BuildContext context) {
+    _width = MediaQuery.of(context).size.width;
+    _height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        elevation: 12,
+        centerTitle: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text(
+              'Buscar Receitas',
+              style: TextStyle(
+                  fontSize: 25,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.lightBlueAccent,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black,
+                      blurRadius: 5.0,
+                      offset: Offset(1, 1),
+                    ),
+                  ]),
+            ),
+          ],
+        ),
+        leading: IconButton(
+          iconSize: 30,
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
+              ),
+            );
+          },
+        ),
+      ),
       body: OrientationBuilder(
         builder: (context, orientation) => orientation == Orientation.portrait
             ? buildPortrait()
@@ -40,18 +83,22 @@ class _BuscaPageState extends State<BuscaPage> {
     );
   }
 
-  Widget buildPortrait() => Padding(
-        padding: const EdgeInsets.only(top: 40),
-        child: Stack(
+  Widget buildPortrait() => SingleChildScrollView(
+        child: Column(
           children: [
-            WebView(
-              initialUrl: busca,
-              gestureNavigationEnabled: true,
-              onPageFinished: (_) {
-                setState(() {
-                  isLoading = false;
-                });
-              },
+            Container(
+              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+              width: _width,
+              height: _height,
+              child: WebView(
+                initialUrl: busca,
+                gestureNavigationEnabled: true,
+                onPageFinished: (_) {
+                  setState(() {
+                    isLoading = false;
+                  });
+                },
+              ),
             ),
             isLoading
                 ? Container(
@@ -69,11 +116,19 @@ class _BuscaPageState extends State<BuscaPage> {
         ),
       );
 
-  Widget buildLandscape() => Padding(
-        padding: const EdgeInsets.only(top: 40),
-        child: WebView(
-          initialUrl: busca,
-          gestureNavigationEnabled: true,
+  Widget buildLandscape() => SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+              width: _width,
+              height: _height,
+              child: WebView(
+                initialUrl: busca,
+                gestureNavigationEnabled: true,
+              ),
+            ),
+          ],
         ),
       );
 }
