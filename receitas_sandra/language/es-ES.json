@@ -1,0 +1,15 @@
+{
+    "_comment1": "Config Page",
+    "secao": "Sección",
+    "linguagem": "idioma",
+    "sublinguagem": "Español",
+    "sistema": "Tema",
+    "seguranca": "Seguridad",
+    "biometria": "Biometría",
+    "usarbio": "Usar datos biométricos",
+
+    "_comment2": "Home Page",
+    "qreceita": "Recetas de",
+    "tipoD": "DULCE",
+    "tipoS": "SALADO"
+}

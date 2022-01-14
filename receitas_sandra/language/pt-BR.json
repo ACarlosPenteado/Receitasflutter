@@ -1,0 +1,15 @@
+{
+    "_comment1": "Config Page",
+    "secao": "Seção",
+    "linguagem": "Linguagem",
+    "sublinguagem": "Português",
+    "sistema": "Tema",
+    "seguranca": "Segurança",
+    "biometria": "Biometria",
+    "usarbio": "Usar Biometria",
+
+    "_comment2": "Home Page",
+    "qreceita": "Receitas da(o)",
+    "tipoD": "DOCES",
+    "tipoS": "SALGADAS"
+}

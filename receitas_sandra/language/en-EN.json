@@ -1,0 +1,15 @@
+{    
+    "_comment1": "Config Page",
+    "secao": "Section",
+    "linguagem": "Language",
+    "sublinguagem": "English",
+    "sistema": "Theme",
+    "seguranca": "Safety",
+    "biometria": "Biometry",
+    "usarbio": "Use Biometrics",
+
+    "_comment2": "Home Page",
+    "qreceita": "Recipes From",
+    "tipoD": "CANDY",
+    "tipoS": "SALTED"
+}

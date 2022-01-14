@@ -1,0 +1,5 @@
+Após acrescentar palavras aos arquivos de language
+
+flutter pub run easy_localization:generate -S "language" -O "lib/language"
+
+flutter pub run easy_localization:generate -S "language" -O "lib/language" -o "locale_keys.g.dart" -f key

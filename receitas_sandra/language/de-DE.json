@@ -1,0 +1,15 @@
+{
+    "_comment1": "Config Page",
+    "secao": "Abschnitt",
+    "linguagem": "Sprache",
+    "sublinguagem": "Deutsch",
+    "sistema": "Thema",
+    "seguranca": "Sicherheit",
+    "biometria": "Biometrie",
+    "usarbio": "Verwenden Sie Biometrie",
+
+    "_comment2": "Home Page",
+    "qreceita": "Einnahmen aus",
+    "tipoD": "SÜSSIGKEIT",
+    "tipoS": "GESALZEN"
+}
