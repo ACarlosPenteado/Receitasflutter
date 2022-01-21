@@ -751,6 +751,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputFormatter mask;
   final TextInputAction inputAction;
   final bool obscureText;
+  final bool enabled;
   final IconData icon;
   final FocusNode? focusNode;
   final FormFieldValidator? validator;
@@ -765,6 +766,7 @@ class CustomTextField extends StatefulWidget {
     required this.mask,
     required this.icon,
     this.obscureText = false,
+    this.enabled = true,
     this.focusNode,
     this.validator,
   });
@@ -813,6 +815,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         inputFormatters: [widget.mask],
         cursorColor: Colors.cyan[400]!,
         validator: widget.validator,
+        enabled: widget.enabled,
         decoration: InputDecoration(
           prefixIcon:
               Icon(widget.icon, color: Colors.indigoAccent[100]!, size: 20),

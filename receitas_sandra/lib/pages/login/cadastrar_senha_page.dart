@@ -1,16 +1,13 @@
 import 'dart:async';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:receitas_sandra/model/users.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
-import 'package:receitas_sandra/model/favoritas.dart';
 import 'package:receitas_sandra/pages/login/termos_page.dart';
-import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 
@@ -764,7 +761,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
     return Material(
-      borderRadius: BorderRadius.circular(30.0),
+      borderRadius: BorderRadius.circular(12.0),
       elevation: large ? 12 : (medium ? 10 : 8),
       child: TextFormField(
         key: widget.key,
@@ -782,7 +779,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               Icon(widget.icon, color: Colors.indigoAccent[200]!, size: 20),
           hintText: widget.hint,
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
+              borderRadius: BorderRadius.circular(12.0),
               borderSide: BorderSide.none),
         ),
       ),

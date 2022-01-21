@@ -1,7 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:receitas_sandra/pages/drawer/busca.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 
@@ -45,12 +45,14 @@ class _DialogCustomState extends State<DialogCustom>
 
   List<String> _list = [];
 
-  bool? _isNomeReceita = false;
+  /* bool? _isNomeReceita = false;
   bool? _isIngrediente = false;
-  bool? _isPreparo = false;
+  bool? _isPreparo = false; */
+  String? _grSelectValue;
 
   @override
   void initState() {
+    _grSelectValue = 'Deutsch';
     super.initState();
 
     controller = AnimationController(
@@ -90,20 +92,25 @@ class _DialogCustomState extends State<DialogCustom>
     );
   }
 
-  void _openImagePicker() async {
-    final ImagePicker picker = ImagePicker();
-    final pick =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
-    if (pick != null) {
-      setState(() {
-        attach.add(pick.path);
-      });
-    }
-  }
-
-  void _removeAttach(int index) {
+  void _grChange(String? value) {
     setState(() {
-      attach.removeAt(index);
+      _grSelectValue = value;
+      switch (value) {
+        case 'Deutsch':
+          Global.idioma = 'Deutsch';
+          break;
+        case 'English':
+          context.locale = Locale('en', 'EN');
+          break;
+        case 'Español':
+          Global.idioma = 'Español';
+          break;
+        case 'Português':
+          context.locale = Locale('pt', 'BR');
+          break;
+        default:
+      }
+      Navigator.of(context).pop();
     });
   }
 
@@ -121,7 +128,11 @@ class _DialogCustomState extends State<DialogCustom>
           scale: scaleAnimation,
           child: Container(
             width: 320,
-            height: widget.qchama == 1 ? 200 : 600,
+            height: widget.qchama == 1
+                ? 200
+                : widget.qchama == 2
+                    ? 600
+                    : 300,
             padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -139,7 +150,8 @@ class _DialogCustomState extends State<DialogCustom>
               ],
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Expanded(
                   child: Row(
@@ -418,114 +430,164 @@ class _DialogCustomState extends State<DialogCustom>
                       ],
                     ),
                   ),
+                if (widget.qchama == 3)
+                  Container(
+                    width: 200,
+                    height: 230,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Expanded(
+                      child: ListView(
+                        children: [
+                          ListTile(
+                            title: const Text('Deutsch'),
+                            leading: Radio(
+                              value: 'Deutsch',
+                              groupValue: _grSelectValue,
+                              onChanged: _grChange,
+                            ),
+                          ),
+                          ListTile(
+                            title: const Text('English'),
+                            leading: Radio(
+                              value: 'English',
+                              groupValue: _grSelectValue,
+                              onChanged: _grChange,
+                            ),
+                          ),
+                          ListTile(
+                            title: const Text('Español'),
+                            leading: Radio(
+                              value: 'Español',
+                              groupValue: _grSelectValue,
+                              onChanged: _grChange,
+                            ),
+                          ),
+                          ListTile(
+                            title: const Text('Português'),
+                            leading: Radio(
+                              value: 'Português',
+                              groupValue: _grSelectValue,
+                              onChanged: _grChange,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                        child: Container(
-                          height: 35.0,
-                          width: 110.0,
-                          decoration: const BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.indigo,
-                                blurRadius: 3.0,
-                                offset: Offset(3.0, 3.0),
-                              ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            child: Text(
-                              widget.txtBtnCancel,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black,
-                                    blurRadius: 5,
-                                    offset: Offset(1, 1),
-                                  ),
-                                ],
-                              ),
+                      if (widget.qchama != 3)
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(left: 10.0, right: 10.0),
+                          child: Container(
+                            height: 35.0,
+                            width: 110.0,
+                            decoration: const BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.indigo,
+                                  blurRadius: 3.0,
+                                  offset: Offset(3.0, 3.0),
+                                ),
+                              ],
                             ),
-                            onPressed: () {
-                              setState(() {
-                                Navigator.of(context).pop();
-                              });
-                            },
+                            child: ElevatedButton(
+                              child: Text(
+                                widget.txtBtnCancel,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black,
+                                      blurRadius: 5,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  Navigator.of(context).pop();
+                                });
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
-                        child: Container(
-                          height: 35.0,
-                          width: 110.0,
-                          decoration: const BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.indigo,
-                                blurRadius: 3.0,
-                                offset: Offset(3.0, 3.0),
-                              ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            child: Text(
-                              widget.txtBtnOk,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black,
-                                    blurRadius: 5,
-                                    offset: Offset(1, 1),
-                                  ),
-                                ],
-                              ),
+                      if (widget.qchama != 3)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
+                          child: Container(
+                            height: 35.0,
+                            width: 110.0,
+                            decoration: const BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.indigo,
+                                  blurRadius: 3.0,
+                                  offset: Offset(3.0, 3.0),
+                                ),
+                              ],
                             ),
-                            onPressed: () {
-                              setState(() {
-                                switch (widget.qchama) {
-                                  case 1:
-                                    _nomeController.text.isEmpty
-                                        ? Global.nomeRec = 'receitas'
-                                        : Global.nomeRec = _nomeController.text;
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const BuscaPage()),
-                                    );
-                                    break;
-                                  case 2:
-                                    envia();
-                                    break;
-                                  case 3:
-                                    if (_nomeController.text.isEmpty) {
-                                      Fluttertoast.showToast(
-                                          gravity: ToastGravity.CENTER,
-                                          msg: 'Digite o que procurar');
-                                    } else {
-                                      Global.nomeRec = _nomeController.text;
-                                    }
-                                    break;
-                                  default:
-                                }
-                              });
-                            },
+                            child: ElevatedButton(
+                              child: Text(
+                                widget.txtBtnOk,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black,
+                                      blurRadius: 5,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  switch (widget.qchama) {
+                                    case 1:
+                                      _nomeController.text.isEmpty
+                                          ? Global.nomeRec = 'receitas'
+                                          : Global.nomeRec =
+                                              _nomeController.text;
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BuscaPage()),
+                                      );
+                                      break;
+                                    case 2:
+                                      envia();
+                                      break;
+                                    case 3:
+                                      if (_nomeController.text.isEmpty) {
+                                        Fluttertoast.showToast(
+                                            gravity: ToastGravity.CENTER,
+                                            msg: 'Digite o que procurar');
+                                      } else {
+                                        Global.nomeRec = _nomeController.text;
+                                      }
+                                      break;
+                                    default:
+                                  }
+                                });
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),

@@ -26,7 +26,7 @@ class Button_Login extends StatelessWidget {
             border: Border.all(
               color: color,
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.all(10),
           child: Row(
@@ -53,7 +53,7 @@ class Button_Login extends StatelessWidget {
                         Shadow(
                           offset: Offset(3.0, 3.0),
                           blurRadius: 3.0,
-                          color: Color.fromARGB(55, 0, 162, 232),
+                          color: Colors.black,
                         ),
                       ],
                     ),

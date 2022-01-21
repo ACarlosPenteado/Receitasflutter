@@ -37,4 +37,6 @@ class Global {
   static String ing_des = '';
 
   static String pre_des = '';
+
+  static String idioma = '';
 }

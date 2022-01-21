@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:receitas_sandra/api/local_auth_api.dart';
 import 'package:receitas_sandra/home_page.dart';
+import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/transitions/transitions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:local_auth/local_auth.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -24,10 +28,23 @@ class _SplashScreenState extends State<SplashScreen>
   late bool _medium;
 
   User? result = FirebaseAuth.instance.currentUser;
+  bool canCheckBio = false;
+  bool? bio;
+  String stringValue = "No value";
 
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+
+  getAllSavedData() async {
+    SharedPreferences prefb = await SharedPreferences.getInstance();
+    bio = prefb.getBool("bio");
+    if (bio != null) stringValue = bio.toString();
+    setState(() {});
+  }
+
   @override
   void initState() {
+    getAllSavedData();
+    print(bio);
     super.initState();
     controller = AnimationController(
       vsync: this,
@@ -35,6 +52,12 @@ class _SplashScreenState extends State<SplashScreen>
     )..repeat();
 
     Timer(const Duration(seconds: 5), () {
+      LocalAuthApi.hasBiometrics().then((value) {
+        canCheckBio = value;
+      });
+      if (canCheckBio) {
+        print(canCheckBio);
+      }
       if (result != null) {
         Global.nome = result!.displayName.toString();
         print(result);
@@ -43,7 +66,10 @@ class _SplashScreenState extends State<SplashScreen>
             CustomPageRoute(HomePage(uid: result!.uid)),
             (Route<dynamic> route) => false);
       } else {
-        Navigator.of(context).pushReplacementNamed('/EntrarPage');
+        Navigator.pushAndRemoveUntil(
+            context,
+            CustomPageRoute(const EntrarPage()),
+            (Route<dynamic> route) => false);
       }
     });
   }

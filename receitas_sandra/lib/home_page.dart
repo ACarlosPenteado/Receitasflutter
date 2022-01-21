@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:receitas_sandra/pages/drawer/busca.dart';
+import 'package:receitas_sandra/language/locale_keys.g.dart';
 import 'package:receitas_sandra/pages/drawer/config.dart';
 import 'package:receitas_sandra/pages/drawer/data_user.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/pages/receitas/escolhe_receita_page.dart';
 import 'package:receitas_sandra/pages/receitas/listar_receita_page.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
-import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 import 'package:receitas_sandra/widgets/dialog_custom.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -25,6 +25,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
+  var _isDarkMode;
+
   late AnimationController controller;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -32,8 +34,6 @@ class _HomePageState extends State<HomePage>
   late double _height;
   late double _width;
   late double _pixelRatio;
-  late bool _large;
-  late bool _medium;
 
   GlobalKey<ScaffoldState> mkey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
@@ -99,11 +99,10 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    _isDarkMode = Theme.of(context).brightness == Brightness.light;
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
     _pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
-    _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
 
     return WillPopScope(
       onWillPop: () async {
@@ -215,9 +214,9 @@ class _HomePageState extends State<HomePage>
                   fit: BoxFit.fill,
                 ),
               ),
-              const Text(
-                'DOCES',
-                style: TextStyle(
+              Text(
+                LocaleKeys.tipoD.tr().toString(),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -249,9 +248,9 @@ class _HomePageState extends State<HomePage>
                   fit: BoxFit.fill,
                 ),
               ),
-              const Text(
-                'SALGADAS',
-                style: TextStyle(
+              Text(
+                LocaleKeys.tipoS.tr().toString(),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -345,12 +344,12 @@ class _HomePageState extends State<HomePage>
                   _buildDivider(),
                   _buildRow(Icons.person_pin, "Dados do Usuário"),
                   _buildDivider(),
-                  _buildRow(Icons.settings, "Configuração"),
-                  _buildDivider(),
+                  //_buildRow(Icons.settings, "Configuração"),
+                  //_buildDivider(),
                   _buildRow(Icons.email, "Contate-nos"),
                   _buildDivider(),
-                  _buildRow(Icons.info_outline, "Ajuda"),
-                  _buildDivider(),
+                  // _buildRow(Icons.info_outline, "Ajuda"),
+                  // _buildDivider(),
                 ],
               ),
             ),
@@ -458,9 +457,9 @@ class _HomePageState extends State<HomePage>
           },
           child: Column(
             children: [
-              const Text(
-                'Receitas da(o) ',
-                style: TextStyle(fontSize: 25),
+              Text(
+                LocaleKeys.qreceita.tr().toString(),
+                style: const TextStyle(fontSize: 25),
               ),
               Text(
                 Global.nome,

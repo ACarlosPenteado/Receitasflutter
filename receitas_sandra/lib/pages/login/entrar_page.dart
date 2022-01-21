@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/pages/login/entrar_senha_page.dart';
@@ -37,6 +38,7 @@ class _EntrarPageState extends State<EntrarPage> {
   String data = getDate;
 
   var loading = false;
+  DateTime time = DateTime.now();
 
   void _loginFacebook() async {
     setState(() {
@@ -229,31 +231,65 @@ class _EntrarPageState extends State<EntrarPage> {
     _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
 
-    return Scaffold(
-      body: Container(
-        height: _height,
-        width: _width,
-        padding: const EdgeInsets.only(top: 48),
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              clipShape(),
-              if (loading) ...[
-                const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ],
-              if (!loading) ...[
-                btnEmailSenha(),
-                btnGoogle(),
-                btnFacebook(),
-                btnFone(),
-                const SizedBox(
-                  height: 20,
-                ),
-                btnAjuda(),
-              ]
+    return WillPopScope(
+      onWillPop: () async {
+        final diff = DateTime.now().difference(time);
+        final isExit = diff >= const Duration(seconds: 2);
+
+        time = DateTime.now();
+
+        if (isExit) {
+          Fluttertoast.showToast(
+            msg: 'Pressione novamente para sair',
+            fontSize: 18,
+            textColor: Colors.amber,
+            backgroundColor: Colors.grey.shade700,
+          );
+          return false;
+        } else {
+          Fluttertoast.cancel();
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 12,
+          centerTitle: true,
+          title: const Text('Minhas Receitas'),
+        ),
+        body: Container(
+          height: _height,
+          width: _width,
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Colors.blue,
+              Colors.cyanAccent,
             ],
+          )),
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                clipShape(),
+                if (loading) ...[
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ],
+                if (!loading) ...[
+                  //btnEmailSenha(),
+                  btnGoogle(),
+                  btnFacebook(),
+                  btnFone(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  //btnAjuda(),
+                ]
+              ],
+            ),
           ),
         ),
       ),
@@ -263,52 +299,23 @@ class _EntrarPageState extends State<EntrarPage> {
   Widget clipShape() {
     return Stack(
       children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
+        Center(
+          child: Container(
+            padding: const EdgeInsets.only(top: 60),
+            child: Hero(
+              tag: 'imagerec',
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
+                ),
+                child: Image.asset(
+                  'images/receitas/receitas.jpg',
+                  height: 200,
+                  width: 300,
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        const Opacity(opacity: 0.88, child: CustomAppBar()),
-        const SizedBox(
-          height: 40,
-        ),
-        Container(
-          alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.only(
-              top: _large
-                  ? _height / 40
-                  : (_medium ? _height / 33 : _height / 31)),
-          child: Image.network(
-            'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
-            height: _height / 3.5,
-            width: _width / 3.5,
           ),
         ),
       ],
@@ -317,7 +324,7 @@ class _EntrarPageState extends State<EntrarPage> {
 
   Widget btnEmailSenha() {
     return Button_Login(
-        color: Colors.grey.shade600,
+        color: Colors.white10,
         image: const AssetImage('images/icones/email.png'),
         text: 'Entrar com seu Email',
         onPressed: () {
@@ -328,7 +335,7 @@ class _EntrarPageState extends State<EntrarPage> {
 
   Widget btnGoogle() {
     return Button_Login(
-        color: Colors.grey.shade600,
+        color: Colors.white10,
         image: const AssetImage('images/icones/google.png'),
         text: 'Entrar sua conta Google',
         onPressed: () {
@@ -338,7 +345,7 @@ class _EntrarPageState extends State<EntrarPage> {
 
   Widget btnFacebook() {
     return Button_Login(
-        color: Colors.grey.shade600,
+        color: Colors.white10,
         image: const AssetImage('images/icones/facebook.png'),
         text: 'Entrar sua conta Facebook',
         onPressed: () {
@@ -348,56 +355,23 @@ class _EntrarPageState extends State<EntrarPage> {
 
   Widget btnFone() {
     return Button_Login(
-        color: Colors.grey.shade600,
+        color: Colors.white10,
         image: const AssetImage('images/icones/fone.png'),
         text: 'Entrar número celular',
-        onPressed: () {});
+        onPressed: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const EntrarFonePage()));
+        });
   }
 
   Widget btnAjuda() {
     return Button_Login(
-        color: Colors.grey.shade600,
+        color: Colors.white10,
         image: const AssetImage('images/icones/duvida.png'),
         text: 'Problemas? Entre em contato!',
         onPressed: () {
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const EntrarSenhaPage()));
         });
-  }
-}
-
-class CustomAppBar extends StatefulWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
-
-  @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
-}
-
-class _CustomAppBarState extends State<CustomAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-    return Material(
-      child: Container(
-        height: 40,
-        width: width - 40,
-        padding: const EdgeInsets.only(left: 0, top: 5, right: 5),
-        decoration: BoxDecoration(
-          gradient:
-              LinearGradient(colors: [Colors.blue[200]!, Colors.cyanAccent]),
-        ),
-        child: const Center(
-          child: Text(
-            'Receitas da Sandra',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

@@ -27,14 +27,15 @@ class FormUsuario extends StatefulWidget {
 }
 
 class _FormUsuarioState extends State<FormUsuario> {
-
   final FocusNode _focusNome = FocusNode();
   final FocusNode _focusEmail = FocusNode();
+  final FocusNode _focusFone = FocusNode();
   final FocusNode _focusSenha = FocusNode();
 
   bool _senhaVisible = true;
   bool _enabledEmail = false;
   bool _enabledSenha = false;
+  bool _enabledFone = false;
 
   late double _height;
   late double _width;
@@ -126,18 +127,29 @@ class _FormUsuarioState extends State<FormUsuario> {
     return Center(
       child: Form(
         child: Container(
+          height: 400,
+          padding: const EdgeInsets.all(10),
+          width: _width,
+          color: Colors.white,
           child: Form(
             key: widget.key,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 nomeTextFormField(),
-                SizedBox(height: _height / 60.0),
+                const SizedBox(
+                  height: 10,
+                ),
                 emailTextFormField(),
-                SizedBox(height: _height / 60.0),
+                const SizedBox(
+                  height: 10,
+                ),
                 foneTextFormField(),
-                SizedBox(height: _height / 60.0),
+                const SizedBox(
+                  height: 10,
+                ),
                 senhaTextFormField(),
-                SizedBox(height: _height / 60.0),            
               ],
             ),
           ),
@@ -153,7 +165,8 @@ class _FormUsuarioState extends State<FormUsuario> {
       inputAction: TextInputAction.next,
       keyboardType: TextInputType.text,
       icon: Icons.person,
-      hint: "Nome",
+      hint: "Digite seu Nome",
+      labelText: 'Nome',
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu nome!';
@@ -170,7 +183,8 @@ class _FormUsuarioState extends State<FormUsuario> {
       inputAction: TextInputAction.next,
       mask: MaskTextInputFormatter(mask: ''),
       icon: Icons.email,
-      hint: "Email",
+      hint: "Digite seu Email",
+      labelText: 'Email',
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu email!';
@@ -201,12 +215,25 @@ class _FormUsuarioState extends State<FormUsuario> {
 
   Widget senhaTextFormField() {
     return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 10,
+      borderRadius: BorderRadius.circular(12.0),
+      elevation: 12,
+      color: Colors.black26,
       child: TextFormField(
+        style: const TextStyle(
+          color: Colors.cyanAccent,
+          fontWeight: FontWeight.bold,
+          shadows: [
+            Shadow(
+              color: Colors.black,
+              blurRadius: 5,
+              offset: Offset(1, 1),
+            ),
+          ],
+        ),
         controller: widget.senhaController,
+        focusNode: _focusSenha,
         keyboardType: TextInputType.visiblePassword,
-        cursorColor: Colors.orange[200]!,
+        cursorColor: Colors.cyan.shade400,
         enabled: _enabledSenha,
         validator: (value) {
           if (value!.isEmpty) {
@@ -216,9 +243,9 @@ class _FormUsuarioState extends State<FormUsuario> {
         },
         obscureText: _senhaVisible,
         decoration: InputDecoration(
-          prefixIcon: const Icon(
+          prefixIcon: Icon(
             Icons.lock,
-            color: Colors.indigoAccent,
+            color: Colors.indigoAccent.shade100,
             size: 20,
           ),
           suffixIcon: InkWell(
@@ -241,11 +268,33 @@ class _FormUsuarioState extends State<FormUsuario> {
           labelText: 'Senha',
           hintText: 'Digite sua Senha',
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(12.0),
               borderSide: BorderSide.none),
+          labelStyle: TextStyle(
+            color: Colors.blue.shade200,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            shadows: const [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 5,
+                offset: Offset(1, 1),
+              ),
+            ],
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide(
+              color: Colors.blue.shade900,
+              width: 2.0,
+            ),
+          ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: const BorderSide(
+              color: Colors.indigoAccent,
+              width: 2.0,
+            ),
           ),
         ),
       ),
@@ -321,12 +370,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
         keyboardType: widget.keyboardType,
         textInputAction: widget.inputAction,
         inputFormatters: [widget.mask],
-        cursorColor: Colors.cyan[400]!,
+        cursorColor: Colors.cyan.shade400,
         validator: widget.validator,
         enabled: widget.enabled,
         decoration: InputDecoration(
-          prefixIcon:
-              Icon(widget.icon, color: Colors.indigoAccent[100]!, size: 20),
+          prefixIcon: Icon(
+            widget.icon,
+            color: Colors.indigoAccent.shade100,
+            size: 20,
+          ),
+          labelText: widget.labelText,
           hintText: widget.hint,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
@@ -343,7 +396,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
               ),
             ],
           ),
-          labelText: widget.labelText,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.0),
             borderSide: BorderSide(

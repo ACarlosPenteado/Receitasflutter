@@ -221,10 +221,32 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
     _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
     return Scaffold(
+      appBar: AppBar(
+        elevation: 12,
+        centerTitle: true,
+        leading: IconButton(
+          iconSize: 30,
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Minhas Receitas'),
+      ),
       body: Container(
         height: _height,
         width: _width,
-        padding: const EdgeInsets.only(top: 48),
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.blue,
+            Colors.cyanAccent,
+          ],
+        )),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -247,56 +269,25 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
   }
 
   Widget clipShape() {
-    //double height = MediaQuery.of(context).size.height;
-
     return Stack(
       children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
+        Center(
+          child: Container(
+            padding: const EdgeInsets.only(top: 60),
+            child: Hero(
+              tag: 'imagerec',
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
+                ),
+                child: Image.asset(
+                  'images/receitas/receitas.jpg',
+                  height: 100,
+                  width: 200,
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        const Opacity(opacity: 0.88, child: CustomAppBar()),
-        const SizedBox(
-          height: 40,
-        ),
-        Container(
-          alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.only(
-              top: _large
-                  ? _height / 50
-                  : (_medium ? _height / 55 : _height / 50)),
-          child: Image.network(
-            'https://receitanatureba.com/wp-content/uploads/2020/04/LAYER-BASE-RECEITA-NATUREBA.jpg',
-            height: _height / 3.5,
-            width: _width / 3.5,
           ),
         ),
       ],
@@ -330,7 +321,7 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
             "Entre em sua conta!",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.indigo.shade200,
+              color: Colors.indigo.shade600,
               fontSize: _large ? 20 : (_medium ? 17.5 : 15),
             ),
           ),
@@ -402,28 +393,6 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
         ),
       ),
     );
-
-    /* CustomTextField(
-      keyboardType: TextInputType.emailAddress,
-      textEditingController: nomeController,
-      focusNode: _focusNome,
-      focus: true,
-      enabled: true,
-      icon: Icons.person,
-      hint: "Nome",
-      validator: (value) {
-        if (qB == 0) {
-          if (value.isEmpty) {
-            return 'Entre com seu nome!';
-          }
-          return null;
-        }
-      },
-      onSubmit: (txt) {
-        setState(() {
-          getData(nomeController.text);
-        });
-      }, */
   }
 
   Widget emailTextFormField() {
