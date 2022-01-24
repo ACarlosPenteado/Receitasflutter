@@ -153,14 +153,14 @@ class _SelectImageState extends State<SelectImage> {
                 children: [
                   if (imageUrl.isNotEmpty)
                     Material(
-                      borderRadius: BorderRadius.circular(12.0),
+                      borderRadius: BorderRadius.circular(60.0),
                       shadowColor: Colors.black26,
                       elevation: 12,
                       color: Colors.black26,
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(60),
                           border: Border.all(
                             color: Colors.blue.shade900,
                             width: 2.0,
@@ -183,14 +183,14 @@ class _SelectImageState extends State<SelectImage> {
                     )
                   else
                     Material(
-                      borderRadius: BorderRadius.circular(12.0),
+                      borderRadius: BorderRadius.circular(60.0),
                       shadowColor: Colors.black26,
                       elevation: 12,
                       color: Colors.black26,
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(60),
                           border: Border.all(
                             color: Colors.blue.shade900,
                             width: 2.0,

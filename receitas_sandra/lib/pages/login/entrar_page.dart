@@ -279,7 +279,7 @@ class _EntrarPageState extends State<EntrarPage> {
                   ),
                 ],
                 if (!loading) ...[
-                  //btnEmailSenha(),
+                  btnEmailSenha(),
                   btnGoogle(),
                   btnFacebook(),
                   btnFone(),
