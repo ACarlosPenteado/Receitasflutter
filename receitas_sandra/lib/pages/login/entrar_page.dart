@@ -69,6 +69,7 @@ class _EntrarPageState extends State<EntrarPage> {
           });
         }
       });
+      Global.provedor = 'Facebook';
       Global.email = email;
       Global.nome = nome;
       Global.foto = foto;
@@ -123,7 +124,6 @@ class _EntrarPageState extends State<EntrarPage> {
       loading = true;
     });
     final googleSignIn = GoogleSignIn(scopes: ['email']);
-
     try {
       final googleSignInAccount = await googleSignIn.signIn();
       if (googleSignInAccount == null) {
@@ -157,6 +157,7 @@ class _EntrarPageState extends State<EntrarPage> {
           });
         }
       });
+      Global.provedor = 'Google';
       Global.email = email;
       Global.nome = nome;
       Global.foto = foto;

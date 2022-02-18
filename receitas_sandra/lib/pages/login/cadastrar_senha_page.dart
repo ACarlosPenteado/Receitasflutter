@@ -34,7 +34,6 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   TextEditingController senhaController = TextEditingController();
   TextEditingController confirmaController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey();
-  final GlobalKey<FormFieldState> _nomekey = GlobalKey<FormFieldState>();
 
   late FocusNode _focusNome;
   late FocusNode _focusEmail;
@@ -44,7 +43,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late User user;
-  late Timer timer;
+  Timer? timer;
   CollectionReference colRef = FirebaseFirestore.instance.collection('Users');
 
   bool _senhaVisible = true;
@@ -61,11 +60,11 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     _focusFone = FocusNode();
     _focusSenha = FocusNode();
     _focusConfirma = FocusNode();
-    nomeController.text = 'Miguel';
+    /*nomeController.text = 'Miguel';
     emailController.text = 'acarlos.penteado@gmail.com';
     foneController.text = '1199999999';
     senhaController.text = 'Ac@1234';
-    confirmaController.text = 'Ac@1234';
+    confirmaController.text = 'Ac@1234';*/
     super.initState();
     nomeController.text = Global.nome;
   }
@@ -168,7 +167,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
         Global.foto = user.photoURL!;
         Global.provedor = 'Email';
       });
-      timer.cancel();
+      timer!.cancel();
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomePage()));
     }
@@ -176,7 +175,7 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
 
   @override
   dispose() {
-    timer.cancel();
+    super.dispose();
     nomeController.dispose();
     emailController.dispose();
     foneController.dispose();
@@ -187,7 +186,6 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     _focusFone.dispose();
     _focusSenha.dispose();
     _focusConfirma.dispose();
-    super.dispose();
   }
 
   @override
@@ -197,12 +195,34 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
     _pixelRatio = MediaQuery.of(context).devicePixelRatio;
     _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
-
     return Scaffold(
+      appBar: AppBar(
+        elevation: 12,
+        centerTitle: true,
+        leading: IconButton(
+          iconSize: 30,
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Cadastrar Usuário'),
+      ),
       body: Container(
         height: _height,
         width: _width,
-        margin: const EdgeInsets.only(top: 48),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Colors.blue,
+              Colors.cyanAccent,
+            ],
+          ),
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -223,44 +243,8 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   Widget clipShape() {
     return Stack(
       children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        const Opacity(opacity: 0.88, child: CustomAppBar()),
-        const SizedBox(
-          height: 40,
-        ),
         Padding(
-          padding: const EdgeInsets.only(top: 60),
+          padding: const EdgeInsets.only(top: 10),
           child: Container(
             height: _height / 5.5,
             alignment: Alignment.center,
@@ -323,19 +307,30 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
   Widget form() {
     return Container(
       margin: EdgeInsets.only(
-          left: _width / 12.0, right: _width / 12.0, top: _height / 20.0),
+        left: _width / 12.0,
+        right: _width / 12.0,
+        top: _height / 15.0,
+      ),
       child: Form(
         key: _formkey,
         child: Column(
           children: <Widget>[
             nomeTextFormField(),
-            SizedBox(height: _height / 60.0),
+            SizedBox(
+              height: _height / 40.0,
+            ),
             emailTextFormField(),
-            SizedBox(height: _height / 60.0),
+            SizedBox(
+              height: _height / 40.0,
+            ),
             foneTextFormField(),
-            SizedBox(height: _height / 60.0),
+            SizedBox(
+              height: _height / 40.0,
+            ),
             senhaTextFormField(),
-            SizedBox(height: _height / 60.0),
+            SizedBox(
+              height: _height / 40.0,
+            ),
             confirmaTextFormField(),
           ],
         ),
@@ -345,15 +340,14 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
 
   Widget nomeTextFormField() {
     return CustomTextField(
-      key: _nomekey,
-      focusNode: _focusNome,
       textEditingController: nomeController,
       mask: MaskTextInputFormatter(mask: ''),
       inputAction: TextInputAction.next,
       keyboardType: TextInputType.text,
       focus: false,
       icon: Icons.person,
-      hint: "Nome",
+      hintText: "Digite seu Nome",
+      labelText: 'Nome',
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu nome!';
@@ -371,7 +365,8 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       mask: MaskTextInputFormatter(mask: ''),
       focus: true,
       icon: Icons.email,
-      hint: "Email",
+      hintText: "Digite seu email",
+      labelText: 'Email',
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu email!';
@@ -388,9 +383,10 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
       inputAction: TextInputAction.next,
       focus: false,
       mask: MaskTextInputFormatter(
-          mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')}),
+          mask: '(##)#####-####', filter: {"#": RegExp(r'[0-9]')}),
       icon: Icons.phone,
-      hint: "(99) 99999-9999",
+      hintText: "(99)99999-9999",
+      labelText: 'Telefone',
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu celular!';
@@ -402,110 +398,153 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
 
   Widget senhaTextFormField() {
     return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 10,
-      child: TextFormField(
-        controller: senhaController,
-        keyboardType: TextInputType.text,
-        textInputAction: TextInputAction.next,
-        onFieldSubmitted: (txt) {
-          bool passValid = RegExp(
-                  "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*(),.?:{}|<>]).*")
-              .hasMatch(txt);
-          if (!passValid) {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Center(
-                      child: Text(
-                        'Senha muito fraca!',
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    content: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.cyan.shade100,
-                      ),
-                      padding: const EdgeInsets.all(15),
-                      width: 200,
-                      height: 100,
-                      child: Text(
-                        Global.senhaMessage,
-                        style: const TextStyle(
-                            fontSize: 15,
-                            color: Colors.purple,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: const Text(
-                          "OK",
+      borderRadius: BorderRadius.circular(12.0),
+      elevation: 12,
+      color: Colors.black26,
+      child: Container(
+        width: _width - 20,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: TextFormField(
+          style: const TextStyle(
+            color: Colors.cyanAccent,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 3,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          key: widget.key,
+          focusNode: _focusSenha,
+          controller: senhaController,
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.next,
+          onFieldSubmitted: (txt) {
+            bool passValid = RegExp(
+                    "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*(),.?:{}|<>]).*")
+                .hasMatch(txt);
+            if (!passValid) {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Center(
+                        child: Text(
+                          'Senha muito fraca!',
                           style: TextStyle(
                               fontSize: 18,
                               color: Colors.blue,
                               fontWeight: FontWeight.bold),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            senhaController.clear();
-                            Navigator.of(context).pop();
-                          });
-                        },
-                      )
-                    ],
-                  );
-                });
-          }
-        },
-        cursorColor: Colors.cyan[400]!,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Entre com a senha';
-          } else {
-            if (value.length < 6) {
-              return 'Senha tem que ter o mínimo de 6 dígitos!';
+                      ),
+                      content: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.cyan.shade100,
+                        ),
+                        padding: const EdgeInsets.all(15),
+                        width: 200,
+                        height: 100,
+                        child: Text(
+                          Global.senhaMessage,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.purple,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          child: const Text(
+                            "OK",
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              senhaController.clear();
+                              Navigator.of(context).pop();
+                            });
+                          },
+                        )
+                      ],
+                    );
+                  });
             }
-          }
-          return null;
-        },
-        obscureText: _senhaVisible,
-        decoration: InputDecoration(
-          prefixIcon: const Icon(
-            Icons.lock,
-            color: Colors.indigoAccent,
-            size: 20,
-          ),
-          suffixIcon: InkWell(
-              child: _senhaVisible
-                  ? const Icon(
-                      Icons.visibility,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    )
-                  : const Icon(
-                      Icons.visibility_off,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    ),
-              onTap: () {
-                setState(() {
-                  _senhaVisible = !_senhaVisible;
-                });
-              }),
-          labelText: 'Senha',
-          hintText: 'Digite sua Senha',
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-            borderRadius: BorderRadius.circular(20.0),
+          },
+          cursorColor: Colors.cyan[400]!,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Entre com a senha';
+            } else {
+              if (value.length < 6) {
+                return 'Senha tem que ter o mínimo de 6 dígitos!';
+              }
+            }
+            return null;
+          },
+          obscureText: _senhaVisible,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(
+              Icons.lock,
+              color: Colors.indigoAccent,
+              size: 20,
+            ),
+            suffixIcon: InkWell(
+                child: _senhaVisible
+                    ? const Icon(
+                        Icons.visibility,
+                        color: Colors.indigoAccent,
+                        size: 20,
+                      )
+                    : const Icon(
+                        Icons.visibility_off,
+                        color: Colors.indigoAccent,
+                        size: 20,
+                      ),
+                onTap: () {
+                  setState(() {
+                    _senhaVisible = !_senhaVisible;
+                  });
+                }),
+            labelText: 'Senha',
+            hintText: 'Digite sua Senha',
+            labelStyle: TextStyle(
+              color: Colors.blue.shade200,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              shadows: const [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.blue.shade900,
+                width: 2.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(
+                color: Colors.indigoAccent,
+                width: 2.0,
+              ),
+            ),
           ),
         ),
       ),
@@ -514,67 +553,110 @@ class _CadatrarSenhaPageState extends State<CadatrarSenhaPage> {
 
   Widget confirmaTextFormField() {
     return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 10,
-      child: TextFormField(
-        controller: confirmaController,
-        keyboardType: TextInputType.text,
-        textInputAction: TextInputAction.done,
-        cursorColor: Colors.cyan[400]!,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Confirme a senha';
-          } else {
-            if (value != senhaController.text) {
-              return 'Deve ser igual a senha!';
-            } else {}
-          }
-          return null;
-        },
-        onFieldSubmitted: (txt) {
-          if (txt != senhaController.text) {
-            Fluttertoast.showToast(
-              msg: 'Contra-Senha deve ser igual a senha!',
-              fontSize: 20,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              textColor: Colors.amber,
-              backgroundColor: Colors.black,
-            );
-          }
-        },
-        obscureText: _confirmaVisible,
-        decoration: InputDecoration(
-          prefixIcon: const Icon(
-            Icons.lock,
-            color: Colors.indigoAccent,
-            size: 20,
+      borderRadius: BorderRadius.circular(12.0),
+      elevation: 12,
+      color: Colors.black26,
+      child: Container(
+        width: _width - 20,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: TextFormField(
+          style: const TextStyle(
+            color: Colors.cyanAccent,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 3,
+                offset: Offset(0, 1),
+              ),
+            ],
           ),
-          suffixIcon: InkWell(
-              child: _confirmaVisible
-                  ? const Icon(
-                      Icons.visibility,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    )
-                  : const Icon(
-                      Icons.visibility_off,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    ),
-              onTap: () {
-                setState(() {
-                  _confirmaVisible = !_confirmaVisible;
-                });
-              }),
-          labelText: 'Contra-Senha',
-          hintText: 'Confirme sua Senha',
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-            borderRadius: BorderRadius.circular(20.0),
+          key: widget.key,
+          focusNode: _focusConfirma,
+          controller: confirmaController,
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.done,
+          cursorColor: Colors.cyan[400]!,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Confirme a senha';
+            } else {
+              if (value != senhaController.text) {
+                return 'Deve ser igual a senha!';
+              } else {}
+            }
+            return null;
+          },
+          onFieldSubmitted: (txt) {
+            if (txt != senhaController.text) {
+              Fluttertoast.showToast(
+                msg: 'Contra-Senha deve ser igual a senha!',
+                fontSize: 20,
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                textColor: Colors.amber,
+                backgroundColor: Colors.black,
+              );
+            }
+          },
+          obscureText: _confirmaVisible,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(
+              Icons.lock,
+              color: Colors.indigoAccent,
+              size: 20,
+            ),
+            suffixIcon: InkWell(
+                child: _confirmaVisible
+                    ? const Icon(
+                        Icons.visibility,
+                        color: Colors.indigoAccent,
+                        size: 20,
+                      )
+                    : const Icon(
+                        Icons.visibility_off,
+                        color: Colors.indigoAccent,
+                        size: 20,
+                      ),
+                onTap: () {
+                  setState(() {
+                    _confirmaVisible = !_confirmaVisible;
+                  });
+                }),
+            labelText: 'Repita Senha',
+            hintText: 'Confirme sua Senha',
+            labelStyle: TextStyle(
+              color: Colors.blue.shade200,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              shadows: const [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.blue.shade900,
+                width: 2.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(
+                color: Colors.indigoAccent,
+                width: 2.0,
+              ),
+            ),
           ),
         ),
       ),
@@ -716,10 +798,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
 }
 
 class CustomTextField extends StatefulWidget {
-  final String hint;
+  final String hintText;
+  final String labelText;
   final TextEditingController textEditingController;
   final TextInputType keyboardType;
-  final TextInputFormatter mask;
+  final TextInputFormatter? mask;
   final TextInputAction inputAction;
   final bool obscureText;
   final IconData icon;
@@ -729,7 +812,8 @@ class CustomTextField extends StatefulWidget {
 
   const CustomTextField({
     Key? key,
-    required this.hint,
+    required this.hintText,
+    required this.labelText,
     required this.textEditingController,
     required this.keyboardType,
     required this.inputAction,
@@ -756,31 +840,73 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    _width = MediaQuery.of(context).size.width;
-    _pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
-    medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
     return Material(
       borderRadius: BorderRadius.circular(12.0),
-      elevation: large ? 12 : (medium ? 10 : 8),
-      child: TextFormField(
-        key: widget.key,
-        focusNode: widget.focusNode,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        controller: widget.textEditingController,
-        keyboardType: widget.keyboardType,
-        textInputAction: widget.inputAction,
-        inputFormatters: [widget.mask],
-        cursorColor: Colors.cyan[400]!,
-        validator: widget.validator,
-        autofocus: widget.focus,
-        decoration: InputDecoration(
-          prefixIcon:
-              Icon(widget.icon, color: Colors.indigoAccent[200]!, size: 20),
-          hintText: widget.hint,
-          border: OutlineInputBorder(
+      elevation: 12,
+      color: Colors.black26,
+      child: Container(
+        width: _width - 20,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: TextFormField(
+          style: const TextStyle(
+            color: Colors.cyanAccent,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 3,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          key: widget.key,
+          focusNode: widget.focusNode,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          controller: widget.textEditingController,
+          keyboardType: widget.keyboardType,
+          textInputAction: widget.inputAction,
+          inputFormatters: [widget.mask!],
+          cursorColor: Colors.cyan[400]!,
+          validator: widget.validator,
+          autofocus: widget.focus,
+          decoration: InputDecoration(
+            prefixIcon:
+                Icon(widget.icon, color: Colors.indigoAccent[200]!, size: 20),
+            hintText: widget.hintText,
+            labelText: widget.labelText,
+            labelStyle: TextStyle(
+              color: Colors.blue.shade200,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              shadows: const [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
-              borderSide: BorderSide.none),
+              borderSide: BorderSide(
+                color: Colors.blue.shade900,
+                width: 2.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(
+                color: Colors.indigoAccent,
+                width: 2.0,
+              ),
+            ),
+          ),
         ),
       ),
     );

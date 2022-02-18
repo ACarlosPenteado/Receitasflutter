@@ -3,10 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/home_page.dart';
+import 'package:receitas_sandra/model/users.dart';
 import 'package:receitas_sandra/pages/login/cadastrar_senha_page.dart';
-import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
+import 'package:receitas_sandra/widgets/dialog1_custom.dart';
 
 class EntrarSenhaPage extends StatefulWidget {
   const EntrarSenhaPage({Key? key}) : super(key: key);
@@ -28,13 +29,14 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
   TextEditingController senhaController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey();
 
-  final FocusNode _focusNome = FocusNode();
-  final FocusNode _focusEmail = FocusNode();
-  final FocusNode _focusSenha = FocusNode();
+  late FocusNode _focusNome;
+  late FocusNode _focusEmail;
+  late FocusNode _focusSenha;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool _senhaVisible = true;
+  bool _enabledNome = true;
   bool _enabledEmail = false;
   bool _enabledSenha = false;
 
@@ -46,18 +48,31 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
   @override
   initState() {
     super.initState();
+    _focusNome = FocusNode();
+    _focusEmail = FocusNode();
+    _focusSenha = FocusNode();
+    Global.provedor = 'Email';
     _focusNome.addListener(() {
       //nomeController.text = 'Miguel';
-      getData(nomeController.text);
+      //getData(nomeController.text);
     });
   }
 
   getData(String nome) async {
     var doc = await FirebaseFirestore.instance
         .collection('Users')
-        .where('nome', isEqualTo: nome);
+        .where('nome', isEqualTo: nome)
+        .where('provedor', isEqualTo: 'Email');
     doc.get().then((event) {
       if (event.docs.isNotEmpty) {
+        Users(
+          data: event.docs.elementAt(0).get('data'),
+          email: event.docs.elementAt(0).get('email'),
+          fone: event.docs.elementAt(0).get('fone'),
+          imagem: event.docs.elementAt(0).get('imagem'),
+          nome: event.docs.elementAt(0).get('nome'),
+          provedor: event.docs.elementAt(0).get('provedor'),
+        );
         Global.nome = event.docs.elementAt(0).get('nome');
         Global.email = event.docs.elementAt(0).get('email');
         Global.fone = event.docs.elementAt(0).get('fone');
@@ -66,54 +81,75 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
         } else {
           Global.foto = imageUrl;
         }
-        emailController.text = Global.email;
-        _enabledSenha = true;
+        setState(() {
+          _enabledEmail = true;
+          emailController.text = Global.email;
+          FocusScope.of(context).requestFocus(_focusSenha);
+          _enabledSenha = true;
+        });
       } else {
         Global.nome = nomeController.text;
         emailController.text = '';
         senhaController.text = '';
         if (nomeController.text.isNotEmpty) {
+          setState(() {
+            _enabledNome = false;
+            _enabledEmail = true;
+          });
           showDialog(
               barrierDismissible: false,
               context: context,
               builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Nome não encontrado!'),
-                  content: const Text('Esqueceu seu nome de acesso?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const CadatrarSenhaPage()),
-                            (Route<dynamic> route) => false);
-                      },
-                      child: const Text('Se cadastrar!'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _enabledEmail = true;
-                          _enabledSenha = true;
-                          Navigator.of(context).pop();
-                        });
-                      },
-                      child: const Text('Tentar com email!'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const EntrarPage()),
-                            (Route<dynamic> route) => false);
-                      },
-                      child: const Text('Sair'),
-                    ),
-                  ],
-                );
+                return const Dialog1Custom(
+                    qchama: 1,
+                    txtTitle: 'Nome não encontrado',
+                    txtBtn1: 'Se cadastrar',
+                    txtBtn2: 'Tentar com email',
+                    txtBtn3: 'Sair');
+              });
+        }
+      }
+    });
+  }
+
+  getEmail(String email) async {
+    var doc = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('email', isEqualTo: email)
+        .where('provedor', isEqualTo: 'Email');
+    doc.get().then((event) {
+      if (event.docs.isNotEmpty) {
+        Global.nome = event.docs.elementAt(0).get('nome');
+        Global.email = event.docs.elementAt(0).get('email');
+        if (event.docs.elementAt(0).get('imagem').isNotEmpty) {
+          Global.foto = event.docs.elementAt(0).get('imagem');
+        } else {
+          Global.foto = imageUrl;
+        }
+        emailController.text = Global.email;
+        setState(() {
+          nomeController.text = Global.nome;
+          _enabledSenha = true;
+        });
+      } else {
+        Global.email = emailController.text;
+        nomeController.text = '';
+        senhaController.text = '';
+        if (emailController.text.isNotEmpty) {
+          setState(() {
+            _enabledNome = false;
+            _enabledEmail = false;
+          });
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) {
+                return const Dialog1Custom(
+                    qchama: 1,
+                    txtTitle: 'Email não encontrado',
+                    txtBtn1: 'Se cadastrar',
+                    txtBtn2: 'Tentar com email',
+                    txtBtn3: 'Sair');
               });
         }
       }
@@ -239,14 +275,15 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
         height: _height,
         width: _width,
         decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            Colors.blue,
-            Colors.cyanAccent,
-          ],
-        )),
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Colors.blue,
+              Colors.cyanAccent,
+            ],
+          ),
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -298,13 +335,21 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
     return Container(
       margin: EdgeInsets.only(left: _width / 20, top: _height / 90),
       child: Row(
-        children: <Widget>[
-          Text(
-            'Bem-vinda(o)',
-            style: TextStyle(
-              color: Colors.indigo.shade700,
-              fontWeight: FontWeight.bold,
-              fontSize: _large ? 60 : (_medium ? 50 : 40),
+        children: const <Widget>[
+          Center(
+            child: Text(
+              'Bem-vinda(o)',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 40,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black,
+                      blurRadius: 3,
+                      offset: Offset(2, 2),
+                    ),
+                  ]),
             ),
           ),
         ],
@@ -354,42 +399,87 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
   }
 
   Widget nomeTextFormField() {
-    return TextFormField(
-      controller: nomeController,
-      keyboardType: TextInputType.text,
-      textCapitalization: TextCapitalization.words,
-      textInputAction: TextInputAction.next,
-      cursorColor: Colors.orange[200]!,
-      validator: (value) {
-        if (qB == 0) {
-          if (value!.isEmpty) {
-            return 'Entre com seu nome!';
-          }
-          return null;
-        }
-      },
-      onFieldSubmitted: (txt) {
-        setState(() {
-          getData(txt);
-        });
-      },
-      focusNode: _focusNome,
-      autofocus: true,
-      enabled: true,
-      decoration: InputDecoration(
-        prefixIcon: const Icon(
-          Icons.person,
-          color: Colors.indigoAccent,
-          size: 20,
+    return Material(
+      borderRadius: BorderRadius.circular(12.0),
+      elevation: 12,
+      color: Colors.black26,
+      child: Container(
+        width: _width - 20,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
         ),
-        hintText: 'Nome',
-        labelText: 'Nome',
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-          borderRadius: BorderRadius.circular(20.0),
+        child: TextFormField(
+          style: const TextStyle(
+            color: Colors.cyanAccent,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 3,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          controller: nomeController,
+          keyboardType: TextInputType.text,
+          textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.next,
+          cursorColor: Colors.cyan.shade400,
+          validator: (value) {
+            if (qB == 0) {
+              if (value!.isEmpty) {
+                return 'Entre com seu nome!';
+              }
+              return null;
+            }
+          },
+          onFieldSubmitted: (txt) {
+            setState(() {
+              getData(txt);
+            });
+          },
+          focusNode: _focusNome,
+          autofocus: true,
+          enabled: _enabledNome,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(
+              Icons.person,
+              color: Colors.indigoAccent,
+              size: 20,
+            ),
+            hintText: 'Digite seu nome',
+            labelText: 'Nome',
+            labelStyle: TextStyle(
+              color: Colors.blue.shade200,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              shadows: const [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.blue.shade900,
+                width: 2.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(
+                color: Colors.indigoAccent,
+                width: 2.0,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -399,11 +489,15 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
     return CustomTextField(
       keyboardType: TextInputType.emailAddress,
       textEditingController: emailController,
+      inputAction: TextInputAction.next,
       icon: Icons.email,
       hint: "Email",
       focusNode: _focusEmail,
       focus: false,
       enabled: _enabledEmail,
+      onFieldSubmitted: (txt) {
+        getEmail(txt);
+      },
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu email!';
@@ -419,51 +513,92 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
 
   Widget senhaTextFormField() {
     return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 10,
-      child: TextFormField(
-        controller: senhaController,
-        keyboardType: TextInputType.visiblePassword,
-        cursorColor: Colors.orange[200]!,
-        enabled: _enabledSenha,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Entre com a senha!';
-          }
-          return null;
-        },
-        obscureText: _senhaVisible,
-        decoration: InputDecoration(
-          prefixIcon: const Icon(
-            Icons.lock,
-            color: Colors.indigoAccent,
-            size: 20,
+      borderRadius: BorderRadius.circular(12.0),
+      elevation: 12,
+      color: Colors.black26,
+      child: Container(
+        width: _width - 20,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: TextFormField(
+          style: const TextStyle(
+            color: Colors.cyanAccent,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 3,
+                offset: Offset(0, 1),
+              ),
+            ],
           ),
-          suffixIcon: InkWell(
-              child: _senhaVisible
-                  ? const Icon(
-                      Icons.visibility,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    )
-                  : const Icon(
-                      Icons.visibility_off,
-                      color: Colors.indigoAccent,
-                      size: 20,
-                    ),
-              onTap: () {
-                setState(() {
-                  _senhaVisible = !_senhaVisible;
-                });
-              }),
-          labelText: 'Senha',
-          hintText: 'Digite sua Senha',
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-            borderRadius: BorderRadius.circular(20.0),
+          controller: senhaController,
+          keyboardType: TextInputType.visiblePassword,
+          cursorColor: Colors.cyan.shade400,
+          enabled: _enabledSenha,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Entre com a senha!';
+            }
+            return null;
+          },
+          obscureText: _senhaVisible,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(
+              Icons.lock,
+              color: Colors.indigoAccent,
+              size: 20,
+            ),
+            suffixIcon: InkWell(
+                child: _senhaVisible
+                    ? const Icon(
+                        Icons.visibility,
+                        color: Colors.indigoAccent,
+                        size: 20,
+                      )
+                    : const Icon(
+                        Icons.visibility_off,
+                        color: Colors.indigoAccent,
+                        size: 20,
+                      ),
+                onTap: () {
+                  setState(() {
+                    _senhaVisible = !_senhaVisible;
+                  });
+                }),
+            labelText: 'Senha',
+            hintText: 'Digite sua Senha',
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none),
+            labelStyle: TextStyle(
+              color: Colors.blue.shade200,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              shadows: const [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.blue.shade900,
+                width: 2.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(
+                color: Colors.indigoAccent,
+                width: 2.0,
+              ),
+            ),
           ),
         ),
       ),
@@ -582,7 +717,7 @@ class _EntrarSenhaPageState extends State<EntrarSenhaPage> {
   }
 }
 
-class CustomAppBar extends StatefulWidget {
+/* class CustomAppBar extends StatefulWidget {
   const CustomAppBar({Key? key}) : super(key: key);
 
   @override
@@ -631,15 +766,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
       ),
     );
   }
-}
-
+} 
+*/
 class CustomTextField extends StatefulWidget {
   final String hint;
+  final String? labelText;
   final TextEditingController textEditingController;
   final TextInputType keyboardType;
   final IconData icon;
+  final TextInputAction inputAction;
   final FormFieldValidator? validator;
-  final FormFieldValidator? onSubmit;
+  final Function(String txt)? onFieldSubmitted;
   final FocusNode? focusNode;
   final bool focus;
   final bool enabled;
@@ -647,11 +784,13 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField({
     Key? key,
     required this.hint,
+    this.labelText,
     required this.textEditingController,
     required this.keyboardType,
+    required this.inputAction,
     required this.icon,
     this.validator,
-    this.onSubmit,
+    this.onFieldSubmitted,
     this.focusNode,
     required this.focus,
     required this.enabled,
@@ -677,31 +816,73 @@ class _CustomTextFieldState extends State<CustomTextField> {
     large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
     medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
     return Material(
-      borderRadius: BorderRadius.circular(20.0),
-      elevation: 10,
-      child: TextFormField(
-        controller: widget.textEditingController,
-        keyboardType: widget.keyboardType,
-        cursorColor: Colors.orange[200]!,
-        validator: widget.validator,
-        onFieldSubmitted: widget.onSubmit,
-        focusNode: widget.focusNode,
-        autofocus: widget.focus,
-        enabled: widget.enabled,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            widget.icon,
-            color: Colors.indigoAccent,
-            size: 20,
+      borderRadius: BorderRadius.circular(12.0),
+      elevation: 12,
+      color: Colors.black26,
+      child: Container(
+        width: _width - 20,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: TextFormField(
+          style: const TextStyle(
+            color: Colors.cyanAccent,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 3,
+                offset: Offset(0, 1),
+              ),
+            ],
           ),
-          hintText: widget.hint,
-          labelText: widget.hint,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-            borderRadius: BorderRadius.circular(20.0),
+          key: widget.key,
+          controller: widget.textEditingController,
+          keyboardType: widget.keyboardType,
+          cursorColor: Colors.cyan.shade400,
+          validator: widget.validator,
+          onFieldSubmitted: widget.onFieldSubmitted,
+          focusNode: widget.focusNode,
+          autofocus: widget.focus,
+          enabled: widget.enabled,
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              widget.icon,
+              color: Colors.indigoAccent,
+              size: 20,
+            ),
+            hintText: widget.hint,
+            labelText: widget.labelText,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none),
+            labelStyle: TextStyle(
+              color: Colors.blue.shade200,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              shadows: const [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.blue.shade900,
+                width: 2.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(
+                color: Colors.indigoAccent,
+                width: 2.0,
+              ),
+            ),
           ),
         ),
       ),

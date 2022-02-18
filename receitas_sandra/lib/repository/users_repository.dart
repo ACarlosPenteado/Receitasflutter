@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:receitas_sandra/model/users.dart';
+import 'package:receitas_sandra/uteis/globais.dart';
 
 class UsersRepository extends ChangeNotifier {
   final String auth;
-  FirebaseFirestore fireDb = FirebaseFirestore.instance;
+  late FirebaseFirestore fireDb;
   List<Users> _lista = [];
 
   UsersRepository({required this.auth}) {
@@ -17,7 +18,6 @@ class UsersRepository extends ChangeNotifier {
   }
 
   _startFirestore() {
-    FirebaseFirestore fireDb;
     fireDb = FirebaseFirestore.instance;
   }
 
@@ -36,7 +36,7 @@ class UsersRepository extends ChangeNotifier {
   }
 
   Future<List> listFavoritas(String uid) async {
-    List favoritaList = [];    
+    List favoritaList = [];
     DocumentSnapshot colRef = await fireDb.collection('Users').doc(uid).get();
     favoritaList = colRef.get('favoritas');
     return favoritaList;
@@ -48,5 +48,13 @@ class UsersRepository extends ChangeNotifier {
         await FirebaseFirestore.instance.collection('Users').doc(idUser).get();
     userNome = doc.get('nome');
     return userNome;
+  }
+
+  Stream<QuerySnapshot> foneUser() {
+    Stream<QuerySnapshot<Map<String, dynamic>>> colRef = fireDb
+        .collection('Users')
+        .where("provedor", isEqualTo: 'Fone')
+        .snapshots();
+    return colRef;
   }
 }

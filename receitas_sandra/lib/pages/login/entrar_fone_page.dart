@@ -7,9 +7,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
+import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:pinput/pin_put/pin_put.dart';
+import 'package:receitas_sandra/widgets/progress_painter.dart';
 
 enum MobileVerificationState {
   SHOW_MOBILE_FORM_STATE,
@@ -23,9 +25,11 @@ class EntrarFonePage extends StatefulWidget {
   _EntrarFonePageState createState() => _EntrarFonePageState();
 }
 
-class _EntrarFonePageState extends State<EntrarFonePage> {
+class _EntrarFonePageState extends State<EntrarFonePage>
+    with SingleTickerProviderStateMixin {
   MobileVerificationState currentState =
       MobileVerificationState.SHOW_MOBILE_FORM_STATE;
+  late AnimationController controller;
 
   late double _height;
   late double _width;
@@ -69,6 +73,45 @@ class _EntrarFonePageState extends State<EntrarFonePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   @override
+  void initState() {
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat();
+    //foneController.text = '(11) 97180-7694';
+    super.initState();
+  }
+
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  cadastrar(String user) {
+    List favoritaList = [];
+    UsersRepository userRepo = UsersRepository(auth: user);
+    userRepo.foneUser().listen((event) {
+      if (event.docs.isEmpty) {
+        colRef.doc(user).set({
+          'data': getDate,
+          'email': emailController.text,
+          'favoritas': [],
+          'fone': foneController.text,
+          'imagem': imageUrl,
+          'nome': nomeController.text,
+          'provedor': Global.provedor,
+        }).then((value) {
+          setState(() {
+            Global.email = emailController.text;
+            Global.nome = nomeController.text;
+            Global.foto = imageUrl;
+          });
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
@@ -89,11 +132,21 @@ class _EntrarFonePageState extends State<EntrarFonePage> {
           ),
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             showLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
+                ? SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, child) {
+                        return CustomPaint(
+                          painter: ProgressPainter(controller),
+                        );
+                      },
+                    ),
                   )
                 : currentState == MobileVerificationState.SHOW_MOBILE_FORM_STATE
                     ? Flexible(
@@ -110,29 +163,6 @@ class _EntrarFonePageState extends State<EntrarFonePage> {
       ),
     );
   }
-
-  /* void signInWithPhoneAuthCredential(
-      PhoneAuthCredential phoneAuthCredential) async {
-    setState(() {
-      showLoading = true;
-    });
-    try {
-      final authCredential =
-          await _auth.signInWithCredential(phoneAuthCredential);
-      setState(() {
-        showLoading = false;
-      });
-      if (authCredential.user != null) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const HomePage()));
-      }
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        showLoading = false;
-      });
-      Fluttertoast.showToast(msg: e.message.toString());
-    }
-  } */
 
   getMobileFormWidget(context) {
     return SingleChildScrollView(
@@ -178,6 +208,7 @@ class _EntrarFonePageState extends State<EntrarFonePage> {
                 ),
                 onPressed: () async {
                   setState(() {
+                    Global.fone = foneController.text;
                     showLoading = true;
                   });
                   await _auth.verifyPhoneNumber(
@@ -366,6 +397,9 @@ class _EntrarFonePageState extends State<EntrarFonePage> {
             Padding(
               padding: const EdgeInsets.only(top: 10, left: 30, right: 30),
               child: PinPut(
+                withCursor: true,
+                cursorColor: Colors.deepPurpleAccent,
+                autofocus: true,
                 fieldsCount: 6,
                 textStyle: TextStyle(
                   fontSize: 35.0,
@@ -411,58 +445,6 @@ class _EntrarFonePageState extends State<EntrarFonePage> {
     );
   }
 
-  cadastrar(String user) {
-    if (Global.provedor == 'Fone') {
-      try {
-        colRef.doc(user).set({
-          'email': emailController.text,
-          'fone': foneController.text,
-          'imagem': imageUrl,
-          'nome': nomeController.text,
-          'provedor': Global.provedor,
-        }).then((value) {
-          setState(() {
-            Global.email = emailController.text;
-            Global.nome = nomeController.text;
-            Global.foto = imageUrl;
-          });
-        });
-      } on FirebaseAuthException catch (e) {
-        var mensagem = '';
-        switch (e.code) {
-          case 'invalid-email':
-            mensagem = 'O email não é válido!';
-            break;
-          case 'email-already-in-use':
-            mensagem = 'Email já for usado por outro usuário!';
-            break;
-          case 'requires-recent-login':
-            mensagem =
-                'Tempo para entrar não atende aos requisitos de segurança!';
-            break;
-          case 'weak-password':
-            mensagem = 'A senha não for forte o suficiente.';
-            break;
-          default:
-        }
-      }
-    } /* else {
-      colRef.doc(_auth.currentUser!.uid).update({
-        'email': emailController.text,
-        'fone': foneController.text,
-        'imagem': imageUrl,
-        'nome': nomeController.text,
-        'provedor': 'Email',
-      }).then((__) {
-        setState(() {
-          Global.email = emailController.text;
-          Global.nome = nomeController.text;
-          Global.foto = imageUrl;
-        });
-      });
-    } */
-  }
-
   Widget nomeTextFormField() {
     return CustomTextField(
       textEditingController: nomeController,
@@ -503,7 +485,7 @@ class _EntrarFonePageState extends State<EntrarFonePage> {
     return CustomTextField(
       keyboardType: TextInputType.number,
       textEditingController: foneController,
-      inputAction: TextInputAction.next,
+      inputAction: TextInputAction.done,
       mask: MaskTextInputFormatter(
           mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')}),
       icon: Icons.phone,

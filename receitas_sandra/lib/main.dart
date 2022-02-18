@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/language/codegen_loader.g.dart';
 import 'package:receitas_sandra/pages/drawer/data_user.dart';
+import 'package:receitas_sandra/pages/login/cadastrar_senha_page.dart';
 import 'package:receitas_sandra/pages/login/entrar_page.dart';
 import 'package:receitas_sandra/providers/theme_notifier.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
@@ -85,12 +86,13 @@ class _MyAppState extends State<MyApp> {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      initialRoute: '/splash',      
+      initialRoute: '/splash',
       routes: <String, WidgetBuilder>{
         '/splash': (context) => const SplashScreen(),
         '/home': (context) => const HomePage(),
         '/dados': (context) => const DataUserPage(),
         '/EntrarPage': (context) => const EntrarPage(),
+        '/CadastrarSenhaPage': (context) => const CadatrarSenhaPage(),
         '/DataUserPage': (context) => const DataUserPage(),
       },
       home: const SplashScreen(),

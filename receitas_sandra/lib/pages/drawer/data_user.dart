@@ -7,9 +7,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
+import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
-import 'package:receitas_sandra/widgets/form_usuario.dart';
 
 class DataUserPage extends StatefulWidget {
   static const routeName = '/DataUserPage';
@@ -41,12 +41,14 @@ class _DataUserPageState extends State<DataUserPage> {
   String imageUrl = '';
 
   bool isLogginIn = false;
+  bool isChange = true;
 
   bool _senhaVisible = true;
   bool _confirmaVisible = true;
-  bool _enabledEmail = false;
-  bool _enabledSenha = false;
-  bool _enabledFone = false;
+  bool _enabledNome = true;
+  bool _enabledEmail = true;
+  bool _enabledSenha = true;
+  bool _enabledFone = true;
 
   @override
   void initState() {
@@ -54,6 +56,14 @@ class _DataUserPageState extends State<DataUserPage> {
     emailController.text = Global.email;
     foneController.text = Global.fone;
     imageUrl = Global.foto;
+    if (Global.provedor == 'Google' || Global.provedor == 'Facebook') {
+      _enabledNome = false;
+      _enabledEmail = false;
+      isChange = false;
+    } else if (Global.provedor == 'Fone') {
+      _enabledFone = false;
+      isChange = false;
+    }
     super.initState();
   }
 
@@ -76,11 +86,11 @@ class _DataUserPageState extends State<DataUserPage> {
                   checkEmailVerified();
                   if (user.emailVerified) {
                     colRef.doc(_auth.currentUser!.uid).update({
+                      'data': getDate,
                       'email': emailController.text,
                       'fone': foneController.text,
                       'imagem': imageUrl,
                       'nome': nomeController.text,
-                      'provedor': 'Email',
                     }).then((value) {
                       setState(() {
                         Global.email = emailController.text;
@@ -149,11 +159,11 @@ class _DataUserPageState extends State<DataUserPage> {
         });
       } else {
         colRef.doc(_auth.currentUser!.uid).update({
+          'data': getDate,
           'email': emailController.text,
           'fone': foneController.text,
           'imagem': imageUrl,
           'nome': nomeController.text,
-          'provedor': 'Email',
         }).then((__) {
           setState(() {
             Global.email = emailController.text;
@@ -162,9 +172,33 @@ class _DataUserPageState extends State<DataUserPage> {
           });
         });
       }
-    } else {
-      Fluttertoast.showToast(msg: 'Altere pela sua conta!');
+    } else if (Global.provedor == 'Facebook' || Global.provedor == 'Google') {
+      try {
+        colRef.doc(_auth.currentUser!.uid).update({
+          'fone': foneController.text,
+        });
+        Global.fone = foneController.text;
+      } finally {
+        setState(() {
+          isLogginIn = false;
+        });
+      }
+    } else if (Global.provedor == 'Fone') {
+      try {
+        colRef.doc(_auth.currentUser!.uid).update({
+          'data': getDate,
+          'email': emailController.text,
+          'imagem': imageUrl,
+          'nome': nomeController.text,
+        });
+        Global.fone = foneController.text;
+      } finally {
+        setState(() {
+          isLogginIn = false;
+        });
+      }
     }
+
     setState(() {
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HomePage()));
@@ -328,13 +362,37 @@ class _DataUserPageState extends State<DataUserPage> {
             right: 10,
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            //mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Flexible(
-                flex: 3,
+              /* Flexible(
+                flex: 2,
                 fit: FlexFit.loose,
-                child: clipShape(),
+                child:  */
+              clipShape(),
+              //),
+              /* Flexible(
+                flex: 2,
+                fit: FlexFit.loose,
+                child:  */
+              form(),
+              //),
+              const SizedBox(
+                height: 25,
+              ),
+              if (isChange)
+                SizedBox(
+                  child: forgetPassTextRow(),
+                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  button1(),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  button(),
+                ],
               ),
             ],
           ),
@@ -354,10 +412,34 @@ class _DataUserPageState extends State<DataUserPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Flexible(
+              /* Flexible(
+                flex: 1,
+                fit: FlexFit.loose,
+                child:  */
+              clipShape(),
+              //),
+              /* Flexible(
                 flex: 3,
                 fit: FlexFit.loose,
-                child: clipShape(),
+                child:  */
+              form(),
+              //),
+              const SizedBox(
+                height: 25,
+              ),
+              forgetPassTextRow(),
+              const SizedBox(
+                height: 25,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  button1(),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  button(),
+                ],
               ),
             ],
           ),
@@ -417,38 +499,16 @@ class _DataUserPageState extends State<DataUserPage> {
                     ],
                   ),
                 ),
-          SelectImage(
-            tip: 0,
-            onFileChanged: (_imageUrl) {
-              setState(() {
-                imageUrl = _imageUrl;
-                Global.foto = _imageUrl;
-              });
-            },
-          ),
-          // form(),
-          Flexible(
-            flex: 3,
-            fit: FlexFit.loose,
-            child: form(),
-          ),
-          const SizedBox(
-            height: 25,
-          ),
-          forgetPassTextRow(),
-          const SizedBox(
-            height: 25,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              button1(),
-              const SizedBox(
-                width: 30,
-              ),
-              button(),
-            ],
-          ),
+          if (isChange)
+            SelectImage(
+              tip: 0,
+              onFileChanged: (_imageUrl) {
+                setState(() {
+                  imageUrl = _imageUrl;
+                  Global.foto = _imageUrl;
+                });
+              },
+            ),
         ],
       ),
     );
@@ -456,61 +516,32 @@ class _DataUserPageState extends State<DataUserPage> {
 
   Widget form() {
     return Center(
-      child:
-    Container(
-      padding: const EdgeInsets.all(10),
-      width: _width,
-      child: Form(
-        key: _formkey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-              mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            nomeTextFormField(),
-            const SizedBox(height: 10),
-            emailTextFormField(),
-            const SizedBox(height: 10),
-            foneTextFormField(),
-            const SizedBox(height: 10),
-            senhaTextFormField(),
-            const SizedBox(height: 10),
-            confirmaTextFormField(),
-
-            
-                /* Flexible(
-            flex: 3,
-            fit: FlexFit.loose,
-            child: SizedBox(
-              width: _width - 20,
-              height: 250,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 5,
-                    child: forgetPassTextRow(),
-                  ),
-                  Positioned(
-                    width: 150,
-                    height: 50,
-                    top: 50,
-                    left: 5,
-                    child: button1(),
-                  ),
-                  Positioned(
-                    width: 150,
-                    height: 50,
-                    top: 50,
-                    left: 200,
-                    child: button(),
-                  ),
-                ],
-              ),
-            ),
-          ), */
-          ],
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        width: _width,
+        child: Form(
+          key: _formkey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              nomeTextFormField(),
+              const SizedBox(height: 10),
+              emailTextFormField(),
+              const SizedBox(height: 10),
+              foneTextFormField(),
+              if (isLogginIn)
+                SizedBox(
+                  child: senhaTextFormField(),
+                ),
+              if (isLogginIn)
+                SizedBox(
+                  child: confirmaTextFormField(),
+                ),
+            ],
+          ),
         ),
-      ),),
+      ),
     );
   }
 
@@ -522,6 +553,7 @@ class _DataUserPageState extends State<DataUserPage> {
       inputAction: TextInputAction.next,
       keyboardType: TextInputType.text,
       icon: Icons.person,
+      enabled: _enabledNome,
       hint: "Digite seu Nome",
       labelText: 'Nome',
       validator: (value) {
@@ -540,6 +572,7 @@ class _DataUserPageState extends State<DataUserPage> {
       inputAction: TextInputAction.next,
       mask: MaskTextInputFormatter(mask: ''),
       icon: Icons.email,
+      enabled: _enabledEmail,
       hint: "Digite seu Email",
       labelText: 'Email',
       validator: (value) {
@@ -559,8 +592,9 @@ class _DataUserPageState extends State<DataUserPage> {
       mask: MaskTextInputFormatter(
           mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')}),
       icon: Icons.phone,
-      hint: '(99) 9999-9999',
+      hint: '(99)9999-9999',
       labelText: 'Telefone',
+      enabled: _enabledFone,
       validator: (value) {
         if (value.isEmpty) {
           return 'Entre com seu celular!';
@@ -572,7 +606,7 @@ class _DataUserPageState extends State<DataUserPage> {
 
   Widget forgetPassTextRow() {
     return Container(
-      margin: EdgeInsets.only(top: _height / 40.0),
+      padding: const EdgeInsets.only(top: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -636,7 +670,7 @@ class _DataUserPageState extends State<DataUserPage> {
                   ),
                   content: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(10),
                       color: Colors.cyan.shade100,
                     ),
                     padding: const EdgeInsets.all(15),
@@ -799,7 +833,7 @@ class _DataUserPageState extends State<DataUserPage> {
       ),
       onPressed: () {
         if (_formkey.currentState!.validate()) {
-          //cadastrar();
+          cadastrar();
         }
       },
       child: Container(
@@ -908,67 +942,68 @@ class _CustomTextFieldState extends State<CustomTextField> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
         ),
-      child: TextFormField(
-        style: const TextStyle(
-          color: Colors.cyanAccent,
-          fontWeight: FontWeight.bold,
-          shadows: [
-            Shadow(
-              color: Colors.black,
-              blurRadius: 3,
-              offset: Offset(0, 1),
-            ),
-          ],
-        ),
-        key: widget.key,
-        focusNode: widget.focusNode,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        controller: widget.textEditingController,
-        keyboardType: widget.keyboardType,
-        textInputAction: widget.inputAction,
-        inputFormatters: [widget.mask],
-        cursorColor: Colors.cyan.shade400,
-        validator: widget.validator,
-        enabled: widget.enabled,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            widget.icon, 
-            color: Colors.indigoAccent.shade100, 
-            size: 20,
-          ),
-          labelText: widget.labelText,
-          hintText: widget.hint,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.0),
-              borderSide: BorderSide.none),
-          labelStyle: TextStyle(
-            color: Colors.blue.shade200,
-            fontSize: 15,
+        child: TextFormField(
+          style: const TextStyle(
+            color: Colors.cyanAccent,
             fontWeight: FontWeight.bold,
-            shadows: const [
+            shadows: [
               Shadow(
                 color: Colors.black,
-                blurRadius: 5,
-                offset: Offset(1, 1),
+                blurRadius: 3,
+                offset: Offset(0, 1),
               ),
             ],
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: BorderSide(
-              color: Colors.blue.shade900,
-              width: 2.0,
+          key: widget.key,
+          focusNode: widget.focusNode,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          controller: widget.textEditingController,
+          keyboardType: widget.keyboardType,
+          textInputAction: widget.inputAction,
+          inputFormatters: [widget.mask],
+          cursorColor: Colors.cyan.shade400,
+          validator: widget.validator,
+          enabled: widget.enabled,
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              widget.icon,
+              color: Colors.indigoAccent.shade100,
+              size: 20,
             ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: const BorderSide(
-              color: Colors.indigoAccent,
-              width: 2.0,
+            labelText: widget.labelText,
+            hintText: widget.hint,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none),
+            labelStyle: TextStyle(
+              color: Colors.blue.shade200,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              shadows: const [
+                Shadow(
+                  color: Colors.black,
+                  blurRadius: 5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.blue.shade900,
+                width: 2.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: const BorderSide(
+                color: Colors.indigoAccent,
+                width: 2.0,
+              ),
             ),
           ),
         ),
-      ),),
+      ),
     );
   }
 }
