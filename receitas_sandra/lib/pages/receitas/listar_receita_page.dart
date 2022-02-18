@@ -466,7 +466,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             ),
           ],
         ),
-      ),      
+      ),
       floatingActionButton: Builder(
         builder: (context) => FabCircularMenu(
           key: fabKey,

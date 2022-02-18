@@ -78,7 +78,6 @@ class _EntrarFonePageState extends State<EntrarFonePage>
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..repeat();
-    //foneController.text = '(11) 97180-7694';
     super.initState();
   }
 
@@ -87,11 +86,11 @@ class _EntrarFonePageState extends State<EntrarFonePage>
     super.dispose();
   }
 
-  cadastrar(String user) {
-    List favoritaList = [];
+  cadastrar(String user, String fone) {
     UsersRepository userRepo = UsersRepository(auth: user);
-    userRepo.foneUser().listen((event) {
-      if (event.docs.isEmpty) {
+    userRepo.foneUser(fone).listen((event) {
+      print(event.docs.elementAt(0).data());
+      /* if (event.docs.isEmpty) {
         colRef.doc(user).set({
           'data': getDate,
           'email': emailController.text,
@@ -99,15 +98,31 @@ class _EntrarFonePageState extends State<EntrarFonePage>
           'fone': foneController.text,
           'imagem': imageUrl,
           'nome': nomeController.text,
-          'provedor': Global.provedor,
-        }).then((value) {
-          setState(() {
-            Global.email = emailController.text;
-            Global.nome = nomeController.text;
-            Global.foto = imageUrl;
-          });
+          'provedor': 'Fone',
         });
-      }
+      } else {
+        if (event.docs.elementAt(0).get('fone') == fone) {
+          if (emailController.text.isNotEmpty) {
+            colRef.doc(user).update({
+              'email': emailController.text,
+            });
+          }
+          if (imageUrl.isNotEmpty) {
+            colRef.doc(user).update({
+              'imagem': imageUrl,
+            });
+          }
+          if (nomeController.text.isNotEmpty) {
+            colRef.doc(user).update({
+              'nome': nomeController.text,
+            });
+          }
+        }
+      }*/
+      Global.email = emailController.text;
+      Global.nome = nomeController.text;
+      Global.fone = foneController.text;
+      Global.foto = imageUrl;
     });
   }
 
@@ -421,9 +436,7 @@ class _EntrarFonePageState extends State<EntrarFonePage>
                             verificationId: verificationId, smsCode: pin))
                         .then((value) async {
                       if (value.user != null) {
-                        print(value.user!.uid);
-                        Global.provedor = 'Fone';
-                        cadastrar(value.user!.uid);
+                        cadastrar(value.user!.uid, foneController.text);
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(

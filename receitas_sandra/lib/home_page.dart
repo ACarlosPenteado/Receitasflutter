@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage>
         body: Container(
           height: _height,
           width: _width,
-          padding: const EdgeInsets.only(top: 63, bottom: 20),
+          padding: const EdgeInsets.only(top: 13, bottom: 20),
           decoration: const BoxDecoration(
               gradient: LinearGradient(
             begin: Alignment.topRight,
@@ -161,114 +161,6 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildPortrait() => SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            clipShape(),
-            animeLetter(),
-            const SizedBox(
-              height: 60,
-            ),
-            buttonRec(),
-          ],
-        ),
-      );
-
-  Widget buildLandscape() => SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            clipShape(),
-            animeLetter(),
-            const SizedBox(
-              height: 30,
-            ),
-            buttonRec(),
-          ],
-        ),
-      );
-
-  Widget buttonRec() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        InkWell(
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                child: Image.asset(
-                  'images/receitas/doces.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              Text(
-                LocaleKeys.tipoD.tr().toString(),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          onTap: () => Navigator.push(
-            context,
-            PageTransition(
-              child: const ListarReceitaPage(tipo: 'Doces'),
-              type: PageTransitionType.rotate,
-              alignment: Alignment.bottomCenter,
-              duration: const Duration(milliseconds: 600),
-              reverseDuration: const Duration(milliseconds: 600),
-            ),
-          ),
-        ),
-        InkWell(
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                child: Image.asset(
-                  'images/receitas/salgadas.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              Text(
-                LocaleKeys.tipoS.tr().toString(),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          onTap: () => Navigator.push(
-            context,
-            PageTransition(
-              child: const ListarReceitaPage(tipo: 'Salgadas'),
-              type: PageTransitionType.rotate,
-              alignment: Alignment.bottomCenter,
-              duration: const Duration(milliseconds: 600),
-              reverseDuration: const Duration(milliseconds: 600),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -438,6 +330,108 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  Widget buildPortrait() => SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            clipShape(0),
+            const SizedBox(
+              height: 40,
+            ),
+            animeLetter(),
+            const SizedBox(
+              height: 60,
+            ),
+            buttonRec(0),
+          ],
+        ),
+      );
+
+  Widget buildLandscape() => SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      clipShape(1),
+                    ],
+                  ),
+                ),
+                Flexible(
+                  flex: 2,
+                  child: Column(
+                    children: [
+                      animeLetter(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buttonRec(1),
+              ],
+            ),
+          ],
+        ),
+      );
+
+  Widget clipShape(int mode) {
+    return Stack(
+      children: <Widget>[
+        mode == 0
+            ? Center(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 60),
+                  child: Hero(
+                    tag: 'imagerec',
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                      child: Image.asset(
+                        'images/receitas/receitas.jpg',
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Center(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Hero(
+                    tag: 'imagerec',
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                      child: Image.asset(
+                        'images/receitas/receitas.jpg',
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+      ],
+    );
+  }
+
   Widget animeLetter() {
     return AnimatedBuilder(
       animation: controller,
@@ -473,82 +467,102 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Widget clipShape() {
-    return Stack(
+  Widget buttonRec(int mode) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        Center(
-          child: Container(
-            padding: const EdgeInsets.only(top: 60),
-            child: Hero(
-              tag: 'imagerec',
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.blueAccent.shade700,
+              width: 3,
+            ),
+          ),
+          child: InkWell(
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  child: Image.asset(
+                    'images/receitas/doces.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.fill,
+                  ),
                 ),
-                child: Image.asset(
-                  'images/receitas/receitas.jpg',
-                  height: 100,
-                  width: 100,
-                  fit: BoxFit.fill,
+                Text(
+                  LocaleKeys.tipoD.tr().toString(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              ],
+            ),
+            onTap: () => Navigator.push(
+              context,
+              PageTransition(
+                child: const ListarReceitaPage(tipo: 'Doces'),
+                type: PageTransitionType.fade,
+                alignment: Alignment.bottomCenter,
+                duration: const Duration(milliseconds: 600),
+                reverseDuration: const Duration(milliseconds: 600),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: mode == 0 ? 20 : 260,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.blueAccent.shade700,
+              width: 3,
+            ),
+          ),
+          child: InkWell(
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  child: Image.asset(
+                    'images/receitas/salgadas.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                Text(
+                  LocaleKeys.tipoS.tr().toString(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            onTap: () => Navigator.push(
+              context,
+              PageTransition(
+                child: const ListarReceitaPage(tipo: 'Salgadas'),
+                type: PageTransitionType.fade,
+                alignment: Alignment.bottomCenter,
+                duration: const Duration(milliseconds: 600),
+                reverseDuration: const Duration(milliseconds: 600),
               ),
             ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class CustomAppBar extends StatefulWidget {
-  GlobalKey<ScaffoldState> mkey = GlobalKey<ScaffoldState>();
-  CustomAppBar({Key? key, required this.mkey}) : super(key: key);
-
-  @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
-}
-
-class _CustomAppBarState extends State<CustomAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-
-    return Material(
-      child: Container(
-        height: 40,
-        width: width,
-        decoration: BoxDecoration(
-          gradient:
-              LinearGradient(colors: [Colors.blue[200]!, Colors.cyanAccent]),
-        ),
-        child: Row(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: SizedBox(
-                height: 30,
-                width: 30,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.transparent,
-                    padding: const EdgeInsets.only(top: 2, left: 4),
-                    //elevation: 10,
-                    alignment: Alignment.centerLeft,
-                  ),
-                  onPressed: () {
-                    widget.mkey.currentState?.openDrawer();
-                  },
-                  child: Icon(Icons.menu, color: Colors.indigo.shade900),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

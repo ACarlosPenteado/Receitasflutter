@@ -50,11 +50,15 @@ class UsersRepository extends ChangeNotifier {
     return userNome;
   }
 
-  Stream<QuerySnapshot> foneUser() {
-    Stream<QuerySnapshot<Map<String, dynamic>>> colRef = fireDb
-        .collection('Users')
-        .where("provedor", isEqualTo: 'Fone')
-        .snapshots();
+  Stream<QuerySnapshot> userDados() {
+    Stream<QuerySnapshot<Map<String, dynamic>>> colRef =
+        fireDb.collection('Users').snapshots();
     return colRef;
+  }
+
+  Stream<QuerySnapshot> foneUser(String fone) {
+    Query<Map<String, dynamic>> colRef =
+        fireDb.collection('Users').where("fone", isEqualTo: fone);
+    return colRef.snapshots();
   }
 }

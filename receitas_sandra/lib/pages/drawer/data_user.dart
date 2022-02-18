@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:receitas_sandra/home_page.dart';
 import 'package:receitas_sandra/image_select/select_image.dart';
+import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/uteis/funtions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
@@ -52,6 +53,7 @@ class _DataUserPageState extends State<DataUserPage> {
 
   @override
   void initState() {
+    //carregaDados();
     nomeController.text = Global.nome;
     emailController.text = Global.email;
     foneController.text = Global.fone;
@@ -65,6 +67,13 @@ class _DataUserPageState extends State<DataUserPage> {
       isChange = false;
     }
     super.initState();
+  }
+
+  carregaDados() {
+    UsersRepository userRepo = UsersRepository(auth: _auth.currentUser!.uid);
+    userRepo.foneUser(foneController.text).listen((event) {
+      print(event.docs.elementAt(0).get('fone'));
+    });
   }
 
   cadastrar() {

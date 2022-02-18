@@ -113,195 +113,112 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Widget buildPortrait() => SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            clipShape(),
-            Center(
-              child: Hero(
-                tag: 'imagerec',
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(20),
-                  ),
-                  child: Image.asset(
-                    'images/receitas/receitas.jpg',
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.fill,
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 150),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              clipShape(0),
+              const SizedBox(
+                height: 40,
+              ),
+              animeLetter(),
+              const SizedBox(
+                height: 40,
+              ),
+              const Text(
+                'Carregando...',
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.cyan,
+                  shadows: <Shadow>[
+                    Shadow(
+                      offset: Offset(3.0, 3.0),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(55, 0, 162, 232),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            animeLetter(),
-            const SizedBox(
-              height: 40,
-            ),
-            const Text(
-              'Carregando...',
-              style: TextStyle(
-                fontSize: 30,
-                color: Colors.cyan,
-                shadows: <Shadow>[
-                  Shadow(
-                    offset: Offset(3.0, 3.0),
-                    blurRadius: 3.0,
-                    color: Color.fromARGB(55, 0, 162, 232),
-                  ),
-                ],
+              const SizedBox(
+                height: 40,
               ),
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Colors.blue),
-              strokeWidth: 5.0,
-            ),
-          ],
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(Colors.blue),
+                strokeWidth: 5.0,
+              ),
+            ],
+          ),
         ),
       );
 
   Widget buildLandscape() => SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 50.0),
-        child: Column(
-          children: [
-            clipShapeL(),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Column(
-                  children: [
-                    Hero(
-                      tag: 'image1',
-                      child: Container(
-                        //alignment: Alignment.topCenter,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        margin: EdgeInsets.only(
-                            top: _large
-                                ? _height / 60
-                                : (_medium ? _height / 65 : _height / 60)),
-                        child: Image.asset(
-                          'images/receitas/receitas.jpg',
-                          height: 150,
-                          width: 150,
-                        ),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 100),
+          child: Column(
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Column(
+                    children: [
+                      clipShape(1),
+                    ],
+                  ),
+                  const SizedBox(
+                    width: 60,
+                  ),
+                  Column(
+                    children: [
+                      animeLetter(),
+                      const SizedBox(
+                        height: 20,
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    animeLetter(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      'Carregando...',
-                      style: TextStyle(
-                          fontSize: 30,
-                          color: Colors.cyan,
-                          shadows: <Shadow>[
-                            Shadow(
-                              offset: Offset(3.0, 3.0),
-                              blurRadius: 3.0,
-                              color: Color.fromARGB(55, 0, 162, 232),
-                            ),
-                          ]),
-                    ),
-                    const SizedBox(
-                      height: 60,
-                    ),
-                    const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(Colors.purple),
-                      strokeWidth: 5.0,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                      const Text(
+                        'Carregando...',
+                        style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.cyan,
+                            shadows: <Shadow>[
+                              Shadow(
+                                offset: Offset(3.0, 3.0),
+                                blurRadius: 3.0,
+                                color: Color.fromARGB(55, 0, 162, 232),
+                              ),
+                            ]),
+                      ),
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.purple),
+                        strokeWidth: 5.0,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
 
-  Widget clipShape() {
-    return Stack(
-      children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
+  Widget clipShape(int mode) {
+    return Center(
+      child: Hero(
+        tag: 'imagerec',
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(20),
+          ),
+          child: Image.asset(
+            'images/receitas/receitas.jpg',
+            height: 200,
+            width: 200,
+            fit: BoxFit.fill,
           ),
         ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget clipShapeL() {
-    return Stack(
-      children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              width: _large
-                  ? _height / 4
-                  : (_medium ? _height / 3.75 : _height / 3.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              width: _large
-                  ? _height / 4.5
-                  : (_medium ? _height / 4.25 : _height / 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.cyanAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 

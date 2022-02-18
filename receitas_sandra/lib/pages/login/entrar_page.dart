@@ -38,6 +38,7 @@ class _EntrarPageState extends State<EntrarPage> {
   String data = getDate;
 
   var loading = false;
+
   DateTime time = DateTime.now();
 
   void _loginFacebook() async {
@@ -270,61 +271,127 @@ class _EntrarPageState extends State<EntrarPage> {
               Colors.cyanAccent,
             ],
           )),
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                clipShape(),
-                if (loading) ...[
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ],
-                if (!loading) ...[
-                  btnEmailSenha(),
-                  btnGoogle(),
-                  btnFacebook(),
-                  btnFone(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  //btnAjuda(),
-                ]
-              ],
-            ),
+          child: OrientationBuilder(
+            builder: (context, orientation) =>
+                orientation == Orientation.portrait
+                    ? buildPortrait()
+                    : buildLandscape(),
           ),
         ),
       ),
     );
   }
 
-  Widget clipShape() {
-    return Stack(
-      children: <Widget>[
-        Center(
-          child: Container(
-            padding: const EdgeInsets.only(top: 60),
-            child: Hero(
-              tag: 'imagerec',
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                child: Image.asset(
-                  'images/receitas/receitas.jpg',
-                  height: 200,
-                  width: 300,
-                  fit: BoxFit.fill,
-                ),
+  Widget buildPortrait() => SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            clipShape(0),
+            if (loading) ...[
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ],
+            if (!loading) ...[
+              btnEmailSenha(0),
+              btnGoogle(0),
+              btnFacebook(0),
+              //btnFone(),
+              const SizedBox(
+                height: 20,
+              ),
+              //btnAjuda(),
+            ]
+          ],
+        ),
+      );
+
+  Widget buildLandscape() => SingleChildScrollView(
+        child: Row(
+          children: [
+            Flexible(
+              flex: 1,
+              child: Column(
+                children: <Widget>[
+                  clipShape(1),
+                  if (loading) ...[
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                ],
               ),
             ),
-          ),
+            Flexible(
+              flex: 2,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  if (!loading) ...[
+                    btnEmailSenha(1),
+                    btnGoogle(1),
+                    btnFacebook(1),
+                    //btnFone(),
+                    //const SizedBox(
+                    //height: 20,
+                    //),
+                    //btnAjuda(),
+                  ]
+                ],
+              ),
+            ),
+          ],
         ),
+      );
+
+  Widget clipShape(int mode) {
+    return Stack(
+      children: <Widget>[
+        mode == 0
+            ? Center(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 60),
+                  child: Hero(
+                    tag: 'imagerec',
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                      child: Image.asset(
+                        'images/receitas/receitas.jpg',
+                        height: 200,
+                        width: 300,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Center(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 20, left: 20),
+                  child: Hero(
+                    tag: 'imagerec',
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                      child: Image.asset(
+                        'images/receitas/receitas.jpg',
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
       ],
     );
   }
 
-  Widget btnEmailSenha() {
+  Widget btnEmailSenha(int mode) {
     return Button_Login(
+        mode: mode,
         color: Colors.white10,
         image: const AssetImage('images/icones/email.png'),
         text: 'Entrar com seu Email',
@@ -334,8 +401,9 @@ class _EntrarPageState extends State<EntrarPage> {
         });
   }
 
-  Widget btnGoogle() {
+  Widget btnGoogle(int mode) {
     return Button_Login(
+        mode: mode,
         color: Colors.white10,
         image: const AssetImage('images/icones/google.png'),
         text: 'Entrar sua conta Google',
@@ -344,8 +412,9 @@ class _EntrarPageState extends State<EntrarPage> {
         });
   }
 
-  Widget btnFacebook() {
+  Widget btnFacebook(int mode) {
     return Button_Login(
+        mode: mode,
         color: Colors.white10,
         image: const AssetImage('images/icones/facebook.png'),
         text: 'Entrar sua conta Facebook',
@@ -354,8 +423,9 @@ class _EntrarPageState extends State<EntrarPage> {
         });
   }
 
-  Widget btnFone() {
+  Widget btnFone(int mode) {
     return Button_Login(
+        mode: mode,
         color: Colors.white10,
         image: const AssetImage('images/icones/fone.png'),
         text: 'Entrar número celular',
@@ -365,8 +435,9 @@ class _EntrarPageState extends State<EntrarPage> {
         });
   }
 
-  Widget btnAjuda() {
+  Widget btnAjuda(int mode) {
     return Button_Login(
+        mode: mode,
         color: Colors.white10,
         image: const AssetImage('images/icones/duvida.png'),
         text: 'Problemas? Entre em contato!',
