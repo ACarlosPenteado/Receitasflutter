@@ -194,26 +194,6 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
 
     return Scaffold(
-      body: Container(
-        height: _height,
-        width: _width,
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            Colors.blue,
-            Colors.cyanAccent,
-          ],
-        )),
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              clipShape(),
-            ],
-          ),
-        ),
-      ),
       appBar: AppBar(
         elevation: 12,
         centerTitle: true,
@@ -245,8 +225,43 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
               }),
         ],
       ),
+      body: Container(
+          height: _height,
+          width: _width,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Colors.blue,
+                Colors.cyanAccent,
+              ],
+            ),
+          ),
+          child: OrientationBuilder(
+            builder: ((context, orientation) =>
+                orientation == Orientation.portrait
+                    ? buildPortrait()
+                    : buildLandscape()),
+          )),
     );
   }
+
+  Widget buildPortrait() => SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            clipShape(0),
+          ],
+        ),
+      );
+
+  Widget buildLandscape() => SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            clipShape(1),
+          ],
+        ),
+      );
 
   Widget tipoRec(String qtipo) {
     return Text(
@@ -266,7 +281,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     );
   }
 
-  Widget clipShape() {
+  Widget clipShape(int mode) {
     return Column(
       children: <Widget>[
         Container(

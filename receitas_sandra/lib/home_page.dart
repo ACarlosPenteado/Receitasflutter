@@ -163,7 +163,6 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
-
   _buildDrawer() {
     return ClipPath(
       clipper: OvalRightBorderClipper(),
@@ -340,7 +339,18 @@ class _HomePageState extends State<HomePage>
             const SizedBox(
               height: 40,
             ),
-            animeLetter(),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.black26,
+                border: Border.all(
+                  color: Colors.lightBlueAccent,
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: animeLetter(),
+            ),
             const SizedBox(
               height: 60,
             ),
@@ -367,7 +377,18 @@ class _HomePageState extends State<HomePage>
                   flex: 2,
                   child: Column(
                     children: [
-                      animeLetter(),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.black26,
+                          border: Border.all(
+                            color: Colors.lightBlueAccent,
+                            width: 3,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: animeLetter(),
+                      ),
                     ],
                   ),
                 ),
