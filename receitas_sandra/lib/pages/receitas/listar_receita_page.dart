@@ -639,7 +639,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
       children: <Widget>[
         Container(
           alignment: Alignment.bottomCenter,
-          margin: const EdgeInsets.only(top: 20),
+          //margin: const EdgeInsets.only(top: 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1077,59 +1077,63 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
   Widget gridRec() {
     return GridView.builder(
       itemCount: _receitas.length,
+      physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       primary: false,
-      gridDelegate:
-          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 2,
+        mainAxisSpacing: 0,
+      ),
       itemBuilder: (_, index) {
         return Dismissible(
           key: ValueKey(_receitas[index]),
           background: Container(
-            height: 200,
-            //alignment: Alignment.centerLeft,
-            color: Colors.cyanAccent,
+            margin: const EdgeInsets.only(left: 10, top: 5, bottom: 30),
+            alignment: Alignment.centerLeft,
+            color: Colors.black,
             child: Align(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: const <Widget>[
+                  SizedBox(
+                    width: 20,
+                  ),
                   Icon(
                     Icons.delete,
-                    color: Colors.red,
+                    color: Colors.redAccent,
                   ),
                   Text(
                     'Exclui Receita',
                     style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.w700,
+                      color: Colors.cyanAccent,
+                      fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.left,
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
                 ],
               ),
-              //alignment: Alignment.centerLeft,
+              alignment: Alignment.centerLeft,
             ),
           ),
           secondaryBackground: Container(
-            height: 200,
-            //alignment: Alignment.centerRight,
-            color: Colors.cyanAccent,
+            margin: const EdgeInsets.only(left: 10, top: 5, bottom: 30),
+            alignment: Alignment.centerRight,
+            color: Colors.black,
             child: Align(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: const <Widget>[
                   Icon(
                     Icons.delete,
-                    color: Colors.red,
+                    color: Colors.redAccent,
                   ),
                   Text(
                     'Exclui Receita',
                     style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.w700,
+                      color: Colors.cyanAccent,
+                      fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.right,
                   ),
@@ -1138,7 +1142,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
                   ),
                 ],
               ),
-              //alignment: Alignment.centerRight,
+              alignment: Alignment.centerRight,
             ),
           ),
           confirmDismiss: (direction) async {
@@ -1155,272 +1159,269 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
               }
             }
           },
-          child: SafeArea(
-            child: Center(
-              child: Container(
-                color: Colors.white,
-                height: 150,
-                width: _width,
-                margin: const EdgeInsets.only(
-                    left: 16, top: 0, right: 16, bottom: 5),
-                child: InkWell(
-                  child: Hero(
-                    tag: 'card' + _receitas[index].descricao,
-                    child: Stack(
-                      children: [
-                        Card(
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 12,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: AnimatedContainer(
-                            duration: const Duration(seconds: 5),
-                            height: size,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: const LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xFF213B6C),
-                                    Color(0xFF0059A5),
-                                  ]),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.cyan,
-                                  blurRadius: 12,
-                                  offset: Offset(3, 5),
-                                ),
-                              ],
+          /* child: SafeArea(
+            child: Center(*/
+          child: Container(
+            //color: Colors.white,
+            height: 150,
+            width: _width,
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+            ),
+            child: InkWell(
+              child: Hero(
+                tag: 'card' + _receitas[index].descricao,
+                child: Stack(
+                  children: [
+                    Card(
+                      clipBehavior: Clip.antiAlias,
+                      elevation: 12,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: AnimatedContainer(
+                        duration: const Duration(seconds: 5),
+                        height: 150,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          gradient: const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(0xFF213B6C),
+                                Color(0xFF0059A5),
+                              ]),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.cyan,
+                              blurRadius: 12,
+                              offset: Offset(3, 5),
                             ),
-                            child: Stack(
-                              children: [
-                                _receitas[index].imagem != 'Sem Imagem'
-                                    ? Positioned(
-                                        top: 0.0,
-                                        left: 0.0,
-                                        right: 0.0,
-                                        child: ClipRRect(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(12),
-                                          ),
-                                          child: Image.network(
-                                            _receitas[index].imagem,
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                        ),
-                                      )
-                                    : Positioned(
-                                        top: 0.0,
-                                        left: 0.0,
-                                        right: 0.0,
-                                        child: ClipRRect(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(12),
-                                          ),
-                                          child: Image.asset(
-                                            'images/receitas/receitas.png',
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                        ),
+                          ],
+                        ),
+                        child: Stack(
+                          children: [
+                            _receitas[index].imagem != 'Sem Imagem'
+                                ? Positioned(
+                                    top: 0.0,
+                                    left: 0.0,
+                                    right: 0.0,
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(12),
                                       ),
-                                Positioned(
-                                  top: 70,
-                                  left: 32,
-                                  width: 260,
-                                  child: Container(
-                                    height: 70,
-                                    padding: const EdgeInsets.only(left: 10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black45,
-                                      border: Border.all(
-                                        color: Colors.cyanAccent.shade400,
-                                        width: 3.0,
+                                      child: Image.network(
+                                        _receitas[index].imagem,
+                                        fit: BoxFit.fitWidth,
                                       ),
-                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: Stack(
-                                      children: [
-                                        Positioned(
-                                          top: 0,
-                                          left: 0,
-                                          child: Text(
-                                            _receitas[index].descricao,
-                                            textAlign: TextAlign.left,
-                                            style: const TextStyle(
-                                                fontSize: 25,
+                                  )
+                                : Positioned(
+                                    top: 0.0,
+                                    left: 0.0,
+                                    right: 0.0,
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(12),
+                                      ),
+                                      child: Image.asset(
+                                        'images/receitas/receitas.png',
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),
+                                  ),
+                            Positioned(
+                              top: 70,
+                              left: 32,
+                              width: 260,
+                              child: Container(
+                                height: 70,
+                                padding: const EdgeInsets.only(left: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.black45,
+                                  border: Border.all(
+                                    color: Colors.cyanAccent.shade400,
+                                    width: 3.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 0,
+                                      left: 0,
+                                      child: Text(
+                                        _receitas[index].descricao,
+                                        textAlign: TextAlign.left,
+                                        style: const TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.cyanAccent,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.black,
+                                                blurRadius: 5,
+                                                offset: Offset(1, 1),
+                                              ),
+                                            ]),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 30,
+                                      left: 0,
+                                      width: _screenWidth,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Tempo de Preparo: ',
+                                            style: TextStyle(
+                                                fontSize: 12,
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.cyanAccent,
+                                                color: Colors.white,
                                                 shadows: [
                                                   Shadow(
-                                                    color: Colors.black,
+                                                    color: Colors.cyanAccent,
                                                     blurRadius: 5,
                                                     offset: Offset(1, 1),
                                                   ),
                                                 ]),
                                           ),
-                                        ),
-                                        Positioned(
-                                          top: 30,
-                                          left: 0,
-                                          width: _screenWidth,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              const Text(
-                                                'Tempo de Preparo: ',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                    shadows: [
-                                                      Shadow(
-                                                        color:
-                                                            Colors.cyanAccent,
-                                                        blurRadius: 5,
-                                                        offset: Offset(1, 1),
-                                                      ),
-                                                    ]),
-                                              ),
-                                              Text(
-                                                _receitas[index].tempoPreparo,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.cyanAccent,
-                                                ),
-                                              ),
-                                              const Text(
-                                                ' minutos',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                    shadows: [
-                                                      Shadow(
-                                                        color:
-                                                            Colors.cyanAccent,
-                                                        blurRadius: 5,
-                                                        offset: Offset(1, 1),
-                                                      ),
-                                                    ]),
-                                              ),
-                                            ],
+                                          Text(
+                                            _receitas[index].tempoPreparo,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.cyanAccent,
+                                            ),
                                           ),
-                                        ),
-                                        Positioned(
-                                          top: 45,
-                                          left: 0,
-                                          width: _screenWidth,
-                                          child: Row(
-                                            children: [
-                                              const Text(
-                                                'Rendimento: ',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                    shadows: [
-                                                      Shadow(
-                                                        color:
-                                                            Colors.cyanAccent,
-                                                        blurRadius: 5,
-                                                        offset: Offset(1, 1),
-                                                      ),
-                                                    ]),
-                                              ),
-                                              Text(
-                                                _receitas[index].rendimento,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.cyanAccent,
-                                                ),
-                                              ),
-                                              const Text(
-                                                ' porções',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                    shadows: [
-                                                      Shadow(
-                                                        color:
-                                                            Colors.cyanAccent,
-                                                        blurRadius: 5,
-                                                        offset: Offset(1, 1),
-                                                      ),
-                                                    ]),
-                                              ),
-                                            ],
+                                          const Text(
+                                            ' minutos',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                shadows: [
+                                                  Shadow(
+                                                    color: Colors.cyanAccent,
+                                                    blurRadius: 5,
+                                                    offset: Offset(1, 1),
+                                                  ),
+                                                ]),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
+                                    Positioned(
+                                      top: 45,
+                                      left: 0,
+                                      width: _screenWidth,
+                                      child: Row(
+                                        children: [
+                                          const Text(
+                                            'Rendimento: ',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                shadows: [
+                                                  Shadow(
+                                                    color: Colors.cyanAccent,
+                                                    blurRadius: 5,
+                                                    offset: Offset(1, 1),
+                                                  ),
+                                                ]),
+                                          ),
+                                          Text(
+                                            _receitas[index].rendimento,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.cyanAccent,
+                                            ),
+                                          ),
+                                          const Text(
+                                            ' porções',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                shadows: [
+                                                  Shadow(
+                                                    color: Colors.cyanAccent,
+                                                    blurRadius: 5,
+                                                    offset: Offset(1, 1),
+                                                  ),
+                                                ]),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (_favoritas.contains(_receitas[index].id) ||
-                            _selecionadas.contains(_receitas[index].id))
-                          favorita(),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    setState(() {
-                      preencheListIngre(1, _receitas[index].ingredientes);
-                      preencheListPrepa(1, _receitas[index].preparo);
-                      Navigator.of(context).push(
-                        PageRouteBuilder(
-                          fullscreenDialog: true,
-                          transitionDuration:
-                              const Duration(milliseconds: 1000),
-                          pageBuilder: (BuildContext context,
-                              Animation<double> animation,
-                              Animation<double> secondaryAnimation) {
-                            return MostrarReceitaPage(
-                              receitas: Receitas(
-                                ativo: _receitas[index].ativo,
-                                id: _receitas[index].id,
-                                data: _receitas[index].data,
-                                descricao: _receitas[index].descricao,
-                                iduser: _receitas[index].iduser,
-                                imagem: _receitas[index].imagem,
-                                ingredientes: _listIngre,
-                                preparo: _listPrepa,
-                                rendimento: _receitas[index].rendimento,
-                                tempoPreparo: _receitas[index].tempoPreparo,
-                                tipo: _receitas[index].tipo,
                               ),
-                            );
-                          },
-                          transitionsBuilder: (BuildContext context,
-                              Animation<double> animation,
-                              Animation<double> secondaryAnimation,
-                              Widget child) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
+                            ),
+                          ],
                         ),
-                      );
-                    });
-                  },
-                  onLongPress: () {
-                    setState(() {
-                      fav = !fav;
-                      selecionar(index);
-                    });
-                  },
+                      ),
+                    ),
+                    if (_favoritas.contains(_receitas[index].id) ||
+                        _selecionadas.contains(_receitas[index].id))
+                      favorita(),
+                  ],
                 ),
               ),
+              onTap: () {
+                setState(() {
+                  preencheListIngre(1, _receitas[index].ingredientes);
+                  preencheListPrepa(1, _receitas[index].preparo);
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      fullscreenDialog: true,
+                      transitionDuration: const Duration(milliseconds: 1000),
+                      pageBuilder: (BuildContext context,
+                          Animation<double> animation,
+                          Animation<double> secondaryAnimation) {
+                        return MostrarReceitaPage(
+                          receitas: Receitas(
+                            ativo: _receitas[index].ativo,
+                            id: _receitas[index].id,
+                            data: _receitas[index].data,
+                            descricao: _receitas[index].descricao,
+                            iduser: _receitas[index].iduser,
+                            imagem: _receitas[index].imagem,
+                            ingredientes: _listIngre,
+                            preparo: _listPrepa,
+                            rendimento: _receitas[index].rendimento,
+                            tempoPreparo: _receitas[index].tempoPreparo,
+                            tipo: _receitas[index].tipo,
+                          ),
+                        );
+                      },
+                      transitionsBuilder: (BuildContext context,
+                          Animation<double> animation,
+                          Animation<double> secondaryAnimation,
+                          Widget child) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                });
+              },
+              onLongPress: () {
+                setState(() {
+                  fav = !fav;
+                  selecionar(index);
+                });
+              },
             ),
+            //   ),
+            // ),
           ),
         );
       },

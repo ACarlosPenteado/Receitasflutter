@@ -250,7 +250,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   Widget buildPortrait() => SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            clipShape(0),
+            clipShape(),
           ],
         ),
       );
@@ -258,7 +258,7 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
   Widget buildLandscape() => SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            clipShape(1),
+            clipShape1(),
           ],
         ),
       );
@@ -281,13 +281,319 @@ class _IncluirReceitaPageState extends State<IncluirReceitaPage> {
     );
   }
 
-  Widget clipShape(int mode) {
+  Widget clipShape() {
     return Column(
       children: <Widget>[
         Container(
           width: _width,
           height: _height - 600,
           margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF213B6C), Color(0xFF0059A5)]),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.cyan,
+                blurRadius: 12,
+                offset: Offset(3, 5),
+              ),
+            ],
+          ),
+          child: Form(
+            key: _formkey,
+            child: Stack(
+              clipBehavior: Clip.antiAlias,
+              children: [
+                if (imageUrl != 'Sem Imagem')
+                  Positioned.fill(
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                  ),
+                Positioned(
+                  left: 20,
+                  bottom: 5.0,
+                  child: SelectImage(
+                    tip: 1,
+                    onFileChanged: (_imageUrl) {
+                      setState(() {
+                        imageUrl = _imageUrl;
+                      });
+                    },
+                  ),
+                ),
+                Positioned(
+                  top: 15.0,
+                  left: _width / 20,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        height: 50,
+                        width: _width - 80,
+                        child: nomeTextFormField(),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 80.0,
+                  left: _width / 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 115,
+                            child: tempoTextFormField(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 80.0,
+                      ),
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 115,
+                            child: rendiTextFormField(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        const Divider(
+          height: 5,
+          color: Colors.purple,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        InkWell(
+          onTap: () {
+            if (nomeController.text.isNotEmpty) {
+              cadastraIngre();
+            } else {
+              Fluttertoast.showToast(
+                msg: 'Inclua o nome da receita',
+                gravity: ToastGravity.CENTER,
+                textColor: Colors.yellow,
+              );
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              border: Border.all(width: 1, color: Colors.purple),
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.grey.shade700,
+                    Colors.black26,
+                  ]),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 8,
+                  offset: Offset(3, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(
+                  Icons.add,
+                  color: Colors.deepOrange,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'Ingredientes',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.cyanAccent,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        if (Global.tamListI > 0)
+          AnimatedContainer(
+            duration: const Duration(seconds: 5),
+            height: Global.tamListI.toDouble() * 25,
+            width: 350,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.grey.shade100,
+                    Colors.black45,
+                  ]),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.cyan,
+                  blurRadius: 8,
+                  offset: Offset(3, 3),
+                ),
+              ],
+            ),
+            child: ListIngre(
+              list: listIngre,
+              fontSize: 15,
+            ),
+          ),
+        const SizedBox(
+          height: 10,
+        ),
+        const Divider(
+          height: 10,
+          color: Colors.purple,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        InkWell(
+          onTap: () {
+            if (nomeController.text.isNotEmpty) {
+              cadastraPrepa();
+            } else {
+              Fluttertoast.showToast(
+                msg: 'Inclua o nome da receita',
+                gravity: ToastGravity.CENTER,
+                textColor: Colors.yellow,
+              );
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              border: Border.all(width: 1, color: Colors.purple),
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.grey.shade700,
+                    Colors.black26,
+                  ]),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 8,
+                  offset: Offset(3, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(
+                  Icons.add,
+                  color: Colors.deepOrange,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'Modo de Preparo',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.cyanAccent,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        blurRadius: 5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        if (Global.tamListP > 0)
+          AnimatedContainer(
+            duration: const Duration(seconds: 5),
+            height: Global.tamListP.toDouble() * 25,
+            width: 350,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.grey.shade100,
+                    Colors.black45,
+                  ]),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.cyan,
+                  blurRadius: 8,
+                  offset: Offset(3, 3),
+                ),
+              ],
+            ),
+            child: ListPrepa(
+              list: listPrepa,
+              fontSize: 15,
+            ),
+          )
+      ],
+    );
+  }
+
+  Widget clipShape1() {
+    return Column(
+      children: <Widget>[
+        Container(
+          width: 400,
+          height: 180,
+          margin: const EdgeInsets.only(top: 20),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),

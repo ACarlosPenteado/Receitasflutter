@@ -85,28 +85,29 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
               ]),
         ),
         actions: [
-          IconButton(
-            iconSize: 30,
-            icon: const Icon(
-              Icons.edit,
-            ),
-            onPressed: () {
-              Global.qual = 'E';
-              Global.id = widget.receitas.id!;
-              Global.imagem = widget.receitas.imagem;
-              Global.descricao = widget.receitas.descricao;
-              Global.tempoPreparo = widget.receitas.tempoPreparo;
-              Global.rendimento = widget.receitas.rendimento;
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => IncluirReceitaPage(
-                    tipo: Global.tipo,
-                    receita: widget.receitas,
+          if (widget.receitas.iduser == _auth.currentUser!.uid)
+            IconButton(
+              iconSize: 30,
+              icon: const Icon(
+                Icons.edit,
+              ),
+              onPressed: () {
+                Global.qual = 'E';
+                Global.id = widget.receitas.id!;
+                Global.imagem = widget.receitas.imagem;
+                Global.descricao = widget.receitas.descricao;
+                Global.tempoPreparo = widget.receitas.tempoPreparo;
+                Global.rendimento = widget.receitas.rendimento;
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => IncluirReceitaPage(
+                      tipo: Global.tipo,
+                      receita: widget.receitas,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
         ],
       ),
       body: Container(
@@ -514,187 +515,197 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
       children: [
         Column(
           children: [
-            SafeArea(
-              child: Center(
-                child: Container(
+            Container(
+              height: 150,
+              width: 230,
+              margin: const EdgeInsets.only(right: 10, bottom: 5),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 12,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: AnimatedContainer(
+                  duration: const Duration(seconds: 5),
                   height: 150,
-                  width: 300,
-                  margin: const EdgeInsets.only(
-                      left: 16, top: 16, right: 16, bottom: 5),
-                  child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    elevation: 12,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: AnimatedContainer(
-                      duration: const Duration(seconds: 5),
-                      height: size,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        gradient: const LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Color(0xFF213B6C), Color(0xFF0059A5)]),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.cyan,
-                            blurRadius: 12,
-                            offset: Offset(3, 5),
-                          ),
-                        ],
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF213B6C), Color(0xFF0059A5)]),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.cyan,
+                        blurRadius: 12,
+                        offset: Offset(3, 5),
                       ),
-                      child: Hero(
-                        tag: 'card' + widget.receitas.descricao,
-                        child: Stack(
-                          children: [
-                            widget.receitas.imagem != 'Sem Imagem'
-                                ? Positioned(
-                                    top: 0.0,
-                                    left: 0.0,
-                                    right: 0.0,
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(12),
-                                      ),
-                                      child: Image.network(
-                                        widget.receitas.imagem,
-                                        fit: BoxFit.fitWidth,
-                                      ),
-                                    ),
-                                  )
-                                : Positioned(
-                                    top: 0.0,
-                                    left: 0.0,
-                                    right: 0.0,
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(12),
-                                      ),
-                                      child: Image.asset(
-                                        'images/receitas/receitas.png',
-                                        fit: BoxFit.fitWidth,
-                                      ),
-                                    ),
+                    ],
+                  ),
+                  child: Hero(
+                    tag: 'card' + widget.receitas.descricao,
+                    child: Stack(
+                      children: [
+                        widget.receitas.imagem != 'Sem Imagem'
+                            ? Positioned(
+                                top: 0.0,
+                                left: 0.0,
+                                right: 0.0,
+                                bottom: 0.0,
+                                child: ClipRRect(
+                                  clipBehavior: Clip.antiAlias,
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(12),
                                   ),
-                            Positioned(
-                              top: 70,
-                              left: 32,
-                              width: 230,
-                              child: Container(
-                                height: 70,
-                                padding: const EdgeInsets.only(left: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.black45,
-                                  border: Border.all(
-                                    color: Colors.cyanAccent.shade400,
-                                    width: 3.0,
+                                  child: Image.network(
+                                    widget.receitas.imagem,
+                                    fit: BoxFit.fill,
                                   ),
-                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: Stack(
-                                  children: [
-                                    Positioned(
-                                      top: 30,
-                                      left: 0,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            'Tempo de Preparo: ',
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                                shadows: [
-                                                  Shadow(
-                                                    color: Colors.cyanAccent,
-                                                    blurRadius: 5,
-                                                    offset: Offset(1, 1),
-                                                  ),
-                                                ]),
-                                          ),
-                                          Text(
-                                            widget.receitas.tempoPreparo,
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.pinkAccent,
-                                            ),
-                                          ),
-                                          const Text(
-                                            ' minutos',
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                                shadows: [
-                                                  Shadow(
-                                                    color: Colors.cyanAccent,
-                                                    blurRadius: 5,
-                                                    offset: Offset(1, 1),
-                                                  ),
-                                                ]),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: 45,
-                                      left: 0,
-                                      width: _screenWidth,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            'Rendimento: ',
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                                shadows: [
-                                                  Shadow(
-                                                    color: Colors.cyanAccent,
-                                                    blurRadius: 5,
-                                                    offset: Offset(1, 1),
-                                                  ),
-                                                ]),
-                                          ),
-                                          Text(
-                                            widget.receitas.rendimento,
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.pinkAccent,
-                                            ),
-                                          ),
-                                          const Text(
-                                            ' porções',
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                                shadows: [
-                                                  Shadow(
-                                                    color: Colors.cyanAccent,
-                                                    blurRadius: 5,
-                                                    offset: Offset(1, 1),
-                                                  ),
-                                                ]),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                              )
+                            : Positioned(
+                                top: 0.0,
+                                left: 0.0,
+                                right: 0.0,
+                                bottom: 0.0,
+                                child: ClipRRect(
+                                  clipBehavior: Clip.antiAlias,
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(12),
+                                  ),
+                                  child: Image.asset(
+                                    'images/receitas/receitas.png',
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              height: 50,
+              width: 230,
+              margin: const EdgeInsets.only(right: 10, bottom: 5),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 12,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: AnimatedContainer(
+                  duration: const Duration(seconds: 5),
+                  height: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF213B6C), Color(0xFF0059A5)]),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.cyan,
+                        blurRadius: 12,
+                        offset: Offset(3, 5),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 5,
+                        left: 10,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Tempo de Preparo: ',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.cyanAccent,
+                                      blurRadius: 5,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ]),
+                            ),
+                            Text(
+                              widget.receitas.tempoPreparo,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.pinkAccent,
+                              ),
+                            ),
+                            const Text(
+                              ' minutos',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.cyanAccent,
+                                      blurRadius: 5,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ]),
                             ),
                           ],
                         ),
                       ),
-                    ),
+                      Positioned(
+                        top: 20,
+                        left: 10,
+                        width: _screenWidth,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Rendimento: ',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.cyanAccent,
+                                      blurRadius: 5,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ]),
+                            ),
+                            Text(
+                              widget.receitas.rendimento,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.pinkAccent,
+                              ),
+                            ),
+                            const Text(
+                              ' porções',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.cyanAccent,
+                                      blurRadius: 5,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
