@@ -518,7 +518,7 @@ class _MostrarReceitaPageState extends State<MostrarReceitaPage> {
             Container(
               height: 150,
               width: 230,
-              margin: const EdgeInsets.only(right: 10, bottom: 5),
+              margin: const EdgeInsets.only(right: 10, bottom: 5,),
               child: Card(
                 clipBehavior: Clip.antiAlias,
                 elevation: 12,
