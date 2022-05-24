@@ -1,8 +1,5 @@
-import 'dart:collection';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:receitas_sandra/model/receitas.dart';
 
 class ReceitasRepository extends ChangeNotifier {
   late FirebaseFirestore fireDb;

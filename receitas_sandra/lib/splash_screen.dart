@@ -8,7 +8,6 @@ import 'package:receitas_sandra/transitions/transitions.dart';
 import 'package:receitas_sandra/uteis/globais.dart';
 import 'package:receitas_sandra/widgets/custom_shape_clipper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:local_auth/local_auth.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

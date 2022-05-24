@@ -392,7 +392,7 @@ class _EntrarPageState extends State<EntrarPage> {
   Widget btnEmailSenha(int mode) {
     return Button_Login(
         mode: mode,
-        color: Colors.white10,
+        color: Colors.white,
         image: const AssetImage('images/icones/email.png'),
         text: 'Entrar com seu Email',
         onPressed: () {
@@ -404,7 +404,7 @@ class _EntrarPageState extends State<EntrarPage> {
   Widget btnGoogle(int mode) {
     return Button_Login(
         mode: mode,
-        color: Colors.white10,
+        color: Colors.white,
         image: const AssetImage('images/icones/google.png'),
         text: 'Entrar sua conta Google',
         onPressed: () {
@@ -415,7 +415,7 @@ class _EntrarPageState extends State<EntrarPage> {
   Widget btnFacebook(int mode) {
     return Button_Login(
         mode: mode,
-        color: Colors.white10,
+        color: Colors.white,
         image: const AssetImage('images/icones/facebook.png'),
         text: 'Entrar sua conta Facebook',
         onPressed: () {

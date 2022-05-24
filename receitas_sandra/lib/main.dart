@@ -12,14 +12,12 @@ import 'package:receitas_sandra/providers/theme_notifier.dart';
 import 'package:receitas_sandra/repository/receitas_repository.dart';
 import 'package:receitas_sandra/repository/users_repository.dart';
 import 'package:receitas_sandra/splash_screen.dart';
-import 'package:receitas_sandra/uteis/app_color.dart';
 import 'package:receitas_sandra/uteis/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-
   await Firebase.initializeApp();
   FirebaseAuth auth = FirebaseAuth.instance;
 

@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dedi_personalizados/models/produtos.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProdutosRepository extends ChangeNotifier {
   late FirebaseFirestore fireDb;
+  final String auth;
 
-  ProdutosRepository() {
+  ProdutosRepository({required this.auth}) {
     _startRepository();
   }
 
@@ -17,9 +19,9 @@ class ProdutosRepository extends ChangeNotifier {
     fireDb = FirebaseFirestore.instance;
   }
 
-  Stream<QuerySnapshot> listProdutos(String id) {
-    CollectionReference colRef = fireDb.collection('Produtos');
-    colRef.where('id', isEqualTo: id).get();
+  Stream<QuerySnapshot> listProdutos() {
+    CollectionReference colRef = fireDb.collection('Dedi_Personalizados');
+    colRef.get();
     return colRef.snapshots();
   }
 
@@ -27,10 +29,10 @@ class ProdutosRepository extends ChangeNotifier {
     fireDb.collection('Dedi_Personalizados').add(produtos.toMap());
   }
 
-  excluiReceita(String id) {
+  excluiProduto(String id) {
     FirebaseFirestore.instance
-        .collection('Receitas')
+        .collection('Dedi_Personalizados')
         .doc(id)
-        .update({'ativo': false});
+        .delete();
   }
 }

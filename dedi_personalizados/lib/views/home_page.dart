@@ -1,14 +1,17 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dedi_personalizados/models/produtos.dart';
+import 'package:dedi_personalizados/repository/produtos_repository.dart';
+import 'package:dedi_personalizados/utils/globais.dart';
 import 'package:dedi_personalizados/views/gerenciar_produtos.dart';
 import 'package:dedi_personalizados/widgets/listview_home.dart';
 import 'package:dedi_personalizados/widgets/procura_produtos.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomePage extends StatefulWidget {
-  final String title;
-  const HomePage({Key? key, required this.title}) : super(key: key);
+  final String uid;
+  const HomePage({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,14 +22,43 @@ class _HomePageState extends State<HomePage> {
   late double _height;
   late double _width;
   late double _pixelRatio;
+  final List _listaProdutos = [];
+
+  late final ScrollController _scrollController = ScrollController(
+    initialScrollOffset: 99,
+    keepScrollOffset: true,
+  );
 
   final urlImagens = [
-    'https://scontent.fcgh10-1.fna.fbcdn.net/v/t1.6435-9/118206931_3593611250673146_8715447496143887195_n.jpg?stp=dst-jpg_p206x206&_nc_cat=111&ccb=1-5&_nc_sid=110474&_nc_eui2=AeE9saeH2QvSxHNurvRJHOEjPXHWoh9w3w09cdaiH3DfDTv7jY9m7mVFT_5SFmiKnbNpc_aNcdODRkgeIxsmVkar&_nc_ohc=_1Cvj7LP8aYAX-O_MW0&_nc_ht=scontent.fcgh10-1.fna&oh=00_AT_n4mQ6HxJmAYJHlkuQXL-CcG_FVAXJ-EDRZTtdzup1Yw&oe=6245ACE4',
-    'https://scontent.fcgh10-1.fna.fbcdn.net/v/t1.6435-9/104836131_145670650428904_8609078132692701393_n.jpg?stp=c34.0.206.206a_dst-jpg_p206x206&_nc_cat=101&ccb=1-5&_nc_sid=110474&_nc_eui2=AeH_544dARUuDGCcgdE9ZmtOGn7Clte9FnwafsKW170WfA__DMWbJMCsaEPvldIbpDHsAomuufbiGEZIg4PJwcrX&_nc_ohc=YibXFv5i9vsAX-xCn6H&_nc_ht=scontent.fcgh10-1.fna&oh=00_AT8lplS2NB5n-PRASimNIXgjkaYmZ1rwucL4wSS8Iv3OUQ&oe=6246170C',
-    'https://scontent.fcgh10-1.fna.fbcdn.net/v/t1.6435-9/161718176_495368064965018_8580941851743434042_n.jpg?stp=c0.23.206.206a_dst-jpg_p206x206&_nc_cat=104&ccb=1-5&_nc_sid=07e735&_nc_eui2=AeHXbkC1lo6E7EI9qlQBuViGqV6ZCL_wIxypXpkIv_AjHLKWXaYxg2uo51WPzch8K86gR8lgUgckeYPtykjTZPhh&_nc_ohc=wzkjzUqq6P4AX_Ti2j5&_nc_ht=scontent.fcgh10-1.fna&oh=00_AT-wo6RSYffLk1G1qEsFMG0FLuBVkh13BGji5zwsIrO-2Q&oe=6245EE81',
-    'https://scontent.fcgh10-1.fna.fbcdn.net/v/t1.6435-9/105001397_144954767167159_1471683271604986178_n.jpg?stp=c34.0.206.206a_dst-jpg_p206x206&_nc_cat=104&ccb=1-5&_nc_sid=8024bb&_nc_eui2=AeGL_F7iLHY6aJbaUgKTObRZrUpySk5gRQytSnJKTmBFDGrtRHD0y5EOHxRhYRFbRzGTYCIh9OMxzQw4p3sowRzU&_nc_ohc=aKJ-VciU3aMAX_sQYz3&_nc_ht=scontent.fcgh10-1.fna&oh=00_AT8ol_JLOf0CTm9djfYnbxMcUqdkj9pmQv0qCndOVToZQQ&oe=624603CD',
-    'https://scontent.fcgh10-1.fna.fbcdn.net/v/t1.6435-9/160900684_495366764965148_8539871273879838600_n.jpg?stp=c0.53.206.206a_dst-jpg_p206x206&_nc_cat=109&ccb=1-5&_nc_sid=07e735&_nc_eui2=AeGDU_jaXYHQ1KTbUGl8Xv2IO_sQs1ToJ4Q7-xCzVOgnhBH7f3flDDZQD2tVV4XFYTh34j4TOMBGd_7tIOi3HOyc&_nc_ohc=RsG8LKLpeLYAX80J4UQ&_nc_ht=scontent.fcgh10-1.fna&oh=00_AT-yDwcN4-exxQIg1kUzPCHX1_8zDSfzdnvuOL2bjnbUaw&oe=62435E5D'
+    'imagens/FB_IMG_1.jpg',
+    'imagens/FB_IMG_2.jpg',
+    'imagens/FB_IMG_3.jpg',
+    'imagens/FB_IMG_4.jpg',
+    'imagens/FB_IMG_5.jpg',
   ];
+
+  @override
+  void initState() {
+    _initList();
+    super.initState();
+  }
+
+  _initList() {
+    ProdutosRepository produtosRepo = ProdutosRepository(auth: widget.uid);
+    produtosRepo.listProdutos().listen((e) {
+      if (e.docs.isNotEmpty) {
+        for (var i = 0; i < e.docs.length; i++) {
+          _listaProdutos.add(Produtos(
+            id: e.docs.elementAt(i).get('id'),
+            quantidade: e.docs.elementAt(i).get('quantidade'),
+            descricao: e.docs.elementAt(i).get('descricao'),
+            linkImagem: e.docs.elementAt(i).get('linkImagem'),
+          ));
+          print(_listaProdutos);
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +94,9 @@ class _HomePageState extends State<HomePage> {
             ),
             onPressed: () {},
           ),
-          title: const Text(
-            'Dedi Personalizados',
-            style: TextStyle(
+          title: Text(
+            Global.title,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -132,16 +164,31 @@ class _HomePageState extends State<HomePage> {
   Widget buildPortrait() => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.transparent),
-            ),
-            child: const Flexible(
-              child: ListView_Home(),
+          Flexible(
+            flex: 1,
+            child: Container(
+              height: 180,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.transparent),
+              ),
+              //child: const Flexible(
+              child: const ListView_Home(),
+              //),
             ),
           ),
           Flexible(
-            child: gridView(),
+            fit: FlexFit.loose,
+            flex: 2,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.transparent),
+              ),
+              //child: Expanded(
+              child: gridView(),
+              //),
+            ),
           ),
         ],
       );
@@ -158,247 +205,145 @@ class _HomePageState extends State<HomePage> {
       );
 
   Widget gridView() {
-    return GridView(
-      padding: const EdgeInsets.only(left: 20, right: 20),
+    return GridView.builder(
+      controller: _scrollController,
+      itemCount: _listaProdutos.length,
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.vertical,
-      shrinkWrap: false,
+      shrinkWrap: true,
       primary: false,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
+        childAspectRatio: 2,
+        mainAxisSpacing: 0,
       ),
-      children: [
-        Card(
-          clipBehavior: Clip.antiAlias,
-          elevation: 12,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          color: Colors.white,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0.0,
-                left: 0.0,
-                right: 0.0,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(12),
+      itemBuilder: (context, index) {
+        return Dismissible(
+          key: ValueKey(_listaProdutos[index]),
+          background: Container(
+            margin: const EdgeInsets.only(left: 10, top: 5, bottom: 30),
+            alignment: Alignment.centerLeft,
+            color: Colors.black,
+            child: Align(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: const <Widget>[
+                  Icon(
+                    Icons.delete,
+                    color: Colors.redAccent,
                   ),
-                  child: Image.network(
-                    urlImagens[0],
-                    height: 120,
-                    fit: BoxFit.fill,
+                  Text(
+                    'Exclui produto',
+                    style: TextStyle(
+                      color: Colors.cyanAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
                   ),
-                ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                ],
               ),
-              const Positioned(
-                bottom: 5,
-                left: 35,
-                right: 35,
-                child: Text(
-                  'Imagem 1',
-                  style: TextStyle(
-                    color: Colors.black,
-                    shadows: [
-                      Shadow(
-                        color: Colors.purpleAccent,
-                        blurRadius: 5,
-                        offset: Offset(1, 1),
+              alignment: Alignment.centerLeft,
+            ),
+          ),
+          secondaryBackground: Container(
+            margin: const EdgeInsets.only(left: 10, top: 5, bottom: 30),
+            alignment: Alignment.centerRight,
+            color: Colors.black,
+            child: Align(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: const <Widget>[
+                  Icon(
+                    Icons.delete,
+                    color: Colors.redAccent,
+                  ),
+                  Text(
+                    'Exclui produto',
+                    style: TextStyle(
+                      color: Colors.cyanAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                ],
+              ),
+              alignment: Alignment.centerRight,
+            ),
+          ),
+          direction: DismissDirection.endToStart,
+          resizeDuration: const Duration(milliseconds: 200),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            elevation: 12,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            color: Colors.white,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0.0,
+                  left: 20.0,
+                  right: 20.0,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(12),
+                    ),
+                    child: /* Image.network(
+                      _listaProdutos[index].linkImagem,
+                      height: 120,
+                      fit: BoxFit.fill,
+                    ), */
+                        Text(
+                      _listaProdutos[index].quantidade,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        shadows: [
+                          Shadow(
+                            color: Colors.purpleAccent,
+                            blurRadius: 5,
+                            offset: Offset(1, 1),
+                          ),
+                        ],
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                    fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Card(
-          clipBehavior: Clip.antiAlias,
-          elevation: 12,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          color: Colors.white,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0.0,
-                left: 0.0,
-                right: 0.0,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(12),
-                  ),
-                  child: Image.network(
-                    urlImagens[1],
-                    height: 120,
-                    fit: BoxFit.fill,
+                Positioned(
+                  bottom: 5,
+                  left: 35,
+                  right: 35,
+                  child: Text(
+                    _listaProdutos[index].descricao,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      shadows: [
+                        Shadow(
+                          color: Colors.purpleAccent,
+                          blurRadius: 5,
+                          offset: Offset(1, 1),
+                        ),
+                      ],
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              const Positioned(
-                bottom: 5,
-                left: 35,
-                right: 35,
-                child: Text(
-                  'Imagem 2',
-                  style: TextStyle(
-                    color: Colors.black,
-                    shadows: [
-                      Shadow(
-                        color: Colors.purpleAccent,
-                        blurRadius: 5,
-                        offset: Offset(1, 1),
-                      ),
-                    ],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        Card(
-          clipBehavior: Clip.antiAlias,
-          elevation: 12,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          color: Colors.white,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0.0,
-                left: 0.0,
-                right: 0.0,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(12),
-                  ),
-                  child: Image.network(
-                    urlImagens[2],
-                    height: 120,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-              const Positioned(
-                bottom: 5,
-                left: 35,
-                right: 35,
-                child: Text(
-                  'Imagem 3',
-                  style: TextStyle(
-                    color: Colors.black,
-                    shadows: [
-                      Shadow(
-                        color: Colors.purpleAccent,
-                        blurRadius: 5,
-                        offset: Offset(1, 1),
-                      ),
-                    ],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Card(
-          clipBehavior: Clip.antiAlias,
-          elevation: 12,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          color: Colors.white,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0.0,
-                left: 0.0,
-                right: 0.0,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(12),
-                  ),
-                  child: Image.network(
-                    urlImagens[3],
-                    height: 120,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-              const Positioned(
-                bottom: 5,
-                left: 35,
-                right: 35,
-                child: Text(
-                  'Imagem 4',
-                  style: TextStyle(
-                    color: Colors.black,
-                    shadows: [
-                      Shadow(
-                        color: Colors.purpleAccent,
-                        blurRadius: 5,
-                        offset: Offset(1, 1),
-                      ),
-                    ],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Card(
-          clipBehavior: Clip.antiAlias,
-          elevation: 12,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          color: Colors.white,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0.0,
-                left: 0.0,
-                right: 0.0,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(12),
-                  ),
-                  child: Image.network(
-                    urlImagens[4],
-                    height: 120,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-              const Positioned(
-                bottom: 5,
-                left: 35,
-                right: 35,
-                child: Text(
-                  'Imagem 5',
-                  style: TextStyle(
-                    color: Colors.black,
-                    shadows: [
-                      Shadow(
-                        color: Colors.purpleAccent,
-                        blurRadius: 5,
-                        offset: Offset(1, 1),
-                      ),
-                    ],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+          /* onDismissed: ((direction) async {
+            await produtosRepo
+                .excluiProduto(listaProdutos![index].id.toString());
+          }), */
+        );
+      },
     );
   }
 }

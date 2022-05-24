@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Produtos {
   String id;
-  String categoria;
+  String quantidade;
   String descricao;
   String linkImagem;
 
   Produtos({
     required this.id,
-    required this.categoria,
+    required this.quantidade,
     required this.descricao,
     required this.linkImagem,
   });
@@ -17,9 +17,9 @@ class Produtos {
 
   set setId(String id) => this.id = id;
 
-  get getCategoria => this.categoria;
+  get getQuantidade => this.quantidade;
 
-  set setCategoria(categoria) => this.categoria = categoria;
+  set setQuantidade(quantidade) => this.quantidade = quantidade;
 
   get getDescricao => this.descricao;
 
@@ -32,7 +32,7 @@ class Produtos {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'categoria': categoria,
+      'quantidade': quantidade,
       'descricao': descricao,
       'linkImagem': linkImagem,
     };
@@ -40,12 +40,12 @@ class Produtos {
 
   Produtos.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc)
       : id = doc.id,
-        categoria = doc.data()!['categoria'],
+        quantidade = doc.data()!['quantidade'],
         descricao = doc.data()!['descricao'],
         linkImagem = doc.data()!['linkImagem'];
 
   @override
   String toString() {
-    return '{ id: ${id}, categoria: ${categoria}, descricao: ${descricao}, linkImagem: ${linkImagem} }';
+    return '{ id: ${id}, quantidade: ${quantidade}, descricao: ${descricao}, linkImagem: ${linkImagem} }';
   }
 }

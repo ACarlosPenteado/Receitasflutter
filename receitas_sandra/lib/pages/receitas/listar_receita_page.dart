@@ -736,6 +736,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
         return Dismissible(
           key: ValueKey(_receitas[index]),
           background: Container(
+            margin: const EdgeInsets.only(left: 10, top: 5, bottom: 30),
             alignment: Alignment.centerLeft,
             color: Colors.cyanAccent,
             child: Align(
@@ -763,6 +764,7 @@ class _ListarReceitaPageState extends State<ListarReceitaPage>
             ),
           ),
           secondaryBackground: Container(
+            margin: const EdgeInsets.only(left: 10, top: 5, bottom: 30),
             alignment: Alignment.centerRight,
             color: Colors.cyanAccent,
             child: Align(
