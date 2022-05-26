@@ -51,8 +51,10 @@ class _HomePageState extends State<HomePage> {
           _listaProdutos.add(Produtos(
             id: e.docs.elementAt(i).get('id'),
             quantidade: e.docs.elementAt(i).get('quantidade'),
+            produto: e.docs.elementAt(i).get('produto'),
             descricao: e.docs.elementAt(i).get('descricao'),
             linkImagem: e.docs.elementAt(i).get('linkImagem'),
+            preco: e.docs.elementAt(i).get('preco'),
           ));
           print(_listaProdutos);
         }
@@ -111,30 +113,34 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {}),
           ],
           bottom: PreferredSize(
-              preferredSize: const Size(300, 50),
+            preferredSize: const Size(300, 50),
+            child: Center(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    width: 20,
-                  ),
+                  // const SizedBox(
+                  //   width: 20,
+                  // ),
                   const Padding(
                     padding: EdgeInsets.all(5),
                     child: Procura_Produtos(),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const GerenciarProdutos(tipo: 0),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
+                  if (widget.uid == 'd5623EJiwzdbRKNyjwDe4toxxHj2')
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const GerenciarProdutos(tipo: 0),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.add),
+                    ),
                 ],
-              )),
+              ),
+            ),
+          ),
         ),
         body: Container(
           height: _height,
@@ -289,30 +295,17 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Positioned(
                   top: 0.0,
-                  left: 20.0,
-                  right: 20.0,
+                  left: 0.0,
+                  right: 0.0,
+                  bottom: 0.0,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(
                       Radius.circular(12),
                     ),
-                    child: /* Image.network(
+                    child: Image.network(
                       _listaProdutos[index].linkImagem,
                       height: 120,
                       fit: BoxFit.fill,
-                    ), */
-                        Text(
-                      _listaProdutos[index].quantidade,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        shadows: [
-                          Shadow(
-                            color: Colors.purpleAccent,
-                            blurRadius: 5,
-                            offset: Offset(1, 1),
-                          ),
-                        ],
-                        fontWeight: FontWeight.bold,
-                      ),
                     ),
                   ),
                 ),
@@ -321,7 +314,7 @@ class _HomePageState extends State<HomePage> {
                   left: 35,
                   right: 35,
                   child: Text(
-                    _listaProdutos[index].descricao,
+                    _listaProdutos[index].produto,
                     style: const TextStyle(
                       color: Colors.black,
                       shadows: [
@@ -335,6 +328,20 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
+                /* Text(
+                      _listaProdutos[index].quantidade,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        shadows: [
+                          Shadow(
+                            color: Colors.purpleAccent,
+                            blurRadius: 5,
+                            offset: Offset(1, 1),
+                          ),
+                        ],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ), */
               ],
             ),
           ),

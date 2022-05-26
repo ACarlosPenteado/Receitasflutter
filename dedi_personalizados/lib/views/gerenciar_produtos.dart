@@ -1,6 +1,7 @@
 import 'package:dedi_personalizados/models/produtos.dart';
 import 'package:dedi_personalizados/repository/produtos_repository.dart';
 import 'package:dedi_personalizados/utils/funtions.dart';
+import 'package:dedi_personalizados/utils/globais.dart';
 import 'package:dedi_personalizados/widgets/text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class _GerenciarProdutosState extends State<GerenciarProdutos>
   TextEditingController produtoController = TextEditingController();
   TextEditingController descricaoController = TextEditingController();
   TextEditingController linkController = TextEditingController();
+  TextEditingController precoController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey();
 
   bool isLoading = false;
@@ -32,12 +34,11 @@ class _GerenciarProdutosState extends State<GerenciarProdutos>
   FocusNode focusPro = FocusNode();
   FocusNode focusDes = FocusNode();
   FocusNode focusLin = FocusNode();
+  FocusNode focusPre = FocusNode();
 
   String imageLk = 'imagens/caneca.jpg';
 
-  User? result = FirebaseAuth.instance.currentUser;
-
-  late ProdutosRepository produtosRepo;
+  ProdutosRepository produtosRepo = ProdutosRepository(auth: Global.id);
 
   @override
   void initState() {
@@ -50,7 +51,7 @@ class _GerenciarProdutosState extends State<GerenciarProdutos>
   }
 
   _initList() {
-    ProdutosRepository produtosRepo = ProdutosRepository(auth: result!.uid);
+    ProdutosRepository produtosRepo = ProdutosRepository(auth: Global.id);
   }
 
   @override
@@ -268,14 +269,20 @@ class _GerenciarProdutosState extends State<GerenciarProdutos>
                   Positioned(
                     top: 10,
                     left: 10,
-                    right: 200,
+                    right: 300,
                     child: quantidadeTextFormField(),
                   ),
                   Positioned(
                     top: 10,
-                    left: 205,
-                    right: 10,
+                    left: 90,
+                    right: 100,
                     child: produtoTextFormField(),
+                  ),
+                  Positioned(
+                    top: 10,
+                    left: 290,
+                    right: 10,
+                    child: precoTextFormField(),
                   ),
                   Positioned(
                     top: 80,
@@ -364,6 +371,27 @@ class _GerenciarProdutosState extends State<GerenciarProdutos>
       validator: (value) {
         if (value.isEmpty || value == null) {
           return 'Digite a descrição do produto!';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget precoTextFormField() {
+    return CustomTextField(
+      keyboardType:
+          const TextInputType.numberWithOptions(signed: true, decimal: true),
+      textEditingController: precoController,
+      textInputAction: TextInputAction.next,
+      focus: false,
+      focusNode: focusPre,
+      tm: 60,
+      ftm: 12,
+      maxLine: 1,
+      labelText: 'Preço',
+      validator: (value) {
+        if (value.isEmpty || value == null) {
+          return 'Digite o preço do produto!';
         }
         return null;
       },
@@ -504,8 +532,10 @@ class _GerenciarProdutosState extends State<GerenciarProdutos>
     Produtos produtos = Produtos(
         id: getId,
         quantidade: quantidadeController.text,
+        produto: produtoController.text,
         descricao: descricaoController.text,
-        linkImagem: linkController.text);
+        linkImagem: linkController.text,
+        preco: precoController.text);
     setState(() {
       isLoading = true;
     });
@@ -513,11 +543,11 @@ class _GerenciarProdutosState extends State<GerenciarProdutos>
     setState(() {
       isLoading = false;
     });
-
     imageLk = 'imagens/caneca.jpg';
     quantidadeController.text = '';
     produtoController.text = '';
     descricaoController.text = '';
     linkController.text = '';
+    precoController.text = '';
   }
 }
